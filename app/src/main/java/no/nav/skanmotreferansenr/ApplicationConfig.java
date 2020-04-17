@@ -1,0 +1,28 @@
+package no.nav.skanmotreferansenr;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import no.nav.skanmotreferansenr.config.alias.ServiceuserAlias;
+import no.nav.skanmotreferansenr.metrics.SkanmotMonitoringAspect;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+@ComponentScan(basePackages = "no.nav.skanmotreferansenr")
+@Configuration
+@EnableConfigurationProperties(value = {ServiceuserAlias.class})
+@EnableAspectJAutoProxy
+@EnableRetry
+@EnableScheduling
+public class ApplicationConfig {
+
+    @Bean
+    public SkanmotMonitoringAspect timedAspect(MeterRegistry meterRegistry) {
+        return new SkanmotMonitoringAspect(meterRegistry);
+    }
+
+
+}

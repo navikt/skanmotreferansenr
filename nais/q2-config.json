@@ -1,0 +1,8 @@
+{
+  "SRVSKANMOTREFERANSENR": "/serviceuser/data/dev/srvskanmotreferansenr",
+  "APPDYNAMICS": "/apikey/appdynamics/dev",
+  "NAMESPACE": "q2",
+  "INGRESSES": [
+    "https://skanmotreferansenr-q2.nais.preprod.local"
+  ]
+}

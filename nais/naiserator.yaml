@@ -1,0 +1,42 @@
+kind: Application
+apiVersion: nais.io/v1alpha1
+metadata:
+  name: skanmotreferansenr
+  namespace: {{ NAMESPACE }}
+  labels:
+    team: teamdokumenthandtering
+spec:
+  image: {{ image }}
+  ingresses:
+    {{#each INGRESSES}}
+       - {{this }}
+      {{/each}}
+  liveness:
+    path: /isAlive
+    port: 8080
+    initialDelay: 30
+    failureThreshold: 10
+  port: 8080
+  prometheus:
+    enabled: true
+    path: /actuator/prometheus
+  readiness:
+    path: /isReady
+    port: 8080
+    initialDelay: 30
+    timeout: 3
+  replicas:
+    min: 1
+    max: 2
+    cpuThresholdPercentage: 50
+  resources:
+    limits:
+      cpu: 1500m
+      memory: 1024Mi
+  vault:
+    enabled: true
+    paths:
+      - kvPath: {{ SRVSKANMOTREFERANSENR }}
+        mountPath: "/var/run/secrets/nais.io/srvskanmotreferansenr"
+      - kvPath: {{ APPDYNAMICS }}
+        mountPath: /var/run/secrets/nais.io/appdynamics

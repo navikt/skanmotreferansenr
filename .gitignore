@@ -1,0 +1,35 @@
+###Maven##
+HELP.md
+target/
+*.mvn
+mvnw*
+
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+*.idea
+*.iws
+*.iml
+*.ipr
+atlassian-ide-plugin.xml
+
+#Eclipse
+.classpath
+.project
+.settings
+
+*.tm*.epoch
+*.lck
+*.log
+
+**/application-t*.properties
+**/application-q*.properties
+**/application-local.properties

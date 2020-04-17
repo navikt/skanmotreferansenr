@@ -1,0 +1,8 @@
+{
+  "SRVSKANMOTREFERANSENR": "/serviceuser/data/dev/srvskanmotreferansenr",
+  "APPDYNAMICS": "/apikey/appdynamics/prod",
+  "NAMESPACE": "default",
+  "INGRESSES": [
+    "https://skanmotreferansenr.nais.adeo.no"
+  ]
+}
