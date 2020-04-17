@@ -37,6 +37,6 @@ spec:
     enabled: true
     paths:
       - kvPath: {{ SRVSKANMOTREFERANSENR }}
-        mountPath: "/var/run/secrets/nais.io/srvskanmotreferansenr"
+        mountPath: "/var/run/secrets/nais.io/srvskanmotreferanse"
       - kvPath: {{ APPDYNAMICS }}
         mountPath: /var/run/secrets/nais.io/appdynamics

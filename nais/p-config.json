@@ -1,5 +1,5 @@
 {
-  "SRVSKANMOTREFERANSENR": "/serviceuser/data/dev/srvskanmotreferansenr",
+  "SRVSKANMOTREFERANSENR": "/serviceuser/data/dev/srvskanmotreferanse",
   "APPDYNAMICS": "/apikey/appdynamics/prod",
   "NAMESPACE": "default",
   "INGRESSES": [
