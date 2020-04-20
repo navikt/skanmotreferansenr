@@ -12,7 +12,7 @@ spec:
        - {{this }}
       {{/each}}
   liveness:
-    path: /isAlive
+    path: /internal/isAlive
     port: 8080
     initialDelay: 30
     failureThreshold: 10
@@ -21,7 +21,7 @@ spec:
     enabled: true
     path: /actuator/prometheus
   readiness:
-    path: /isReady
+    path: /internal/isReady
     port: 8080
     initialDelay: 30
     timeout: 3
@@ -31,12 +31,14 @@ spec:
     cpuThresholdPercentage: 50
   resources:
     limits:
-      cpu: 1500m
-      memory: 1024Mi
+      cpu: 2000m
+      memory: 2048Mi
+    requests:
+      memory: 512Mi
   vault:
     enabled: true
     paths:
-      - kvPath: {{ SRVSKANMOTREFERANSENR }}
-        mountPath: "/var/run/secrets/nais.io/srvskanmotreferanse"
+      - kvPath: {{ SRVSKANMOTREFERANSE }}
+        mountPath: /var/run/secrets/nais.io/srvskanmotreferanse
       - kvPath: {{ APPDYNAMICS }}
         mountPath: /var/run/secrets/nais.io/appdynamics
