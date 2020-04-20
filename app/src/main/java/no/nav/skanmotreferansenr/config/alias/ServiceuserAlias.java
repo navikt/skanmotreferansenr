@@ -1,7 +1,9 @@
 package no.nav.skanmotreferansenr.config.alias;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -13,6 +15,8 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 @ToString
 @ConfigurationProperties("serviceuser")
+@AllArgsConstructor
+@NoArgsConstructor
 @Validated
 public class ServiceuserAlias {
 
@@ -20,6 +24,5 @@ public class ServiceuserAlias {
     private String username;
     @NotEmpty
     private String password;
-
 
 }
