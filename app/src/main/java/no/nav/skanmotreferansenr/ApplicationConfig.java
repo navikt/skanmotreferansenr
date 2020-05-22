@@ -1,9 +1,8 @@
 package no.nav.skanmotreferansenr;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.skanmotreferansenr.config.properties.ServiceuserProperties;
 import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
-import no.nav.skanmotreferansenr.metrics.SkanmotMonitoringAspect;
+import no.nav.skanmotreferansenr.metrics.DokTimedAspect;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,8 +20,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class ApplicationConfig {
 
     @Bean
-    public SkanmotMonitoringAspect timedAspect(MeterRegistry meterRegistry) {
-        return new SkanmotMonitoringAspect(meterRegistry);
+    public DokTimedAspect timedAspect(MeterRegistry meterRegistry) {
+        return new DokTimedAspect(meterRegistry);
     }
 
 
