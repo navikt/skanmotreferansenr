@@ -28,7 +28,7 @@ import java.time.Duration;
 public class FoerstesidegeneratorConsumer {
 
     public static final String CORRELATION_HEADER = "X-Correlation-Id";
-    public static final String CONSUMER_ID = "skanmotutgaaende";
+    public static final String CONSUMER_ID = "skanmotreferansenr";
 
     private final RestTemplate restTemplate;
     private final String foerstesideUrl;
