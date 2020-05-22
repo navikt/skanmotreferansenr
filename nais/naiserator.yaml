@@ -6,6 +6,11 @@ metadata:
   labels:
     team: teamdokumenthandtering
 spec:
+  env:
+    - name: SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL
+      value: {{ SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL }}
+    - name: SKANMOTREFERANSENR_STSURL
+      value: {{ SKANMOTREFERANSENR_STSURL }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
