@@ -1,7 +1,7 @@
 {
   "NAMESPACE": "default",
   "SRVSKANMOTREFERANSE": "/serviceuser/data/prod/srvskanmotreferanse",
-  "SRVSKANMOTREFERANSENR_VAULT": "/kv/prod/fss/skanmotreferansenr/default",
+  "SKANMOTREFERANSENR_VAULT": "/kv/prod/fss/skanmotreferansenr/default",
   "SFTP_KEYS": "kv/prod/fss/skanmotreferansenr/keys",
   "SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL": "https://foerstesidegenerator.nais.adeo.no/api/foerstesidegenerator/v1/foersteside",
   "SKANMOTREFERANSENR_STSURL": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",

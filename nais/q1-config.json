@@ -1,7 +1,7 @@
 {
   "NAMESPACE": "q1",
   "SRVSKANMOTREFERANSE": "/serviceuser/data/dev/srvskanmotreferanse",
-  "SRVSKANMOTREFERANSENR_VAULT": "/kv/preprod/fss/skanmotreferansenr/q1",
+  "SKANMOTREFERANSENR_VAULT": "/kv/preprod/fss/skanmotreferansenr/q1",
   "SFTP_KEYS": "kv/preprod/fss/skanmotreferansenr/keys",
   "SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL": "https://foerstesidegenerator-q1.nais.preprod.local/api/foerstesidegenerator/v1/foersteside",
   "SKANMOTREFERANSENR_STSURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
