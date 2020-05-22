@@ -1,7 +1,6 @@
 {
   "NAMESPACE": "q1",
   "SRVSKANMOTREFERANSE": "/serviceuser/data/dev/srvskanmotreferanse",
-  "APPDYNAMICS": "/apikey/appdynamics/dev",
   "SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL": "https://foerstesidegenerator-q1.nais.preprod.local/api/foerstesidegenerator/v1/foersteside",
   "SKANMOTREFERANSENR_STSURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
   "INGRESSES": [
