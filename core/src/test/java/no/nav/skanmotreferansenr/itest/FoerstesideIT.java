@@ -2,11 +2,11 @@ package no.nav.skanmotreferansenr.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.Json;
-import no.nav.dok.foerstesidegenerator.api.v1.BrukerType;
-import no.nav.dok.foerstesidegenerator.api.v1.GetFoerstesideResponse;
 import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorConsumer;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
+import no.nav.skanmotreferansenr.foersteside.data.Bruker;
+import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.itest.config.TestConfig;
 import no.nav.skanmotreferansenr.sts.STSConsumer;
 import org.junit.jupiter.api.AfterEach;
@@ -83,11 +83,11 @@ public class FoerstesideIT {
 
     @Test
     void shouldGetFoerstesideMetadata() {
-        GetFoerstesideResponse metadata = foerstesidegeneratorService.hentFoersteside("111");
+        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside("111");
 
         assertNull(metadata.getAvsender());
         assertEquals("12345678910", metadata.getBruker().getBrukerId());
-        assertEquals(BrukerType.PERSON, metadata.getBruker().getBrukerType());
+        assertEquals(Bruker.BrukerType.PERSON, metadata.getBruker().getBrukerType());
         assertEquals("AAP", metadata.getTema());
         assertNull(metadata.getBehandlingstema());
         assertEquals("Brev", metadata.getArkivtittel());
@@ -99,7 +99,7 @@ public class FoerstesideIT {
 
     @Test
     void shouldGetNullIfNotExisting() {
-        GetFoerstesideResponse metadata = foerstesidegeneratorService.hentFoersteside("222");
+        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside("222");
         assertNull(metadata);
     }
 

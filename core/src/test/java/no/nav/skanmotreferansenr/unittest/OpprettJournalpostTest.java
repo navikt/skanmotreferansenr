@@ -1,14 +1,12 @@
 package no.nav.skanmotreferansenr.unittest;
 
-
-import no.nav.dok.foerstesidegenerator.api.v1.Avsender;
-import no.nav.dok.foerstesidegenerator.api.v1.Bruker;
-import no.nav.dok.foerstesidegenerator.api.v1.BrukerType;
-import no.nav.dok.foerstesidegenerator.api.v1.GetFoerstesideResponse;
 import no.nav.skanmotreferansenr.domain.Filepair;
 import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.domain.SkanningInfo;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
+import no.nav.skanmotreferansenr.foersteside.data.Avsender;
+import no.nav.skanmotreferansenr.foersteside.data.Bruker;
+import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.Dokument;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.DokumentVariant;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostRequest;
@@ -136,14 +134,14 @@ public class OpprettJournalpostTest {
                 .xml(DUMMY_FILE)
                 .build();
 
-        GetFoerstesideResponse foerstesideResponse = GetFoerstesideResponse.builder()
+        FoerstesideMetadata foerstesideResponse = FoerstesideMetadata.builder()
                 .arkivtittel(ARKIVTITTEL)
                 .avsender(Avsender.builder()
                         .avsenderId(AVSENDER_ID)
                         .avsenderNavn(AVSENDER_NAVN)
                         .build())
                 .behandlingstema(BEHANDLINGSTEMA)
-                .bruker(Bruker.builder().brukerId(BRUKER_ID).brukerType(BrukerType.PERSON).build())
+                .bruker(Bruker.builder().brukerId(BRUKER_ID).brukerType(Bruker.BrukerType.PERSON).build())
                 .enhetsnummer(ENHETSNUMMER)
                 .navSkjemaId(NAV_SKJEMA_ID)
                 .tema(TEMA)

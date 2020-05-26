@@ -1,7 +1,6 @@
 package no.nav.skanmotreferansenr;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.foerstesidegenerator.api.v1.GetFoerstesideResponse;
 import no.nav.skanmotreferansenr.domain.Filepair;
 import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
@@ -11,6 +10,7 @@ import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrUnzippe
 import no.nav.skanmotreferansenr.exceptions.technical.AbstractSkanmotreferansenrTechnicalException;
 import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
+import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostService;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostResponse;
 import no.nav.skanmotreferansenr.unzipskanningmetadata.UnzipSkanningmetadataUtils;
@@ -57,7 +57,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
 
                 filepairList.forEach(filepair -> {
                     Optional<Skanningmetadata> skanningmetadata = extractMetadata(filepair);
-                    Optional<GetFoerstesideResponse> foerstesideMetadata = getFoerstesideMetadata(skanningmetadata);
+                    Optional<FoerstesideMetadata> foerstesideMetadata = getFoerstesideMetadata(skanningmetadata);
                     Optional<OpprettJournalpostResponse> response = opprettJournalpost(filepair, skanningmetadata, foerstesideMetadata);
                     try {
                         if (response.isEmpty()) {
@@ -83,8 +83,8 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         }
     }
 
-    private Optional<GetFoerstesideResponse> getFoerstesideMetadata(Optional<Skanningmetadata> skanningmetadata) {
-        GetFoerstesideResponse response = null;
+    private Optional<FoerstesideMetadata> getFoerstesideMetadata(Optional<Skanningmetadata> skanningmetadata) {
+        FoerstesideMetadata response = null;
 
         if (skanningmetadata.isEmpty()) {
             return Optional.empty();
@@ -106,7 +106,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         return Optional.of(response);
     }
 
-    private Optional<OpprettJournalpostResponse> opprettJournalpost(Filepair filepair, Optional<Skanningmetadata> skanningmetadata, Optional<GetFoerstesideResponse> foerstesideMetadata) {
+    private Optional<OpprettJournalpostResponse> opprettJournalpost(Filepair filepair, Optional<Skanningmetadata> skanningmetadata, Optional<FoerstesideMetadata> foerstesideMetadata) {
 
         OpprettJournalpostResponse response = null;
 

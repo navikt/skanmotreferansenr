@@ -1,10 +1,10 @@
 package no.nav.skanmotreferansenr.opprettjournalpost;
 
-import no.nav.dok.foerstesidegenerator.api.v1.GetFoerstesideResponse;
 import no.nav.skanmotreferansenr.domain.Filepair;
 import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.domain.SkanningInfo;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
+import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.AvsenderMottaker;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.Bruker;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.Dokument;
@@ -34,7 +34,7 @@ public class OpprettJournalpostRequestMapper {
     private static final String FNR = "FNR";
     private static final String TEMA_UKJENT = "UKJ";
 
-    public static OpprettJournalpostRequest generateRequestBody(Skanningmetadata skanningmetadata, GetFoerstesideResponse foerstesideMetadata, Filepair filepair) {
+    public static OpprettJournalpostRequest generateRequestBody(Skanningmetadata skanningmetadata, FoerstesideMetadata foerstesideMetadata, Filepair filepair) {
         Journalpost journalpost = skanningmetadata.getJournalpost();
         SkanningInfo skanningInfo = skanningmetadata.getSkanningInfo();
 
@@ -98,7 +98,7 @@ public class OpprettJournalpostRequestMapper {
                 .build();
     }
 
-    private static AvsenderMottaker extractAvsenderMottaker(GetFoerstesideResponse foerstesideMetadata) {
+    private static AvsenderMottaker extractAvsenderMottaker(FoerstesideMetadata foerstesideMetadata) {
         if (foerstesideMetadata.getAvsender() == null) {
             return AvsenderMottaker.builder().build();
         }

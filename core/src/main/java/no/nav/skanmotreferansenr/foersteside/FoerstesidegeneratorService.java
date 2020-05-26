@@ -1,11 +1,11 @@
 package no.nav.skanmotreferansenr.foersteside;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.dok.foerstesidegenerator.api.v1.GetFoerstesideResponse;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFinnesIkkeFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.HentMetadataFoerstesideTechnicalException;
+import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.sts.STSConsumer;
 import no.nav.skanmotreferansenr.sts.data.STSResponse;
 import org.springframework.stereotype.Component;
@@ -25,8 +25,7 @@ public class FoerstesidegeneratorService {
         this.stsConsumer = stsConsumer;
     }
 
-    public GetFoerstesideResponse hentFoersteside(String loepenr) throws HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException,
-            HentMetadataFoerstesideFunctionalException, HentMetadataFoerstesideTechnicalException {
+    public FoerstesideMetadata hentFoersteside(String loepenr) {
         STSResponse stsResponse = stsConsumer.getSTSToken();
         try {
             return foerstesidegeneratorConsumer.hentFoersteside(stsResponse.getAccess_token(), loepenr);

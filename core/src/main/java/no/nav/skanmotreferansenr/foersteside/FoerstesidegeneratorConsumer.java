@@ -1,11 +1,11 @@
 package no.nav.skanmotreferansenr.foersteside;
 
-import no.nav.dok.foerstesidegenerator.api.v1.GetFoerstesideResponse;
 import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFinnesIkkeFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.HentMetadataFoerstesideTechnicalException;
+import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.jaxws.MDCConstants;
 import no.nav.skanmotreferansenr.jaxws.MDCGenerate;
 import org.slf4j.MDC;
@@ -27,9 +27,6 @@ import java.time.Duration;
 @Component
 public class FoerstesidegeneratorConsumer {
 
-    public static final String CORRELATION_HEADER = "X-Correlation-Id";
-    public static final String CONSUMER_ID = "skanmotreferansenr";
-
     private final RestTemplate restTemplate;
     private final String foerstesideUrl;
 
@@ -43,13 +40,13 @@ public class FoerstesidegeneratorConsumer {
                 .build();
     }
 
-    public GetFoerstesideResponse hentFoersteside(String token, String loepenr) {
+    public FoerstesideMetadata hentFoersteside(String token, String loepenr) {
         try {
             HttpHeaders headers = createHeaders(token);
             HttpEntity<?> requestEntity = new HttpEntity<>(headers);
             URI uri = UriComponentsBuilder.fromHttpUrl(foerstesideUrl).pathSegment(loepenr).build().toUri();
 
-            return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, GetFoerstesideResponse.class).getBody();
+            return restTemplate.exchange(uri, HttpMethod.GET, requestEntity, FoerstesideMetadata.class).getBody();
 
         } catch (HttpClientErrorException e) {
             if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
@@ -74,8 +71,12 @@ public class FoerstesidegeneratorConsumer {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
 
-        headers.add(CORRELATION_HEADER, MDC.get(MDCConstants.MDC_CALL_ID));
-        headers.add(MDCConstants.MDC_NAV_CONSUMER_ID, CONSUMER_ID);
+        if (MDC.get(MDCConstants.MDC_NAV_CALL_ID) != null) {
+            headers.add(MDCConstants.MDC_NAV_CALL_ID, MDC.get(MDCConstants.MDC_NAV_CALL_ID));
+        }
+        if (MDC.get(MDCConstants.MDC_NAV_CONSUMER_ID) != null) {
+            headers.add(MDCConstants.MDC_NAV_CONSUMER_ID, MDC.get(MDCConstants.MDC_NAV_CONSUMER_ID));
+        }
         return headers;
     }
 }
