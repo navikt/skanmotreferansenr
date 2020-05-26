@@ -13,9 +13,9 @@ spec:
       value: {{ SKANMOTREFERANSENR_DOKARKIVJOURNALPOSTURL }}
     - name: SKANMOTREFERANSENR_STSURL
       value: {{ SKANMOTREFERANSENR_STSURL }}
-    - name: SKANMOTOVRIG_SFTP_PRIVATEKEY
+    - name: SKANMOTREFERANSENR_SFTP_PRIVATEKEY
       value: /var/run/secrets/nais.io/keys/privatekey
-    - name: SKANMOTOVRIG_SFTP_HOSTKEY
+    - name: SKANMOTREFERANSENR_SFTP_HOSTKEY
       value: /var/run/secrets/nais.io/keys/hostkey
   image: {{ image }}
   ingresses:
