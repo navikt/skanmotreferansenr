@@ -19,8 +19,17 @@ public class SkanmotreferansenrProperties {
     private String getmetadatafoerstesideurl;
 
     @NotNull
+    private String dokarkivjournalposturl;
+
+    @NotNull
     private String stsurl;
 
     @NotNull
     private ServiceuserProperties serviceuser;
+
+    @NotNull
+    private FilomraadeProperties filomraade;
+
+    @NotNull
+    private SftpProperties sftp;
 }

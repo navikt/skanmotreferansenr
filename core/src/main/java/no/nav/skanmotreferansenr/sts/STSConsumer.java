@@ -2,10 +2,11 @@ package no.nav.skanmotreferansenr.sts;
 
 
 import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
-import no.nav.skanmotreferansenr.exception.functional.SkanmotreferansenrFunctionalException;
-import no.nav.skanmotreferansenr.exception.technical.SkanmotreferansenrTechnicalException;
+import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrStsFunctionalException;
+import no.nav.skanmotreferansenr.exceptions.technical.SkanmotreferansenrStsTechnicalException;
 import no.nav.skanmotreferansenr.jaxws.MDCConstants;
 import no.nav.skanmotreferansenr.metrics.Metrics;
+import no.nav.skanmotreferansenr.sts.data.STSResponse;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -49,10 +50,10 @@ public class STSConsumer {
                     .getBody();
 
         } catch (HttpClientErrorException e) {
-            throw new SkanmotreferansenrFunctionalException(String.format("getSTSToken feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
+            throw new SkanmotreferansenrStsFunctionalException(String.format("getSTSToken feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
                     .getStatusCode(), e.getMessage()), e);
         } catch (HttpServerErrorException e) {
-            throw new SkanmotreferansenrTechnicalException(String.format("getSTSToken feilet teknisk med statusKode=%s. Feilmelding=%s", e
+            throw new SkanmotreferansenrStsTechnicalException(String.format("getSTSToken feilet teknisk med statusKode=%s. Feilmelding=%s", e
                     .getStatusCode(), e.getMessage()), e);
         }
     }

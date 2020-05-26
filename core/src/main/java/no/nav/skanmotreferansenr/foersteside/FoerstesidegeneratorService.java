@@ -2,12 +2,12 @@ package no.nav.skanmotreferansenr.foersteside;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.dok.foerstesidegenerator.api.v1.GetFoerstesideResponse;
-import no.nav.skanmotreferansenr.exception.functional.HentMetadataFoerstesideFinnesIkkeFunctionalException;
-import no.nav.skanmotreferansenr.exception.functional.HentMetadataFoerstesideFunctionalException;
-import no.nav.skanmotreferansenr.exception.functional.HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException;
-import no.nav.skanmotreferansenr.exception.technical.HentMetadataFoerstesideTechnicalException;
+import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFinnesIkkeFunctionalException;
+import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFunctionalException;
+import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException;
+import no.nav.skanmotreferansenr.exceptions.technical.HentMetadataFoerstesideTechnicalException;
 import no.nav.skanmotreferansenr.sts.STSConsumer;
-import no.nav.skanmotreferansenr.sts.STSResponse;
+import no.nav.skanmotreferansenr.sts.data.STSResponse;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
