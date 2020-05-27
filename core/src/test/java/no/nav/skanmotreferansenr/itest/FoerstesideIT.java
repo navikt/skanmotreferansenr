@@ -89,7 +89,7 @@ public class FoerstesideIT {
 
         assertNull(metadata.getAvsender());
         assertEquals("12345678910", metadata.getBruker().getBrukerId());
-        assertEquals(Bruker.BrukerType.PERSON, metadata.getBruker().getBrukerType());
+        assertEquals("PERSON", metadata.getBruker().getBrukerType());
         assertEquals("AAP", metadata.getTema());
         assertNull(metadata.getBehandlingstema());
         assertEquals("Brev", metadata.getArkivtittel());

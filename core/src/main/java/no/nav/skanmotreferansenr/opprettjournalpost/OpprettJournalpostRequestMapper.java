@@ -51,10 +51,10 @@ public class OpprettJournalpostRequestMapper {
         AvsenderMottaker avsenderMottaker = extractAvsenderMottaker(foerstesideMetadata);
 
         Bruker bruker = Optional.ofNullable(foerstesideMetadata.getBruker())
-                .filter(foersesideBruker -> notNullOrEmpty(foersesideBruker.getBrukerType().name()))
+                .filter(foersesideBruker -> notNullOrEmpty(foersesideBruker.getBrukerType()))
                 .filter(foersesideBruker -> notNullOrEmpty(foersesideBruker.getBrukerId()))
                 .map(foersesideBruker -> Bruker.builder()
-                        .idType(foersesideBruker.getBrukerType().name())
+                        .idType(foersesideBruker.getBrukerType())
                         .id(foersesideBruker.getBrukerId())
                         .build()
                 ).orElse(null);

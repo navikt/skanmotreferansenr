@@ -12,10 +12,6 @@ import lombok.NoArgsConstructor;
 public class Arkivsak {
 
     private String arkivsaksnummer;
-    private Arkivsaksystem arkivsaksystem;
+    private String arkivsaksystem;
 
-    enum Arkivsaksystem {
-        GSAK,
-        PSAK;
-    }
 }

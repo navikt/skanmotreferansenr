@@ -125,7 +125,7 @@ public class OpprettJournalpostRequestMapperTest {
                         .avsenderNavn(AVSENDER_NAVN)
                         .build())
                 .behandlingstema(BEHANDLINGSTEMA)
-                .bruker(Bruker.builder().brukerId(BRUKER_ID).brukerType(Bruker.BrukerType.PERSON).build())
+                .bruker(Bruker.builder().brukerId(BRUKER_ID).brukerType("PERSON").build())
                 .enhetsnummer(ENHETSNUMMER)
                 .navSkjemaId(NAV_SKJEMA_ID)
                 .tema(TEMA)

@@ -12,11 +12,6 @@ import lombok.NoArgsConstructor;
 public class Bruker {
 
     private String brukerId;
-    private BrukerType brukerType;
-
-    public enum BrukerType {
-        PERSON,
-        ORGANISASJON
-    }
+    private String brukerType;
 
 }
