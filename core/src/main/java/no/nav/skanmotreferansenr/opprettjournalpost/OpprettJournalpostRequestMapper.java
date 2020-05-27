@@ -14,6 +14,7 @@ import no.nav.skanmotreferansenr.opprettjournalpost.data.Tilleggsopplysning;
 import no.nav.skanmotreferansenr.utils.Utils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class OpprettJournalpostRequestMapper {
@@ -48,10 +49,14 @@ public class OpprettJournalpostRequestMapper {
 
         AvsenderMottaker avsenderMottaker = extractAvsenderMottaker(foerstesideMetadata);
 
-        Bruker bruker = Bruker.builder()
-                .id(foerstesideMetadata.getBruker().getBrukerId())
-                .idType(foerstesideMetadata.getBruker().getBrukerType().name())
-                .build();
+        Bruker bruker = Optional.ofNullable(foerstesideMetadata.getBruker())
+                .filter(foersesideBruker -> notNullOrEmpty(foersesideBruker.getBrukerType().name()))
+                .filter(foersesideBruker -> notNullOrEmpty(foersesideBruker.getBrukerId()))
+                .map(foersesideBruker -> Bruker.builder()
+                        .idType(foersesideBruker.getBrukerType().name())
+                        .id(foersesideBruker.getBrukerId())
+                        .build()
+                ).orElse(null);
 
         List<Tilleggsopplysning> tilleggsopplysninger = List.of(
                 new Tilleggsopplysning(REFERANSENR, journalpost.getReferansenummer() + journalpost.getReferansenrChecksum()),
