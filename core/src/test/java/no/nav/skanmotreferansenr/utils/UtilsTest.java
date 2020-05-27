@@ -1,6 +1,5 @@
-package no.nav.skanmotreferansenr.unittest;
+package no.nav.skanmotreferansenr.utils;
 
-import no.nav.skanmotreferansenr.utils.Utils;
 import org.junit.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

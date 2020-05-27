@@ -9,6 +9,7 @@ import no.nav.skanmotreferansenr.metrics.Metrics;
 import no.nav.skanmotreferansenr.sts.data.STSResponse;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 
+import static no.nav.skanmotreferansenr.config.LocalCacheConfig.STS_CACHE;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
 
@@ -41,6 +43,7 @@ public class STSConsumer {
     }
 
     @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "getSTSToken"}, percentiles = {0.5, 0.95}, histogram = true)
+    @Cacheable(STS_CACHE)
     public STSResponse getSTSToken() {
         try {
             HttpHeaders headers = createHeaders();

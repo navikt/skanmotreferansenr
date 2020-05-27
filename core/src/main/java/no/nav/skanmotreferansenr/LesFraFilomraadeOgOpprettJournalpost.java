@@ -2,15 +2,13 @@ package no.nav.skanmotreferansenr;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.domain.Filepair;
-import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException;
-import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrUnzipperFunctionalException;
-import no.nav.skanmotreferansenr.exceptions.technical.AbstractSkanmotreferansenrTechnicalException;
 import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
+import no.nav.skanmotreferansenr.metrics.Metrics;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostService;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostResponse;
 import no.nav.skanmotreferansenr.unzipskanningmetadata.UnzipSkanningmetadataUtils;
@@ -22,6 +20,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
+import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
 
 @Slf4j
 @Component
@@ -41,10 +42,11 @@ public class LesFraFilomraadeOgOpprettJournalpost {
 
     @Scheduled(initialDelay = 10000, fixedDelay = 10 * MINUTE)
     public void scheduledJob() {
-        lesOgLagre();
+        lesOgLagreZipfiler();
     }
 
-    public void lesOgLagre() {
+    @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "lesOgLagreZipfiler"}, percentiles = {0.5, 0.95}, histogram = true)
+    public void lesOgLagreZipfiler() {
         try {
             List<String> filenames = filomraadeService.getFileNames();
             log.info("Skanmotreferansenr fant {} zipfiler på sftp server", filenames.size());
@@ -57,8 +59,8 @@ public class LesFraFilomraadeOgOpprettJournalpost {
 
                 filepairList.forEach(filepair -> {
                     Optional<Skanningmetadata> skanningmetadata = extractMetadata(filepair);
-                    Optional<FoerstesideMetadata> foerstesideMetadata = getFoerstesideMetadata(skanningmetadata);
-                    Optional<OpprettJournalpostResponse> response = opprettJournalpost(filepair, skanningmetadata, foerstesideMetadata);
+                    Optional<FoerstesideMetadata> foerstesideMetadata = foerstesidegeneratorService.hentFoersteside(skanningmetadata.get().getJournalpost().getReferansenummer());
+                    Optional<OpprettJournalpostResponse> response = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
                     try {
                         if (response.isEmpty()) {
                             log.warn("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
@@ -81,54 +83,6 @@ public class LesFraFilomraadeOgOpprettJournalpost {
             // Feels like a leaky abstraction ...
             filomraadeService.disconnect();
         }
-    }
-
-    private Optional<FoerstesideMetadata> getFoerstesideMetadata(Optional<Skanningmetadata> skanningmetadata) {
-        FoerstesideMetadata response = null;
-
-        if (skanningmetadata.isEmpty()) {
-            return Optional.empty();
-        }
-
-        String referansenr = skanningmetadata.get().getJournalpost().getReferansenummer();
-        try {
-            response = foerstesidegeneratorService.hentFoersteside(referansenr);
-        } catch (AbstractSkanmotreferansenrFunctionalException e) {
-            log.error("Skanmotreferansenr feilet funskjonelt med henting av foerstesidemetadata referansenr={}", referansenr, e);
-            return Optional.empty();
-        } catch (AbstractSkanmotreferansenrTechnicalException e) {
-            log.error("Skanmotreferansenr feilet teknisk med henting av foerstesidemetadata referansenr={}", referansenr, e);
-            return Optional.empty();
-        } catch (Exception e) {
-            log.error("Skanmotreferansenr feilet med ukjent feil ved henting av foerstesidemetadata referansenr={}", referansenr, e);
-            return Optional.empty();
-        }
-        return Optional.of(response);
-    }
-
-    private Optional<OpprettJournalpostResponse> opprettJournalpost(Filepair filepair, Optional<Skanningmetadata> skanningmetadata, Optional<FoerstesideMetadata> foerstesideMetadata) {
-
-        OpprettJournalpostResponse response = null;
-
-        if (skanningmetadata.isEmpty() || foerstesideMetadata.isEmpty()) {
-            return Optional.empty();
-        }
-        String batchNavn = skanningmetadata.map(Skanningmetadata::getJournalpost).map(Journalpost::getBatchNavn).orElse(null);
-        try {
-            log.info("Skanmotreferansenr oppretter journalpost fil={}, batch={}", filepair.getName(), batchNavn);
-            response = opprettJournalpostService.opprettJournalpost(skanningmetadata.get(), foerstesideMetadata.get(), filepair);
-            log.info("Skanmotreferansenr har opprettet journalpost, journalpostId={}, fil={}, batch={}", response.getJournalpostId(), filepair.getName(), batchNavn);
-        } catch (AbstractSkanmotreferansenrFunctionalException e) {
-            log.error("Skanmotreferansenr feilet funskjonelt med oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
-            return Optional.empty();
-        } catch (AbstractSkanmotreferansenrTechnicalException e) {
-            log.error("Skanmotreferansenr feilet teknisk med  oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
-            return Optional.empty();
-        } catch (Exception e) {
-            log.error("Skanmotreferansenr feilet med ukjent feil ved oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
-            return Optional.empty();
-        }
-        return Optional.of(response);
     }
 
     private Optional<Skanningmetadata> extractMetadata(Filepair filepair) {

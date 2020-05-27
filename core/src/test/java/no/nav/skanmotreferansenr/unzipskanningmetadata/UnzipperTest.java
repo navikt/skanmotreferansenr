@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.unittest;
+package no.nav.skanmotreferansenr.unzipskanningmetadata;
 
 import no.nav.skanmotreferansenr.domain.Filepair;
 import no.nav.skanmotreferansenr.domain.FilepairWithMetadata;

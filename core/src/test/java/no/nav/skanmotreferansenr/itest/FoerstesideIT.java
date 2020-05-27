@@ -22,6 +22,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
 
+import java.util.Optional;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -83,7 +85,7 @@ public class FoerstesideIT {
 
     @Test
     void shouldGetFoerstesideMetadata() {
-        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside("111");
+        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside("111").get();
 
         assertNull(metadata.getAvsender());
         assertEquals("12345678910", metadata.getBruker().getBrukerId());
@@ -91,16 +93,14 @@ public class FoerstesideIT {
         assertEquals("AAP", metadata.getTema());
         assertNull(metadata.getBehandlingstema());
         assertEquals("Brev", metadata.getArkivtittel());
-        assertTrue(metadata.getVedleggsliste().isEmpty());
         assertEquals("VANL", metadata.getNavSkjemaId());
         assertEquals("9999", metadata.getEnhetsnummer());
-        assertNull(metadata.getArkivsak());
     }
 
     @Test
     void shouldGetNullIfNotExisting() {
-        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside("222");
-        assertNull(metadata);
+        Optional<FoerstesideMetadata> metadata = foerstesidegeneratorService.hentFoersteside("222");
+        assertTrue(metadata.isEmpty());
     }
 
 }

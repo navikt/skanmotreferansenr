@@ -36,7 +36,7 @@ public class OpprettJournalpostRequestMapper {
     private static final String FNR = "FNR";
     private static final String TEMA_UKJENT = "UKJ";
 
-    public static OpprettJournalpostRequest generateRequestBody(Skanningmetadata skanningmetadata, FoerstesideMetadata foerstesideMetadata, Filepair filepair) {
+    public OpprettJournalpostRequest mapMetadataToOpprettJournalpostRequest(Skanningmetadata skanningmetadata, FoerstesideMetadata foerstesideMetadata, Filepair filepair) {
         Journalpost journalpost = skanningmetadata.getJournalpost();
         SkanningInfo skanningInfo = skanningmetadata.getSkanningInfo();
 

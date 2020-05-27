@@ -155,7 +155,7 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
     public void shouldLesOgLagreHappy() {
         setUpHappyStubs();
         try {
-            lesFraFilomraadeOgOpprettJournalpost.lesOgLagre();
+            lesFraFilomraadeOgOpprettJournalpost.lesOgLagreZipfiler();
             verify(exactly(3), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
         } catch (Exception e) {
             fail();

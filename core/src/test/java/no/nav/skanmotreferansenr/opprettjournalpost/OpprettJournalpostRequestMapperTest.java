@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.unittest;
+package no.nav.skanmotreferansenr.opprettjournalpost;
 
 import no.nav.skanmotreferansenr.domain.Filepair;
 import no.nav.skanmotreferansenr.domain.Journalpost;
@@ -17,12 +17,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostRequestMapper.generateRequestBody;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class OpprettJournalpostTest {
+public class OpprettJournalpostRequestMapperTest {
+
+    private final OpprettJournalpostRequestMapper opprettJournalpostRequestMapper = new OpprettJournalpostRequestMapper();
 
     private final String MOTTAKSKANAL = "SKAN_IM";
     private final String BATCHNAVN = "navnPaaBatch.zip";
@@ -48,7 +49,11 @@ public class OpprettJournalpostTest {
     @Test
     public void shouldExtractOpprettJournalpostRequestFromSkanningmetadata() {
 
-        OpprettJournalpostRequest opprettJournalpostRequest = generateOpprettJournalpostRequest();
+        OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
+                generateSkanningMetadata(),
+                generateFoerstesideMetadata(),
+                generateFilepair()
+        );
 
         assertEquals(JOURNALPOSTTYPE_INNGAAENDE, opprettJournalpostRequest.getJournalpostType());
 
@@ -112,8 +117,23 @@ public class OpprettJournalpostTest {
         return tilleggsopplysninger.stream().filter(pair -> nokkel.equals(pair.getNokkel())).findFirst().get().getVerdi();
     }
 
-    private OpprettJournalpostRequest generateOpprettJournalpostRequest() {
-        Skanningmetadata skanningmetadata = Skanningmetadata.builder()
+    private FoerstesideMetadata generateFoerstesideMetadata() {
+        return FoerstesideMetadata.builder()
+                .arkivtittel(ARKIVTITTEL)
+                .avsender(Avsender.builder()
+                        .avsenderId(AVSENDER_ID)
+                        .avsenderNavn(AVSENDER_NAVN)
+                        .build())
+                .behandlingstema(BEHANDLINGSTEMA)
+                .bruker(Bruker.builder().brukerId(BRUKER_ID).brukerType(Bruker.BrukerType.PERSON).build())
+                .enhetsnummer(ENHETSNUMMER)
+                .navSkjemaId(NAV_SKJEMA_ID)
+                .tema(TEMA)
+                .build();
+    }
+
+    private Skanningmetadata generateSkanningMetadata() {
+        return Skanningmetadata.builder()
                 .journalpost(
                         Journalpost.builder()
                                 .referansenummer(REFERANSENR)
@@ -130,26 +150,12 @@ public class OpprettJournalpostTest {
                         .strekkodePostboks(STREKKODE_POSTBOKS)
                         .build())
                 .build();
+    }
 
-        Filepair filepair = Filepair.builder()
+    private Filepair generateFilepair() {
+        return Filepair.builder()
                 .pdf(DUMMY_FILE)
                 .xml(DUMMY_FILE)
                 .build();
-
-        FoerstesideMetadata foerstesideResponse = FoerstesideMetadata.builder()
-                .arkivtittel(ARKIVTITTEL)
-                .avsender(Avsender.builder()
-                        .avsenderId(AVSENDER_ID)
-                        .avsenderNavn(AVSENDER_NAVN)
-                        .build())
-                .behandlingstema(BEHANDLINGSTEMA)
-                .bruker(Bruker.builder().brukerId(BRUKER_ID).brukerType(Bruker.BrukerType.PERSON).build())
-                .enhetsnummer(ENHETSNUMMER)
-                .navSkjemaId(NAV_SKJEMA_ID)
-                .tema(TEMA)
-                .build();
-
-        return generateRequestBody(skanningmetadata, foerstesideResponse, filepair);
     }
-
 }
