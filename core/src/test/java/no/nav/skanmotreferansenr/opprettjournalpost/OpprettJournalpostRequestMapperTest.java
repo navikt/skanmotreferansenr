@@ -39,7 +39,7 @@ public class OpprettJournalpostRequestMapperTest {
     private final String NAV_SKJEMA_ID = "mockBrevKode";
     private final byte[] DUMMY_FILE = "dummyfile".getBytes();
     private final String BRUKER_ID = "12345678900";
-    private final String BRUKER_IDTYPE = "PERSON";
+    private final String BRUKER_IDTYPE = "FNR";
     private final String ARKIVTITTEL = "mockArkivtittel";
     private final String AVSENDER_ID = "mockAvsenderID";
     private final String AVSENDER_NAVN = "mockAvsendernavn";

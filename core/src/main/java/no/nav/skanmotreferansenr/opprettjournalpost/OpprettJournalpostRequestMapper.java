@@ -33,6 +33,7 @@ public class OpprettJournalpostRequestMapper {
     private static final String STREKKODEPOSTBOKS = "strekkodePostboks";
     private static final String BATCHNAVN = "batchNavn";
 
+    private static final String PERSON = "PERSON";
     private static final String FNR = "FNR";
     private static final String TEMA_UKJENT = "UKJ";
 
@@ -54,7 +55,8 @@ public class OpprettJournalpostRequestMapper {
                 .filter(foersesideBruker -> notNullOrEmpty(foersesideBruker.getBrukerType()))
                 .filter(foersesideBruker -> notNullOrEmpty(foersesideBruker.getBrukerId()))
                 .map(foersesideBruker -> Bruker.builder()
-                        .idType(foersesideBruker.getBrukerType())
+                        .idType(PERSON.equals(foersesideBruker.getBrukerType()) ?
+                                FNR : foersesideBruker.getBrukerType())
                         .id(foersesideBruker.getBrukerId())
                         .build()
                 ).orElse(null);
