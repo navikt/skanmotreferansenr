@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 @Value
@@ -24,7 +25,7 @@ public class OpprettJournalpostRequest {
 
     private String kanal;
 
-    private String datoMottatt;
+    private Date datoMottatt;
 
     private String journalfoerendeEnhet;
 

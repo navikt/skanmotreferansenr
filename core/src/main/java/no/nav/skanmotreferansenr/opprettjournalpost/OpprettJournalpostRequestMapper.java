@@ -13,6 +13,7 @@ import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostReque
 import no.nav.skanmotreferansenr.opprettjournalpost.data.Tilleggsopplysning;
 import no.nav.skanmotreferansenr.utils.Utils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,7 +46,7 @@ public class OpprettJournalpostRequestMapper {
         String kanal = skanningmetadata.getJournalpost().getMottakskanal();
         String journalfoerendeEnhet = foerstesideMetadata.getEnhetsnummer();
         String eksternReferanseId = skanningmetadata.getJournalpost().getFilNavn();
-        String datoMottatt = skanningmetadata.getJournalpost().getDatoMottatt().toString();
+        Date datoMottatt = skanningmetadata.getJournalpost().getDatoMottatt();
 
         AvsenderMottaker avsenderMottaker = extractAvsenderMottaker(foerstesideMetadata);
 
