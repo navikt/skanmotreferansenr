@@ -60,7 +60,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class LesFraFilomraadeOgOpprettJournalpostIT {
 
     private final String URL_DOKARKIV_JOURNALPOST_GEN = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
-    private final String URL_FOERSTESIDEGENERATOR = "/api/foerstesidegenerator/v1/foersteside/\\d{14}";
+    private final String URL_FOERSTESIDEGENERATOR = "/api/foerstesidegenerator/v1/foersteside/\\d{13}";
     private final String STSUrl = "/rest/v1/sts/token";
     private static final String VALID_PUBLIC_KEY_PATH = "src/test/resources/sftp/itest_valid.pub";
     private final String FOERSTESIDE_METADATA_HAPPY = "foersteside/foerseside_metadata_HAPPY.json";

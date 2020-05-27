@@ -28,7 +28,8 @@ public class OpprettJournalpostTest {
     private final String BATCHNAVN = "navnPaaBatch.zip";
     private final String FILNAVN_PDF = "filnavn.pdf";
     private final String FILNAVN_XML = "filnavn.xml";
-    private final String REFERANSENR = "12345678901234";
+    private final String REFERANSENR = "1234567890123";
+    private final String REFERANSENR_CHECKSUM = "4";
     private final String ENDORSERNR = "222111NAV456";
     private final String FYSISK_POSTBOKS = "1400";
     private final String STREKKODE_POSTBOKS = "1400";
@@ -65,7 +66,7 @@ public class OpprettJournalpostTest {
         assertEquals(ENHETSNUMMER, opprettJournalpostRequest.getJournalfoerendeEnhet());
         assertEquals(FILNAVN_PDF, opprettJournalpostRequest.getEksternReferanseId());
 
-        assertEquals(REFERANSENR, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "referansenr"));
+        assertEquals(REFERANSENR + REFERANSENR_CHECKSUM, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "referansenr"));
         assertEquals(ENDORSERNR, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "endorsernr"));
         assertEquals(FYSISK_POSTBOKS, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "fysiskPostboks"));
         assertEquals(STREKKODE_POSTBOKS, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "strekkodePostboks"));
@@ -116,6 +117,7 @@ public class OpprettJournalpostTest {
                 .journalpost(
                         Journalpost.builder()
                                 .referansenummer(REFERANSENR)
+                                .referansenrChecksum(REFERANSENR_CHECKSUM)
                                 .datoMottatt(new Date())
                                 .mottakskanal(MOTTAKSKANAL)
                                 .batchNavn(BATCHNAVN)

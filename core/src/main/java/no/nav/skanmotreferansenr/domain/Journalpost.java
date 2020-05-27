@@ -17,6 +17,7 @@ public class Journalpost {
 
     @XmlElement(required = true, name = "referansenummer")
     private String referansenummer;
+    private String referansenrChecksum;
 
     @XmlElement(required = true, name = "mottakskanal")
     private String mottakskanal;

@@ -9,7 +9,7 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
-import no.nav.skanmotreferansenr.jaxws.MDCConstants;
+import no.nav.skanmotreferansenr.mdc.MDCConstants;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import no.nav.skanmotreferansenr.validator.SkanningMetadataValidator;
+import no.nav.skanmotreferansenr.validators.SkanningMetadataValidator;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

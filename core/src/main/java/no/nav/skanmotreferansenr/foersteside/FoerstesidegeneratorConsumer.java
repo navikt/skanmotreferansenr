@@ -6,8 +6,8 @@ import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFu
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.HentMetadataFoerstesideTechnicalException;
 import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
-import no.nav.skanmotreferansenr.jaxws.MDCConstants;
-import no.nav.skanmotreferansenr.jaxws.MDCGenerate;
+import no.nav.skanmotreferansenr.mdc.MDCConstants;
+import no.nav.skanmotreferansenr.mdc.MDCGenerate;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -33,8 +33,8 @@ public class FoerstesidegeneratorConsumer {
     public FoerstesidegeneratorConsumer(RestTemplateBuilder restTemplateBuilder, SkanmotreferansenrProperties skanmotreferansenrProperties) {
         this.foerstesideUrl = skanmotreferansenrProperties.getGetmetadatafoerstesideurl();
         this.restTemplate = restTemplateBuilder
-                .setReadTimeout(Duration.ofSeconds(150))
-                .setConnectTimeout(Duration.ofSeconds(5))
+                .setReadTimeout(Duration.ofSeconds(5))
+                .setConnectTimeout(Duration.ofSeconds(2))
                 .basicAuthentication(skanmotreferansenrProperties.getServiceuser().getUsername(),
                         skanmotreferansenrProperties.getServiceuser().getPassword())
                 .build();

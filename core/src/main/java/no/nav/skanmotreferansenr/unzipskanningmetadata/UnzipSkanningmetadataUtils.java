@@ -1,7 +1,9 @@
 package no.nav.skanmotreferansenr.unzipskanningmetadata;
 
+import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.domain.Filepair;
 import no.nav.skanmotreferansenr.domain.FilepairWithMetadata;
+import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrUnzipperFunctionalException;
 import no.nav.skanmotreferansenr.utils.Utils;
@@ -51,7 +53,7 @@ public class UnzipSkanningmetadataUtils {
 
             skanningmetadata.verifyFields();
 
-            return skanningmetadata;
+            return splitChecksumInReferansenummer(skanningmetadata);
         } catch (JAXBException | XMLStreamException e) {
             throw new SkanmotreferansenrUnzipperFunctionalException("Skanmotreferansenr klarte ikke lese metadata i zipfil", e);
         } catch (NullPointerException e) {
@@ -61,5 +63,22 @@ public class UnzipSkanningmetadataUtils {
 
     public static String getFileType(ZipEntry file) {
         return file.getName().substring(file.getName().lastIndexOf(".") + 1);
+    }
+
+    // IM sender referansenr med checksum (Luhns algoritme), de er lagret uten checksummen i foerstesidedb, vi ønsker å inkludere checksummen i dokarkiv (og senere i foerstesidedb)
+    public static Skanningmetadata splitChecksumInReferansenummer(Skanningmetadata old) {
+        String referansenummer = old.getJournalpost().getReferansenummer();
+        return Skanningmetadata.builder()
+                .journalpost(Journalpost.builder()
+                        .mottakskanal(old.getJournalpost().getMottakskanal())
+                        .datoMottatt(old.getJournalpost().getDatoMottatt())
+                        .batchNavn(old.getJournalpost().getBatchNavn())
+                        .filNavn(old.getJournalpost().getFilNavn())
+                        .endorsernr(old.getJournalpost().getEndorsernr())
+                        .referansenummer(referansenummer.substring(0, 13))
+                        .referansenrChecksum(referansenummer.substring(13))
+                        .build())
+                .skanningInfo(old.getSkanningInfo())
+                .build();
     }
 }

@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.jaxws;
+package no.nav.skanmotreferansenr.mdc;
 
 public class MDCConstants {
     public static final String MDC_REQUEST_ID = "requestId";

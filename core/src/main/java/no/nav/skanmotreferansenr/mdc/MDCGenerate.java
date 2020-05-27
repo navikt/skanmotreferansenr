@@ -1,10 +1,10 @@
-package no.nav.skanmotreferansenr.jaxws;
+package no.nav.skanmotreferansenr.mdc;
 
 import org.slf4j.MDC;
 
 import java.util.UUID;
 
-import static no.nav.skanmotreferansenr.jaxws.MDCConstants.MDC_CALL_ID;
+import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_CALL_ID;
 
 public class MDCGenerate {
 

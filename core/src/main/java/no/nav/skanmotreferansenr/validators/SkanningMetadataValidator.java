@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.validator;
+package no.nav.skanmotreferansenr.validators;
 
 import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.domain.SkanningInfo;

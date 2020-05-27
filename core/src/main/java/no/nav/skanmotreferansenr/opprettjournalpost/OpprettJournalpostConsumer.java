@@ -1,11 +1,9 @@
 package no.nav.skanmotreferansenr.opprettjournalpost;
 
 import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
-import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.OpprettJournalpostFunctionalException;
-import no.nav.skanmotreferansenr.exceptions.technical.AbstractSkanmotreferansenrTechnicalException;
 import no.nav.skanmotreferansenr.exceptions.technical.OpprettJournalpostTechnicalException;
-import no.nav.skanmotreferansenr.jaxws.MDCConstants;
+import no.nav.skanmotreferansenr.mdc.MDCConstants;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostRequest;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostResponse;
 import no.nav.skanmotreferansenr.metrics.Metrics;

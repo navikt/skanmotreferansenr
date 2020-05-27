@@ -4,7 +4,7 @@ package no.nav.skanmotreferansenr.sts;
 import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrStsFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.SkanmotreferansenrStsTechnicalException;
-import no.nav.skanmotreferansenr.jaxws.MDCConstants;
+import no.nav.skanmotreferansenr.mdc.MDCConstants;
 import no.nav.skanmotreferansenr.metrics.Metrics;
 import no.nav.skanmotreferansenr.sts.data.STSResponse;
 import org.slf4j.MDC;

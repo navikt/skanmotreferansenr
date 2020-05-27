@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.validator;
+package no.nav.skanmotreferansenr.validators;
 
 import java.util.Date;
 

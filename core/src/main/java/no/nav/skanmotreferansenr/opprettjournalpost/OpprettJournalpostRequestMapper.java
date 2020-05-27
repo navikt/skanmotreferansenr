@@ -54,7 +54,7 @@ public class OpprettJournalpostRequestMapper {
                 .build();
 
         List<Tilleggsopplysning> tilleggsopplysninger = List.of(
-                new Tilleggsopplysning(REFERANSENR, journalpost.getReferansenummer()),
+                new Tilleggsopplysning(REFERANSENR, journalpost.getReferansenummer() + journalpost.getReferansenrChecksum()),
                 new Tilleggsopplysning(ENDORSERNR, journalpost.getEndorsernr()),
                 new Tilleggsopplysning(FYSISKPOSTBOKS, skanningInfo.getFysiskPostboks()),
                 new Tilleggsopplysning(STREKKODEPOSTBOKS, skanningInfo.getStrekkodePostboks()),

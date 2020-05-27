@@ -31,7 +31,8 @@ public class UnzipperTest {
     private final String PDF_PATH = "src/test/resources/__files/xml_pdf_pairs/mockDokument-1.pdf";
     private final String XML_PATH = "src/test/resources/__files/xml_pdf_pairs/mockDokument-1.xml";
     private final String ZIPPED_PDF_NAME = "mockDokument-1.pdf";
-    private final String REFERANSENUMMER = "11111111111111";
+    private final String REFERANSENUMMER = "1111111111111";
+    private final String REFERANSENUMMER_CHECKSUM = "1";
     private final String MOTTAKSKANAL = "SKAN_IM";
     private final long DATO_MOTTATT = 1572476400000L;
     private final String BATCH_NAVN = "TEST40404";
@@ -52,6 +53,7 @@ public class UnzipperTest {
 
         assertEquals(3, extracted.size());
         assertEquals(REFERANSENUMMER, journalpost.getReferansenummer());
+        assertEquals(REFERANSENUMMER_CHECKSUM, journalpost.getReferansenrChecksum());
         assertEquals(MOTTAKSKANAL, journalpost.getMottakskanal());
         assertEquals(DATO_MOTTATT, journalpost.getDatoMottatt().getTime());
         assertEquals(BATCH_NAVN, journalpost.getBatchNavn());
