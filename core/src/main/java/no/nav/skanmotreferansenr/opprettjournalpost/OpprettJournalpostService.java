@@ -47,13 +47,13 @@ public class OpprettJournalpostService {
             return Optional.of(response);
 
         } catch (AbstractSkanmotreferansenrFunctionalException e) {
-            log.error("Skanmotreferansenr feilet funksjonelt med oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
+            log.warn("Skanmotreferansenr feilet funksjonelt med oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
             return Optional.empty();
         } catch (AbstractSkanmotreferansenrTechnicalException e) {
-            log.error("Skanmotreferansenr feilet teknisk med  oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
+            log.warn("Skanmotreferansenr feilet teknisk med  oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
             return Optional.empty();
         } catch (Exception e) {
-            log.error("Skanmotreferansenr feilet med ukjent feil ved oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
+            log.warn("Skanmotreferansenr feilet med ukjent feil ved oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
             return Optional.empty();
         }
     }

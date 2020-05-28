@@ -17,6 +17,7 @@ import no.nav.skanmotreferansenr.utils.Utils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,9 +50,9 @@ public class LesFraFilomraadeOgOpprettJournalpost {
     public void lesOgLagreZipfiler() {
         try {
             List<String> filenames = filomraadeService.getFileNames();
+            List<String> processedZipFiles = new ArrayList<>();
             log.info("Skanmotreferansenr fant {} zipfiler på sftp server", filenames.size());
             for (String zipName : filenames) {
-                AtomicBoolean safeToDeleteZipFile = new AtomicBoolean(true);
 
                 log.info("Skanmotreferansenr laster ned {} fra sftp server", zipName);
                 List<Filepair> filepairList = Unzipper.unzipXmlPdf(filomraadeService.getZipFile(zipName)); // TODO feilhåndtering hvis zipfil ikke er lesbar.
@@ -69,14 +70,12 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                         }
                     } catch (Exception e) {
                         log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", filepair.getName(), zipName, e.getMessage(), e);
-                        safeToDeleteZipFile.set(false);
+                    } finally {
+                        processedZipFiles.add(zipName);
                     }
                 });
-
-                if (safeToDeleteZipFile.get()) {
-                    filomraadeService.moveZipFile(zipName, "processed");
-                }
             }
+            filomraadeService.moveZipFiles(processedZipFiles, "processed");
         } catch (Exception e) {
             log.error("Skanmotreferansenr ukjent feil oppstod i lesOgLagre, feilmelding={}", e.getMessage(), e);
         } finally {

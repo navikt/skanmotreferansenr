@@ -20,11 +20,10 @@ import java.util.stream.Collectors;
 
 public class OpprettJournalpostRequestMapper {
 
-    private static final String PDFA = "PDFA";
-    private static final String XML = "XML";
+    private static final String FILTYPE_PDFA = "PDFA";
+    private static final String FILTYPE_XML = "XML";
     private static final String VARIANTFORMAT_PDF = "ARKIV";
     private static final String VARIANTFORMAT_XML = "SKANNING_META";
-    private static final String FILTYPE_XML = "xml";
     private static final String DOKUMENTKATEGORI_IS = "IS";
     private static final String JOURNALPOSTTYPE = "INNGAAENDE";
     private static final String REFERANSENR = "referansenr";
@@ -34,7 +33,9 @@ public class OpprettJournalpostRequestMapper {
     private static final String BATCHNAVN = "batchNavn";
 
     private static final String PERSON = "PERSON";
+    private static final String ORGANISASJON = "ORGANISASJON";
     private static final String FNR = "FNR";
+    private static final String ORGNR = "ORGNR";
     private static final String TEMA_UKJENT = "UKJ";
 
     public OpprettJournalpostRequest mapMetadataToOpprettJournalpostRequest(Skanningmetadata skanningmetadata, FoerstesideMetadata foerstesideMetadata, Filepair filepair) {
@@ -50,16 +51,7 @@ public class OpprettJournalpostRequestMapper {
         Date datoMottatt = skanningmetadata.getJournalpost().getDatoMottatt();
 
         AvsenderMottaker avsenderMottaker = extractAvsenderMottaker(foerstesideMetadata);
-
-        Bruker bruker = Optional.ofNullable(foerstesideMetadata.getBruker())
-                .filter(foersesideBruker -> notNullOrEmpty(foersesideBruker.getBrukerType()))
-                .filter(foersesideBruker -> notNullOrEmpty(foersesideBruker.getBrukerId()))
-                .map(foersesideBruker -> Bruker.builder()
-                        .idType(PERSON.equals(foersesideBruker.getBrukerType()) ?
-                                FNR : foersesideBruker.getBrukerType())
-                        .id(foersesideBruker.getBrukerId())
-                        .build()
-                ).orElse(null);
+        Bruker bruker = extractBruker(foerstesideMetadata);
 
         List<Tilleggsopplysning> tilleggsopplysninger = List.of(
                 new Tilleggsopplysning(REFERANSENR, journalpost.getReferansenummer() + journalpost.getReferansenrChecksum()),
@@ -70,17 +62,17 @@ public class OpprettJournalpostRequestMapper {
         ).stream().filter(tilleggsopplysning -> tilleggsopplysning.getVerdi() != null).collect(Collectors.toList());
 
         DokumentVariant pdf = DokumentVariant.builder()
-                .filtype(PDFA)
+                .filtype(FILTYPE_PDFA)
                 .variantformat(VARIANTFORMAT_PDF)
                 .fysiskDokument(filepair.getPdf())
                 .filnavn(journalpost.getFilNavn())
                 .build();
 
         DokumentVariant xml = DokumentVariant.builder()
-                .filtype(XML)
+                .filtype(FILTYPE_XML)
                 .variantformat(VARIANTFORMAT_XML)
                 .fysiskDokument(filepair.getXml())
-                .filnavn(Utils.changeFiletypeInFilename(journalpost.getFilNavn(), FILTYPE_XML))
+                .filnavn(Utils.changeFiletypeInFilename(journalpost.getFilNavn(), "xml"))
                 .build();
 
         Dokument dokument = Dokument.builder()
@@ -106,9 +98,9 @@ public class OpprettJournalpostRequestMapper {
                 .build();
     }
 
-    private static AvsenderMottaker extractAvsenderMottaker(FoerstesideMetadata foerstesideMetadata) {
+    private AvsenderMottaker extractAvsenderMottaker(FoerstesideMetadata foerstesideMetadata) {
         if (foerstesideMetadata.getAvsender() == null) {
-            return AvsenderMottaker.builder().build();
+            return null;
         }
         return AvsenderMottaker.builder()
                 .id(foerstesideMetadata.getAvsender().getAvsenderId())
@@ -117,7 +109,24 @@ public class OpprettJournalpostRequestMapper {
                 .build();
     }
 
-    private static boolean notNullOrEmpty(String string) {
+    private Bruker extractBruker(FoerstesideMetadata foerstesideMetadata) {
+        if (foerstesideMetadata.getBruker() == null) {
+            return null;
+        }
+        String id = foerstesideMetadata.getBruker().getBrukerId();
+        String idType = foerstesideMetadata.getBruker().getBrukerType();
+        if (PERSON.equals(idType)) {
+            idType = FNR;
+        } else if (ORGANISASJON.equals(idType)) {
+            idType = ORGNR;
+        }
+        return Bruker.builder()
+                .id(id)
+                .idType(idType)
+                .build();
+    }
+
+    private boolean notNullOrEmpty(String string) {
         return string != null && !string.isBlank();
     }
 }
