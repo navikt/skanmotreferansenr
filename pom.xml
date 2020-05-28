@@ -5,47 +5,70 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.4.RELEASE</version>
+        <version>2.2.7.RELEASE</version>
     </parent>
 
     <groupId>no.nav.skanmotreferansenr</groupId>
     <artifactId>skanmotreferansenr</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-
     <packaging>pom</packaging>
-
 
     <modules>
         <module>app</module>
+        <module>core</module>
     </modules>
 
 
     <properties>
         <application.version>${project.version}</application.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <apache.commons.version>1.20</apache.commons.version>
+        <foerstesidegenerator-api.version>0.1.1</foerstesidegenerator-api.version>
+        <freg.sercurity.version>3.1.0</freg.sercurity.version>
+        <glassfish.jaxb.version>2.3.2</glassfish.jaxb.version>
+        <jackson.version>2.9.0</jackson.version>
+        <javax.validation.version>2.0.1.Final</javax.validation.version>
+        <javax.activation.version>1.1.1</javax.activation.version>
         <javax.inject.version>1</javax.inject.version>
+        <javax.bind.version>2.3.1</javax.bind.version>
+        <jcraft.jsch.version>0.1.55</jcraft.jsch.version>
+        <junit5.version>5.3.2</junit5.version>
+        <junit5.mockito.version>2.23.0</junit5.mockito.version>
         <logstash-logback-encoder.version>5.2</logstash-logback-encoder.version>
         <logback-syslog4j.version>1.0.0</logback-syslog4j.version>
         <lombok.version>1.18.4</lombok.version>
-        <junit5.version>5.3.2</junit5.version>
-        <junit5.mockito.version>2.23.0</junit5.mockito.version>
-        <resilience4j.version>0.11.0</resilience4j.version>
-        <pep1-jira-client.version>0.5</pep1-jira-client.version>
-        <jackson.version>2.9.0</jackson.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <opencsv.version>4.3.1</opencsv.version>
-        <freg.sercurity.version>3.1.0</freg.sercurity.version>
+        <pep1-jira-client.version>0.5</pep1-jira-client.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <resilience4j.version>0.11.0</resilience4j.version>
+        <spring-cloud-contract-wiremock.version>2.2.2.RELEASE</spring-cloud-contract-wiremock.version>
+        <sshd-core.version>2.4.0</sshd-core.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>${javax.activation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.inject</groupId>
                 <artifactId>javax.inject</artifactId>
                 <version>${javax.inject.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${javax.bind.version}</version>
             </dependency>
             <dependency>
                 <groupId>net.logstash.logback</groupId>
@@ -64,6 +87,18 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${glassfish.jaxb.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>${apache.commons.version}</version>
             </dependency>
 
             <dependency>
@@ -89,7 +124,19 @@
                 <artifactId>freg-security-oidc</artifactId>
                 <version>${freg.sercurity.version}</version>
             </dependency>
+            <dependency>
+                <groupId>no.nav.dok</groupId>
+                <artifactId>foerstesidegenerator-api-v1</artifactId>
+                <version>${foerstesidegenerator-api.version}</version>
+            </dependency>
 
+            <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>${jcraft.jsch.version}</version>
+            </dependency>
+
+            <!--test-->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
@@ -103,23 +150,32 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-contract-wiremock</artifactId>
+                <version>${spring-cloud-contract-wiremock.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>${junit5.mockito.version}</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-contract-wiremock</artifactId>
-                <version>1.2.5.RELEASE</version>
-                <scope>test</scope>
-            </dependency>
 
             <dependency>
-                <groupId>com.github.tomakehurst</groupId>
-                <artifactId>wiremock-standalone</artifactId>
-                <version>2.19.0</version>
-                <scope>test</scope>
+                <groupId>org.apache.sshd</groupId>
+                <artifactId>sshd-core</artifactId>
+                <version>${sshd-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sshd</groupId>
+                <artifactId>sshd-sftp</artifactId>
+                <version>${sshd-core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.sshd</groupId>
+                <artifactId>sshd-scp</artifactId>
+                <version>${sshd-core.version}</version>
             </dependency>
 
             <!--Selftest metrics-->
@@ -153,10 +209,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit5.version}</version>
-            <scope>test</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

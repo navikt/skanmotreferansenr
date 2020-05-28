@@ -1,7 +1,11 @@
 {
-  "SRVSKANMOTREFERANSE": "/serviceuser/data/dev/srvskanmotreferanse",
-  "APPDYNAMICS": "/apikey/appdynamics/dev",
   "NAMESPACE": "q1",
+  "SRVSKANMOTREFERANSE": "/serviceuser/data/dev/srvskanmotreferanse",
+  "SKANMOTREFERANSENR_VAULT": "/kv/preprod/fss/skanmotreferansenr/q1",
+  "SFTP_KEYS": "kv/preprod/fss/skanmotreferansenr/keys",
+  "SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL": "https://foerstesidegenerator-q1.nais.preprod.local/api/foerstesidegenerator/v1/foersteside",
+  "SKANMOTREFERANSENR_DOKARKIVJOURNALPOSTURL": "https://dokarkiv-q1.nais.preprod.local/rest/journalpostapi/v1/journalpost?foersoekFerdigstill=false",
+  "SKANMOTREFERANSENR_STSURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
   "INGRESSES": [
     "https://skanmotreferansenr-q1.nais.preprod.local"
   ]

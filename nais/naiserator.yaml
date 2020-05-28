@@ -6,22 +6,33 @@ metadata:
   labels:
     team: teamdokumenthandtering
 spec:
+  env:
+    - name: SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL
+      value: {{ SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL }}
+    - name: SKANMOTREFERANSENR_DOKARKIVJOURNALPOSTURL
+      value: {{ SKANMOTREFERANSENR_DOKARKIVJOURNALPOSTURL }}
+    - name: SKANMOTREFERANSENR_STSURL
+      value: {{ SKANMOTREFERANSENR_STSURL }}
+    - name: SKANMOTREFERANSENR_SFTP_PRIVATEKEY
+      value: /var/run/secrets/nais.io/keys/privatekey
+    - name: SKANMOTREFERANSENR_SFTP_HOSTKEY
+      value: /var/run/secrets/nais.io/keys/hostkey
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
        - {{this }}
       {{/each}}
   liveness:
-    path: /internal/isAlive
+    path: /isAlive
     port: 8080
     initialDelay: 30
     failureThreshold: 10
   port: 8080
   prometheus:
     enabled: true
-    path: /actuator/prometheus
+    path: /prometheus
   readiness:
-    path: /internal/isReady
+    path: /isReady
     port: 8080
     initialDelay: 30
     timeout: 3
@@ -40,5 +51,7 @@ spec:
     paths:
       - kvPath: {{ SRVSKANMOTREFERANSE }}
         mountPath: /var/run/secrets/nais.io/srvskanmotreferanse
-      - kvPath: {{ APPDYNAMICS }}
-        mountPath: /var/run/secrets/nais.io/appdynamics
+      - kvPath: {{ SKANMOTREFERANSENR_VAULT }}
+        mountPath: /var/run/secrets/nais.io/vault
+      - kvPath: {{ SFTP_KEYS }}
+        mountPath: /var/run/secrets/nais.io/keys

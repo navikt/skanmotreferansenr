@@ -1,0 +1,15 @@
+{
+  "avsender": null,
+  "bruker": {
+    "brukerId": "12345678910",
+    "brukerType": "PERSON"
+  },
+  "tema": "AAP",
+  "behandlingstema": null,
+  "arkivtittel": "Brev",
+  "vedleggsliste": [],
+  "navSkjemaId": "VANL",
+  "enhetsnummer": "9999",
+  "arkivsak": null,
+  "foerstesideOpprettetAv": "gosys-dokument-auth-proxy"
+}
