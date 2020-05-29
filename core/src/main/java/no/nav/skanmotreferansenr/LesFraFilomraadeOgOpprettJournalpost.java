@@ -48,37 +48,48 @@ public class LesFraFilomraadeOgOpprettJournalpost {
 
     @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "lesOgLagreZipfiler"}, percentiles = {0.5, 0.95}, histogram = true)
     public void lesOgLagreZipfiler() {
+        List<String> processedZipFiles = new ArrayList<>();
         try {
             List<String> filenames = filomraadeService.getFileNames();
-            List<String> processedZipFiles = new ArrayList<>();
-            log.info("Skanmotreferansenr fant {} zipfiler på sftp server", filenames.size());
+            log.info("Skanmotreferansenr fant {} zipfiler på sftp server: {}", filenames.size(), filenames);
             for (String zipName : filenames) {
 
                 log.info("Skanmotreferansenr laster ned {} fra sftp server", zipName);
-                List<Filepair> filepairList = Unzipper.unzipXmlPdf(filomraadeService.getZipFile(zipName)); // TODO feilhåndtering hvis zipfil ikke er lesbar.
+                List<Filepair> filepairList;
+                try {
+                    filepairList = Unzipper.unzipXmlPdf(filomraadeService.getZipFile(zipName));
+                } catch (Exception e) {
+                    log.error("Skanmotreferansenr klarte ikke lese zipfil {}", zipName, e);
+                    processedZipFiles.add(zipName);
+                    continue;
+                }
+
                 log.info("Skanmotreferansenr begynner behandling av {}", zipName);
 
                 filepairList.forEach(filepair -> {
                     Optional<Skanningmetadata> skanningmetadata = extractMetadata(filepair);
-                    Optional<FoerstesideMetadata> foerstesideMetadata = foerstesidegeneratorService.hentFoersteside(skanningmetadata.get().getJournalpost().getReferansenummer());
-                    Optional<OpprettJournalpostResponse> response = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
-                    try {
-                        if (response.isEmpty()) {
-                            log.warn("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
-                            lastOppFilpar(filepair, zipName);
-                            log.warn("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
+                    if (skanningmetadata.isEmpty()) {
+                        lastOppFilpar(filepair, zipName);
+                    } else {
+                        Optional<FoerstesideMetadata> foerstesideMetadata = foerstesidegeneratorService.hentFoersteside(skanningmetadata.get().getJournalpost().getReferansenummer());
+                        Optional<OpprettJournalpostResponse> response = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
+                        try {
+                            if (response.isEmpty()) {
+                                lastOppFilpar(filepair, zipName);
+                            }
+                        } catch (Exception e) {
+                            log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", filepair.getName(), zipName, e.getMessage(), e);
+                        } finally {
+                            processedZipFiles.add(zipName);
                         }
-                    } catch (Exception e) {
-                        log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", filepair.getName(), zipName, e.getMessage(), e);
-                    } finally {
-                        processedZipFiles.add(zipName);
                     }
                 });
             }
-            filomraadeService.moveZipFiles(processedZipFiles, "processed");
         } catch (Exception e) {
             log.error("Skanmotreferansenr ukjent feil oppstod i lesOgLagre, feilmelding={}", e.getMessage(), e);
         } finally {
+            filomraadeService.moveZipFiles(processedZipFiles, "processed");
+
             // Feels like a leaky abstraction ...
             filomraadeService.disconnect();
         }
@@ -98,8 +109,10 @@ public class LesFraFilomraadeOgOpprettJournalpost {
     }
 
     private void lastOppFilpar(Filepair filepair, String zipName) {
+        log.warn("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
         String path = Utils.removeFileExtensionInFilename(zipName);
         filomraadeService.uploadFileToFeilomrade(filepair.getPdf(), filepair.getName() + ".pdf", path);
         filomraadeService.uploadFileToFeilomrade(filepair.getXml(), filepair.getName() + ".xml", path);
+        log.warn("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
     }
 }
