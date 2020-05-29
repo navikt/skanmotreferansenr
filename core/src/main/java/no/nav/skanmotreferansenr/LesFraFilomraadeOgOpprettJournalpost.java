@@ -79,11 +79,10 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                             }
                         } catch (Exception e) {
                             log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", filepair.getName(), zipName, e.getMessage(), e);
-                        } finally {
-                            processedZipFiles.add(zipName);
                         }
                     }
                 });
+                processedZipFiles.add(zipName);
             }
         } catch (Exception e) {
             log.error("Skanmotreferansenr ukjent feil oppstod i lesOgLagre, feilmelding={}", e.getMessage(), e);
