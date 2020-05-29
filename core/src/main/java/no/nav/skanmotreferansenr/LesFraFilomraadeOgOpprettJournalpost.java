@@ -51,18 +51,19 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         List<String> processedZipFiles = new ArrayList<>();
         try {
             List<String> filenames = filomraadeService.getFileNames();
-            log.info("Skanmotreferansenr fant {} zipfiler på sftp server", filenames.size());
+            log.info("Skanmotreferansenr fant {} zipfiler på sftp server: {}", filenames.size(), filenames);
             for (String zipName : filenames) {
 
                 log.info("Skanmotreferansenr laster ned {} fra sftp server", zipName);
                 List<Filepair> filepairList;
                 try {
-                    filepairList = Unzipper.unzipXmlPdf(filomraadeService.getZipFile(zipName)); // TODO feilhåndtering hvis zipfil ikke er lesbar.
+                    filepairList = Unzipper.unzipXmlPdf(filomraadeService.getZipFile(zipName));
                 } catch (Exception e) {
                     log.error("Skanmotreferansenr klarte ikke lese zipfil {}", zipName, e);
                     processedZipFiles.add(zipName);
                     continue;
                 }
+
                 log.info("Skanmotreferansenr begynner behandling av {}", zipName);
 
                 filepairList.forEach(filepair -> {
@@ -87,10 +88,8 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         } catch (Exception e) {
             log.error("Skanmotreferansenr ukjent feil oppstod i lesOgLagre, feilmelding={}", e.getMessage(), e);
         } finally {
-            //
-            if (processedZipFiles.size() > 0) {
-                filomraadeService.moveZipFiles(processedZipFiles, "processed");
-            }
+            filomraadeService.moveZipFiles(processedZipFiles, "processed");
+
             // Feels like a leaky abstraction ...
             filomraadeService.disconnect();
         }
