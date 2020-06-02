@@ -7,7 +7,7 @@ public class SkanningInfoValidator {
     }
 
     public static boolean isValidStrekkodePostboks(String strekkodePostboks) {
-        return "1400".equals(strekkodePostboks);
+        return isNonEmptyString(strekkodePostboks);
     }
 
     private static boolean isNonEmptyString(String string) {
