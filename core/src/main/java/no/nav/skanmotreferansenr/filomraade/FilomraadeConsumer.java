@@ -48,13 +48,11 @@ public class FilomraadeConsumer {
     public void deleteFile(String filename) {
         log.info("Skanmotreferansenr sletter fil {}", filename);
         sftp.deleteFile(inboundDirectory, filename);
-        log.info("Skanmotreferansenr slettet fil {}", filename);
     }
 
     public void uploadFileToFeilomrade(InputStream file, String filename, String path) {
         log.info("Skanmotreferansenr laster opp fil {} til feilområde", filename);
         sftp.uploadFile(file, feilDirectory + "/" + path, filename);
-        log.info("Skanmotreferansenr har lastet opp fil {} til feilområde", filename);
     }
 
     public void moveFile(String from, String to, String newFilename) {
@@ -62,7 +60,6 @@ public class FilomraadeConsumer {
         String toPath = inboundDirectory + "/" + to;
         log.info("Skanmotreferansenr flytter fil {} til {}", fromPath, toPath);
         sftp.moveFile(fromPath, toPath, newFilename);
-        log.info("Skanmotreferansenr flyttet fil {} til {}", fromPath, toPath);
     }
 
     public void disconnect() {
