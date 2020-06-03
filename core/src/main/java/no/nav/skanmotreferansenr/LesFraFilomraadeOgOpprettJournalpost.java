@@ -8,6 +8,7 @@ import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrUnzippe
 import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
+import no.nav.skanmotreferansenr.mdc.MDCGenerate;
 import no.nav.skanmotreferansenr.metrics.Metrics;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostService;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostResponse;
@@ -53,6 +54,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
             List<String> filenames = filomraadeService.getFileNames();
             log.info("Skanmotreferansenr fant {} zipfiler på sftp server: {}", filenames.size(), filenames);
             for (String zipName : filenames) {
+                setUpMDCforZip(zipName);
 
                 log.info("Skanmotreferansenr laster ned {} fra sftp server", zipName);
                 List<Filepair> filepairList;
@@ -63,13 +65,15 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                     processedZipFiles.add(zipName);
                     continue;
                 }
-
                 log.info("Skanmotreferansenr begynner behandling av {}", zipName);
 
                 filepairList.forEach(filepair -> {
+                    setUpMDCforFile(filepair.getName());
+
                     Optional<Skanningmetadata> skanningmetadata = extractMetadata(filepair);
                     if (skanningmetadata.isEmpty()) {
                         lastOppFilpar(filepair, zipName);
+                        tearDownMDCforFile();
                     } else {
                         Optional<FoerstesideMetadata> foerstesideMetadata = foerstesidegeneratorService.hentFoersteside(skanningmetadata.get().getJournalpost().getReferansenummer());
                         Optional<OpprettJournalpostResponse> response = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
@@ -79,10 +83,13 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                             }
                         } catch (Exception e) {
                             log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", filepair.getName(), zipName, e.getMessage(), e);
+                        } finally {
+                            tearDownMDCforFile();
                         }
                     }
                 });
                 processedZipFiles.add(zipName);
+                tearDownMDCforZip();
             }
         } catch (Exception e) {
             log.error("Skanmotreferansenr ukjent feil oppstod i lesOgLagre, feilmelding={}", e.getMessage(), e);
@@ -112,5 +119,20 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         String path = Utils.removeFileExtensionInFilename(zipName);
         filomraadeService.uploadFileToFeilomrade(filepair.getPdf(), filepair.getName() + ".pdf", path);
         filomraadeService.uploadFileToFeilomrade(filepair.getXml(), filepair.getName() + ".xml", path);
+    }
+
+    private void setUpMDCforZip(String zipname){
+        MDCGenerate.setZipId(zipname);
+    }
+    private void tearDownMDCforZip(){
+        MDCGenerate.clearZipId();
+    }
+    private void setUpMDCforFile(String filename){
+        MDCGenerate.setFileName(filename);
+        MDCGenerate.generateNewCallIdIfThereAreNone();
+    }
+    private void tearDownMDCforFile(){
+        MDCGenerate.clearFilename();
+        MDCGenerate.clearCallId();
     }
 }

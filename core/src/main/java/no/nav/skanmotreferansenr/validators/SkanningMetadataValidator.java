@@ -1,11 +1,12 @@
 package no.nav.skanmotreferansenr.validators;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.domain.SkanningInfo;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException;
 
-
+@Slf4j
 public class SkanningMetadataValidator {
 
     public static void validate(Skanningmetadata skanningmetadata) {
@@ -37,7 +38,7 @@ public class SkanningMetadataValidator {
             throw new InvalidMetadataException("Batchnavn is not valid: " + journalpost.getBatchNavn());
         }
         if (!JournalpostValidator.isValidFilnavn(journalpost.getFilNavn())) {
-            throw new InvalidMetadataException("Filnavn is not valid: " + journalpost.getFilNavn());
+            log.warn("Skanmotreferansenr Filnavn is not valid but gernerating journalpost anyway, Filnavn={}", journalpost.getFilNavn());
         }
         if (!JournalpostValidator.isValidEndorsernr(journalpost.getEndorsernr())) {
             throw new InvalidMetadataException("Endorsernr is not valid: " + journalpost.getEndorsernr());
@@ -49,10 +50,10 @@ public class SkanningMetadataValidator {
             throw new InvalidMetadataException("SkanningInfo is null");
         }
         if (!SkanningInfoValidator.isValidFysiskPostboks(skanningInfo.getFysiskPostboks())) {
-            throw new InvalidMetadataException("FysiskPostboks is not valid: " + skanningInfo.getFysiskPostboks());
+            log.warn("Skanmotreferansenr FysiskPostboks is not valid but generating journalpost anyway, FysiskPostboks={}", skanningInfo.getFysiskPostboks());
         }
         if (!SkanningInfoValidator.isValidStrekkodePostboks(skanningInfo.getStrekkodePostboks())) {
-            throw new   InvalidMetadataException("StrekkodePostboks is not valid: " + skanningInfo.getStrekkodePostboks());
+            log.warn("Skanmotreferansenr StrekkodePostboks is not valid but generating journalpost anyway, StrekkodePostboks={}", skanningInfo.getStrekkodePostboks());
         }
     }
 }

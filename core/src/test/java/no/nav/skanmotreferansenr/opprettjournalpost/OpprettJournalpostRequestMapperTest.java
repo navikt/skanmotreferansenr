@@ -27,6 +27,8 @@ public class OpprettJournalpostRequestMapperTest {
 
     private final String MOTTAKSKANAL = "SKAN_IM";
     private final String BATCHNAVN = "navnPaaBatch.zip";
+    private final String FILNAVN_I_XML = "ABC.PDF";
+    private final String FILNAVN = "filnavn";
     private final String FILNAVN_PDF = "filnavn.pdf";
     private final String FILNAVN_XML = "filnavn.xml";
     private final String REFERANSENR = "1234567890123";
@@ -141,7 +143,7 @@ public class OpprettJournalpostRequestMapperTest {
                                 .datoMottatt(new Date())
                                 .mottakskanal(MOTTAKSKANAL)
                                 .batchNavn(BATCHNAVN)
-                                .filNavn(FILNAVN_PDF)
+                                .filNavn(FILNAVN_I_XML)
                                 .endorsernr(ENDORSERNR)
                                 .build()
                 )
@@ -154,6 +156,7 @@ public class OpprettJournalpostRequestMapperTest {
 
     private Filepair generateFilepair() {
         return Filepair.builder()
+                .name(FILNAVN)
                 .pdf(DUMMY_FILE)
                 .xml(DUMMY_FILE)
                 .build();

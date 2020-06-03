@@ -22,6 +22,8 @@ public class OpprettJournalpostRequestMapper {
 
     private static final String FILTYPE_PDFA = "PDFA";
     private static final String FILTYPE_XML = "XML";
+    private static final String FIL_EXTENSION_PDF = "pdf";
+    private static final String FIL_EXTENSION_XML = "xml";
     private static final String VARIANTFORMAT_PDF = "ARKIV";
     private static final String VARIANTFORMAT_XML = "SKANNING_META";
     private static final String DOKUMENTKATEGORI_IS = "IS";
@@ -47,7 +49,7 @@ public class OpprettJournalpostRequestMapper {
         String tittel = foerstesideMetadata.getArkivtittel();
         String kanal = skanningmetadata.getJournalpost().getMottakskanal();
         String journalfoerendeEnhet = foerstesideMetadata.getEnhetsnummer();
-        String eksternReferanseId = skanningmetadata.getJournalpost().getFilNavn();
+        String eksternReferanseId = appendFileType(filepair.getName(), FIL_EXTENSION_PDF);
         Date datoMottatt = skanningmetadata.getJournalpost().getDatoMottatt();
 
         AvsenderMottaker avsenderMottaker = extractAvsenderMottaker(foerstesideMetadata);
@@ -65,14 +67,14 @@ public class OpprettJournalpostRequestMapper {
                 .filtype(FILTYPE_PDFA)
                 .variantformat(VARIANTFORMAT_PDF)
                 .fysiskDokument(filepair.getPdf())
-                .filnavn(journalpost.getFilNavn())
+                .filnavn(appendFileType(filepair.getName(), FIL_EXTENSION_PDF))
                 .build();
 
         DokumentVariant xml = DokumentVariant.builder()
                 .filtype(FILTYPE_XML)
                 .variantformat(VARIANTFORMAT_XML)
                 .fysiskDokument(filepair.getXml())
-                .filnavn(Utils.changeFiletypeInFilename(journalpost.getFilNavn(), "xml"))
+                .filnavn(appendFileType(filepair.getName(), FIL_EXTENSION_XML))
                 .build();
 
         Dokument dokument = Dokument.builder()
@@ -128,5 +130,9 @@ public class OpprettJournalpostRequestMapper {
 
     private boolean notNullOrEmpty(String string) {
         return string != null && !string.isBlank();
+    }
+
+    private static String appendFileType(String filename, String filetype) {
+        return filename + "." + filetype;
     }
 }
