@@ -36,16 +36,13 @@ spec:
     port: 8080
     initialDelay: 30
     timeout: 3
-  replicas:
-    min: 1
-    max: 2
-    cpuThresholdPercentage: 50
+  replicas: 1
   resources:
     limits:
       cpu: 2000m
       memory: 2048Mi
     requests:
-      memory: 512Mi
+      memory: 1024Mi
   vault:
     enabled: true
     paths:
