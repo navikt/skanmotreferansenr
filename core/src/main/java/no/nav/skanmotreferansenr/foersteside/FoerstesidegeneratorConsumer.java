@@ -65,12 +65,11 @@ public class FoerstesidegeneratorConsumer {
         }
     }
 
+
     private HttpHeaders createHeaders(String token) {
-        MDCGenerate.generateNewCallIdIfThereAreNone();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(token);
-
         if (MDC.get(MDCConstants.MDC_NAV_CALL_ID) != null) {
             headers.add(MDCConstants.MDC_NAV_CALL_ID, MDC.get(MDCConstants.MDC_NAV_CALL_ID));
         }

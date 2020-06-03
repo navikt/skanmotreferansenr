@@ -32,7 +32,7 @@ public class Journalpost {
     @XmlElement(required = true, name = "filnavn")
     private String filNavn;
 
-    @XmlElement(required = true, name = "endorsernr")
+    @XmlElement(required = false, name = "endorsernr")
     private String endorsernr;
 
 }
