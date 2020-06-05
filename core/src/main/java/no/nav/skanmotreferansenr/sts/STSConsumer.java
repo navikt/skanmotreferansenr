@@ -1,7 +1,7 @@
 package no.nav.skanmotreferansenr.sts;
 
 
-import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrStsFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.SkanmotreferansenrStsTechnicalException;
 import no.nav.skanmotreferansenr.mdc.MDCConstants;

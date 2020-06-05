@@ -1,7 +1,7 @@
 package no.nav.skanmotreferansenr;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.metrics.DokTimedAspect;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;

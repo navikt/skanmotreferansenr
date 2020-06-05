@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
@@ -33,7 +32,6 @@ public class LesFraFilomraadeOgOpprettJournalpost {
     private final FilomraadeService filomraadeService;
     private final FoerstesidegeneratorService foerstesidegeneratorService;
     private final OpprettJournalpostService opprettJournalpostService;
-    private final int MINUTE = 60_000;
 
     public LesFraFilomraadeOgOpprettJournalpost(FilomraadeService filomraadeService, FoerstesidegeneratorService foerstesidegeneratorService,
                                                 OpprettJournalpostService opprettJournalpostService) {
@@ -42,7 +40,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         this.opprettJournalpostService = opprettJournalpostService;
     }
 
-    @Scheduled(initialDelay = 10000, fixedDelay = 30 * MINUTE)
+    @Scheduled(cron = "0 0/30 8-16 * *  MON-FRI")
     public void scheduledJob() {
         lesOgLagreZipfiler();
     }
@@ -121,17 +119,20 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         filomraadeService.uploadFileToFeilomrade(filepair.getXml(), filepair.getName() + ".xml", path);
     }
 
-    private void setUpMDCforZip(String zipname){
+    private void setUpMDCforZip(String zipname) {
         MDCGenerate.setZipId(zipname);
     }
-    private void tearDownMDCforZip(){
+
+    private void tearDownMDCforZip() {
         MDCGenerate.clearZipId();
     }
-    private void setUpMDCforFile(String filename){
+
+    private void setUpMDCforFile(String filename) {
         MDCGenerate.setFileName(filename);
         MDCGenerate.generateNewCallIdIfThereAreNone();
     }
-    private void tearDownMDCforFile(){
+
+    private void tearDownMDCforFile() {
         MDCGenerate.clearFilename();
         MDCGenerate.clearCallId();
     }

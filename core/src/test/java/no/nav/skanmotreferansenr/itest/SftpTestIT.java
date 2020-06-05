@@ -1,6 +1,6 @@
 package no.nav.skanmotreferansenr.itest;
 
-import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.exceptions.technical.SkanmotreferansenrSftpTechnicalException;
 import no.nav.skanmotreferansenr.itest.config.TestConfig;
 import no.nav.skanmotreferansenr.sftp.Sftp;
