@@ -3,7 +3,7 @@ package no.nav.skanmotreferansenr.itest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.Json;
 import no.nav.skanmotreferansenr.LesFraFilomraadeOgOpprettJournalpost;
-import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.filomraade.FilomraadeConsumer;
 import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorConsumer;

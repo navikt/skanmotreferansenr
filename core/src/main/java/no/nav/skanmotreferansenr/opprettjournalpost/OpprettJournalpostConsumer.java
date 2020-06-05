@@ -1,6 +1,6 @@
 package no.nav.skanmotreferansenr.opprettjournalpost;
 
-import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.exceptions.functional.OpprettJournalpostFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.OpprettJournalpostTechnicalException;
 import no.nav.skanmotreferansenr.mdc.MDCConstants;

@@ -1,6 +1,5 @@
 package no.nav.skanmotreferansenr.unzipskanningmetadata;
 
-import no.nav.skanmotreferansenr.config.properties.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.domain.Filepair;
 import no.nav.skanmotreferansenr.domain.FilepairWithMetadata;
 import no.nav.skanmotreferansenr.domain.Journalpost;
