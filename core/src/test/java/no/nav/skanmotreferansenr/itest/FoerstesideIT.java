@@ -45,7 +45,6 @@ public class FoerstesideIT {
     private final String HENT_FOERSTESIDE_METADATA = "/api/foerstesidegenerator/v1/foersteside/";
     private final String STS_URL = "/rest/v1/sts/token";
     private final String METADATA_HAPPY = "foersteside/foerseside_metadata_HAPPY.json";
-    private final String METADATA_INVALID_USER_ID = "foersteside/foerseside_metadata_INVALID_USER_ID.json";
 
     private FoerstesidegeneratorService foerstesidegeneratorService;
 
@@ -74,11 +73,6 @@ public class FoerstesideIT {
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile(METADATA_HAPPY)));
-        stubFor(get(urlMatching(HENT_FOERSTESIDE_METADATA + LOEPENR_INVALID_USER_ID))
-                .willReturn(aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile(METADATA_INVALID_USER_ID)));
         stubFor(get(urlMatching(HENT_FOERSTESIDE_METADATA + LOEPENR_NOT_FOUND))
                 .willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
         stubFor(post(urlMatching(STS_URL))
@@ -109,14 +103,4 @@ public class FoerstesideIT {
         Optional<FoerstesideMetadata> metadata = foerstesidegeneratorService.hentFoersteside(LOEPENR_NOT_FOUND);
         assertTrue(metadata.isEmpty());
     }
-
-    @Test
-    void shouldGetNoBrukerIfBrukerIdIsInvalid() {
-        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside(LOEPENR_INVALID_USER_ID).get();
-
-        assertNull(metadata.getBruker());
-        assertEquals("AAP", metadata.getTema());
-        assertEquals("9999", metadata.getEnhetsnummer());
-    }
-
 }

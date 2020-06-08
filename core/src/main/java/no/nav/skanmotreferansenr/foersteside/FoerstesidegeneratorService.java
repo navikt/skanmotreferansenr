@@ -16,9 +16,6 @@ import java.util.Optional;
 @Slf4j
 public class FoerstesidegeneratorService {
 
-    private final String BRUKERTYPE_PERSON = "PERSON";
-    private final String BRUKERTYPE_ORG = "ORGANISASJON";
-
     private FoerstesidegeneratorConsumer foerstesidegeneratorConsumer;
     private STSConsumer stsConsumer;
 
@@ -31,11 +28,7 @@ public class FoerstesidegeneratorService {
     public Optional<FoerstesideMetadata> hentFoersteside(String loepenr) {
         STSResponse stsResponse = stsConsumer.getSTSToken();
         try {
-            FoerstesideMetadata metadata = foerstesidegeneratorConsumer.hentFoersteside(stsResponse.getAccess_token(), loepenr);
-            if (!isValidBruker(metadata)) {
-                metadata.setBruker(null);
-            }
-            return Optional.of(metadata);
+            return Optional.of(foerstesidegeneratorConsumer.hentFoersteside(stsResponse.getAccess_token(), loepenr));
         } catch (HentMetadataFoerstesideFinnesIkkeFunctionalException e) {
             log.warn("Fant ikke metadata for foersteside med lopenummer {}", loepenr, e);
             return Optional.empty();
@@ -49,14 +42,5 @@ public class FoerstesidegeneratorService {
             log.error("Skanmotreferansenr feilet med ukjent feil ved henting av foerstesidemetadata loepenr={}", loepenr, e);
             return Optional.empty();
         }
-    }
-
-    private boolean isValidBruker(FoerstesideMetadata metadata) {
-        if (BRUKERTYPE_PERSON.equals(metadata.getBruker().getBrukerType())) {
-            return metadata.getBruker().getBrukerId().length() == 11;
-        } if (BRUKERTYPE_ORG.equals(metadata.getBruker().getBrukerType())) {
-            return metadata.getBruker().getBrukerId().length() == 9;
-        }
-        return false;
     }
 }

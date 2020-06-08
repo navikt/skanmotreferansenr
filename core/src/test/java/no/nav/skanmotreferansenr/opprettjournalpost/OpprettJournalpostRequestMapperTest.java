@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class OpprettJournalpostRequestMapperTest {
@@ -41,6 +42,7 @@ public class OpprettJournalpostRequestMapperTest {
     private final String NAV_SKJEMA_ID = "mockBrevKode";
     private final byte[] DUMMY_FILE = "dummyfile".getBytes();
     private final String BRUKER_ID = "12345678900";
+    private final String BRUKER_ID_INVALID = "123";
     private final String BRUKER_IDTYPE = "FNR";
     private final String ARKIVTITTEL = "mockArkivtittel";
     private final String AVSENDER_ID = "mockAvsenderID";
@@ -53,7 +55,7 @@ public class OpprettJournalpostRequestMapperTest {
 
         OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
                 generateSkanningMetadata(),
-                generateFoerstesideMetadata(),
+                generateFoerstesideMetadata(Bruker.builder().brukerId(BRUKER_ID).brukerType("PERSON").build()),
                 generateFilepair()
         );
 
@@ -115,11 +117,21 @@ public class OpprettJournalpostRequestMapperTest {
         assertEquals(1, xmlCounter.get());
     }
 
+    @Test
+    public void shouldMapNoBrukerIfBrukeridIsInvalid() {
+        OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
+                generateSkanningMetadata(),
+                generateFoerstesideMetadata(Bruker.builder().brukerId(BRUKER_ID_INVALID).brukerType("PERSON").build()),
+                generateFilepair()
+        );
+        assertNull(opprettJournalpostRequest.getBruker());
+    }
+
     private String getTillegsopplysningerVerdiFromNokkel(List<Tilleggsopplysning> tilleggsopplysninger, String nokkel) {
         return tilleggsopplysninger.stream().filter(pair -> nokkel.equals(pair.getNokkel())).findFirst().get().getVerdi();
     }
 
-    private FoerstesideMetadata generateFoerstesideMetadata() {
+    private FoerstesideMetadata generateFoerstesideMetadata(Bruker bruker) {
         return FoerstesideMetadata.builder()
                 .arkivtittel(ARKIVTITTEL)
                 .avsender(Avsender.builder()
@@ -127,7 +139,7 @@ public class OpprettJournalpostRequestMapperTest {
                         .avsenderNavn(AVSENDER_NAVN)
                         .build())
                 .behandlingstema(BEHANDLINGSTEMA)
-                .bruker(Bruker.builder().brukerId(BRUKER_ID).brukerType("PERSON").build())
+                .bruker(bruker)
                 .enhetsnummer(ENHETSNUMMER)
                 .navSkjemaId(NAV_SKJEMA_ID)
                 .tema(TEMA)
