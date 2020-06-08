@@ -39,10 +39,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ActiveProfiles("itest")
 public class FoerstesideIT {
 
-    private final String HENT_FOERSTESIDE_METADATA_OK = "/api/foerstesidegenerator/v1/foersteside/111";
-    private final String HENT_FOERSTESIDE_METADATA_NOT_FOUND = "/api/foerstesidegenerator/v1/foersteside/222";
+    private final String LOEPENR_OK = "111";
+    private final String LOEPENR_NOT_FOUND = "222";
+    private final String LOEPENR_INVALID_USER_ID = "333";
+    private final String HENT_FOERSTESIDE_METADATA = "/api/foerstesidegenerator/v1/foersteside/";
     private final String STS_URL = "/rest/v1/sts/token";
     private final String METADATA_HAPPY = "foersteside/foerseside_metadata_HAPPY.json";
+    private final String METADATA_INVALID_USER_ID = "foersteside/foerseside_metadata_INVALID_USER_ID.json";
 
     private FoerstesidegeneratorService foerstesidegeneratorService;
 
@@ -66,12 +69,17 @@ public class FoerstesideIT {
     }
 
     private void setUpStubs() {
-        stubFor(get(urlMatching(HENT_FOERSTESIDE_METADATA_OK))
+        stubFor(get(urlMatching(HENT_FOERSTESIDE_METADATA + LOEPENR_OK))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile(METADATA_HAPPY)));
-        stubFor(get(urlMatching(HENT_FOERSTESIDE_METADATA_NOT_FOUND))
+        stubFor(get(urlMatching(HENT_FOERSTESIDE_METADATA + LOEPENR_INVALID_USER_ID))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile(METADATA_INVALID_USER_ID)));
+        stubFor(get(urlMatching(HENT_FOERSTESIDE_METADATA + LOEPENR_NOT_FOUND))
                 .willReturn(aResponse().withStatus(HttpStatus.NOT_FOUND.value())));
         stubFor(post(urlMatching(STS_URL))
                 .willReturn(aResponse()
@@ -84,7 +92,7 @@ public class FoerstesideIT {
 
     @Test
     void shouldGetFoerstesideMetadata() {
-        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside("111").get();
+        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside(LOEPENR_OK).get();
 
         assertNull(metadata.getAvsender());
         assertEquals("12345678910", metadata.getBruker().getBrukerId());
@@ -98,8 +106,17 @@ public class FoerstesideIT {
 
     @Test
     void shouldGetNullIfNotExisting() {
-        Optional<FoerstesideMetadata> metadata = foerstesidegeneratorService.hentFoersteside("222");
+        Optional<FoerstesideMetadata> metadata = foerstesidegeneratorService.hentFoersteside(LOEPENR_NOT_FOUND);
         assertTrue(metadata.isEmpty());
+    }
+
+    @Test
+    void shouldGetNoBrukerIfBrukerIdIsInvalid() {
+        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside(LOEPENR_INVALID_USER_ID).get();
+
+        assertNull(metadata.getBruker());
+        assertEquals("AAP", metadata.getTema());
+        assertEquals("9999", metadata.getEnhetsnummer());
     }
 
 }
