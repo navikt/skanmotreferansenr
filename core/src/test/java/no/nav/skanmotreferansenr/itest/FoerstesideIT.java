@@ -41,7 +41,6 @@ public class FoerstesideIT {
 
     private final String LOEPENR_OK = "111";
     private final String LOEPENR_NOT_FOUND = "222";
-    private final String LOEPENR_INVALID_USER_ID = "333";
     private final String HENT_FOERSTESIDE_METADATA = "/api/foerstesidegenerator/v1/foersteside/";
     private final String STS_URL = "/rest/v1/sts/token";
     private final String METADATA_HAPPY = "foersteside/foerseside_metadata_HAPPY.json";
