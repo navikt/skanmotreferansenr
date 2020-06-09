@@ -1,5 +1,6 @@
 package no.nav.skanmotreferansenr.opprettjournalpost;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.domain.Filepair;
 import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.domain.SkanningInfo;
@@ -11,13 +12,12 @@ import no.nav.skanmotreferansenr.opprettjournalpost.data.Dokument;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.DokumentVariant;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostRequest;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.Tilleggsopplysning;
-import no.nav.skanmotreferansenr.utils.Utils;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class OpprettJournalpostRequestMapper {
 
     private static final String FILTYPE_PDFA = "PDFA";
@@ -34,8 +34,8 @@ public class OpprettJournalpostRequestMapper {
     private static final String STREKKODEPOSTBOKS = "strekkodePostboks";
     private static final String BATCHNAVN = "batchNavn";
 
-    private static final String PERSON = "PERSON";
-    private static final String ORGANISASJON = "ORGANISASJON";
+    private static final String BRUKERTYPE_PERSON = "PERSON";
+    private static final String BRUKERTYPE_ORGANISASJON = "ORGANISASJON";
     private static final String FNR = "FNR";
     private static final String ORGNR = "ORGNR";
     private static final String TEMA_UKJENT = "UKJ";
@@ -119,20 +119,37 @@ public class OpprettJournalpostRequestMapper {
     }
 
     private Bruker extractBruker(FoerstesideMetadata foerstesideMetadata) {
-        if (foerstesideMetadata.getBruker() == null) {
+        if (foerstesideMetadata.getBruker() == null || !isValidBruker(foerstesideMetadata)) {
             return null;
         }
         String id = foerstesideMetadata.getBruker().getBrukerId();
         String idType = foerstesideMetadata.getBruker().getBrukerType();
-        if (PERSON.equals(idType)) {
+        if (BRUKERTYPE_PERSON.equals(idType)) {
             idType = FNR;
-        } else if (ORGANISASJON.equals(idType)) {
+        } else if (BRUKERTYPE_ORGANISASJON.equals(idType)) {
             idType = ORGNR;
         }
         return Bruker.builder()
                 .id(id)
                 .idType(idType)
                 .build();
+    }
+
+    private boolean isValidBruker(FoerstesideMetadata metadata) {
+        if (BRUKERTYPE_PERSON.equals(metadata.getBruker().getBrukerType())) {
+            if (metadata.getBruker().getBrukerId().length() == 11) {
+                return true;
+            }
+            log.warn("Brukerid av type {} hadde ikke en lengde på 11, setter bruker til null", BRUKERTYPE_PERSON);
+        } else if (BRUKERTYPE_ORGANISASJON.equals(metadata.getBruker().getBrukerType())) {
+            if (metadata.getBruker().getBrukerId().length() == 9) {
+                return true;
+            }
+            log.warn("Brukerid av type {} hadde ikke en lengde på 9, setter bruker til null", BRUKERTYPE_ORGANISASJON);
+        } else {
+            log.warn("Brukertype {} er ikke en gyldig verdi: [{}, {}]. Setter bruker til null", metadata.getBruker().getBrukerId(), BRUKERTYPE_PERSON, BRUKERTYPE_ORGANISASJON);
+        }
+        return false;
     }
 
     private boolean notNullOrEmpty(String string) {
