@@ -61,6 +61,7 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
 
     private final String URL_DOKARKIV_JOURNALPOST_GEN = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
     private final String URL_FOERSTESIDEGENERATOR = "/api/foerstesidegenerator/v1/foersteside/\\d{13}";
+    private final String URL_FOERSTESIDEGENERATOR_NOT_FOUND = "/api/foerstesidegenerator/v1/foersteside/11111111111111";
     private final String STSUrl = "/rest/v1/sts/token";
     private static final String VALID_PUBLIC_KEY_PATH = "src/test/resources/sftp/itest_valid.pub";
     private final String FOERSTESIDE_METADATA_HAPPY = "foersteside/foerseside_metadata_HAPPY.json";
@@ -97,7 +98,7 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
     }
 
     @BeforeEach
-    void setUpServices() throws IOException {
+    void setUpServices() {
         sftp = new Sftp(properties);
         filomraadeService = new FilomraadeService(new FilomraadeConsumer(sftp, properties));
         opprettJournalpostService = new OpprettJournalpostService(
@@ -135,6 +136,9 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile(FOERSTESIDE_METADATA_HAPPY)));
+        stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.NOT_FOUND.value())));
     }
 
     private void setUpBadStubs() {
