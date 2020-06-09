@@ -98,8 +98,15 @@ public class FoerstesideIT {
 
     @Test
     void shouldGetNullIfNotExisting() {
-        Optional<FoerstesideMetadata> metadata = foerstesidegeneratorService.hentFoersteside("222");
-        assertTrue(metadata.isEmpty());
+        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside("222").get();
+
+        assertNull(metadata.getAvsender());
+        assertNull(metadata.getBruker());
+        assertNull(metadata.getTema());
+        assertNull(metadata.getBehandlingstema());
+        assertNull(metadata.getArkivtittel());
+        assertNull(metadata.getNavSkjemaId());
+        assertNull(metadata.getEnhetsnummer());
     }
 
 }

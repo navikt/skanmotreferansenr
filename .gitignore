@@ -33,3 +33,6 @@ atlassian-ide-plugin.xml
 **/application-t*.properties
 **/application-q*.properties
 **/application-local.properties
+
+### Test generated files ###
+core/src/test/resources/inbound/

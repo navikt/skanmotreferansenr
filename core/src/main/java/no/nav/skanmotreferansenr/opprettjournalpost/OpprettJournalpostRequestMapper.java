@@ -44,7 +44,7 @@ public class OpprettJournalpostRequestMapper {
         Journalpost journalpost = skanningmetadata.getJournalpost();
         SkanningInfo skanningInfo = skanningmetadata.getSkanningInfo();
 
-        String tema = null == foerstesideMetadata.getTema() ? TEMA_UKJENT : foerstesideMetadata.getTema();
+        String tema = extractTema(foerstesideMetadata);
         String behandlingstema = foerstesideMetadata.getBehandlingstema();
         String tittel = foerstesideMetadata.getArkivtittel();
         String kanal = skanningmetadata.getJournalpost().getMottakskanal();
@@ -98,6 +98,13 @@ public class OpprettJournalpostRequestMapper {
                 .tilleggsopplysninger(tilleggsopplysninger)
                 .dokumenter(List.of(dokument))
                 .build();
+    }
+
+    private String extractTema(FoerstesideMetadata foerstesideMetadata) {
+        if (foerstesideMetadata.getTema() == null) {
+            return TEMA_UKJENT;
+        }
+        return foerstesideMetadata.getTema();
     }
 
     private AvsenderMottaker extractAvsenderMottaker(FoerstesideMetadata foerstesideMetadata) {

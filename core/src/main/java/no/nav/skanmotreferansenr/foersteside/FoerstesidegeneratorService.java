@@ -31,7 +31,7 @@ public class FoerstesidegeneratorService {
             return Optional.of(foerstesidegeneratorConsumer.hentFoersteside(stsResponse.getAccess_token(), loepenr));
         } catch (HentMetadataFoerstesideFinnesIkkeFunctionalException e) {
             log.warn("Fant ikke metadata for foersteside med lopenummer {}", loepenr, e);
-            return Optional.empty();
+            return Optional.of(new FoerstesideMetadata());
         } catch (AbstractSkanmotreferansenrFunctionalException e) {
             log.error("Skanmotreferansenr feilet funksjonelt med henting av foerstesidemetadata loepenr={}", loepenr, e);
             return Optional.empty();
