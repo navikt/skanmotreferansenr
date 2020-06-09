@@ -43,6 +43,7 @@ import java.util.List;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
@@ -60,8 +61,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class LesFraFilomraadeOgOpprettJournalpostIT {
 
     private final String URL_DOKARKIV_JOURNALPOST_GEN = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
-    private final String URL_FOERSTESIDEGENERATOR = "/api/foerstesidegenerator/v1/foersteside/\\d{13}";
-    private final String URL_FOERSTESIDEGENERATOR_NOT_FOUND = "/api/foerstesidegenerator/v1/foersteside/11111111111111";
+    private final String URL_FOERSTESIDEGENERATOR_OK_1 = "/api/foerstesidegenerator/v1/foersteside/1111111111111";
+    private final String URL_FOERSTESIDEGENERATOR_OK_2 = "/api/foerstesidegenerator/v1/foersteside/2222222222222";
+    private final String URL_FOERSTESIDEGENERATOR_NOT_FOUND = "/api/foerstesidegenerator/v1/foersteside/3333333333333";
     private final String STSUrl = "/rest/v1/sts/token";
     private static final String VALID_PUBLIC_KEY_PATH = "src/test/resources/sftp/itest_valid.pub";
     private final String FOERSTESIDE_METADATA_HAPPY = "foersteside/foerseside_metadata_HAPPY.json";
@@ -131,7 +133,12 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
                                 "{\"access_token\":\"MockToken\",\"token_type\":\"Bearer\",\"expires_in\":3600}"
                         )))
         );
-        stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR))
+        stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1))
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile(FOERSTESIDE_METADATA_HAPPY)));
+        stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_OK_2))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
@@ -160,6 +167,9 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
         setUpHappyStubs();
         try {
             lesFraFilomraadeOgOpprettJournalpost.lesOgLagreZipfiler();
+            verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1)));
+            verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_2)));
+            verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
             verify(exactly(3), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
         } catch (Exception e) {
             fail();
