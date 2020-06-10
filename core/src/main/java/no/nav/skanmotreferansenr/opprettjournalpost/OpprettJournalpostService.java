@@ -43,7 +43,8 @@ public class OpprettJournalpostService {
             log.info("Skanmotreferansenr oppretter journalpost fil={}, batch={}", filepair.getName(), batchNavn);
             OpprettJournalpostRequest request = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(skanningmetadata.get(), foerstesideMetadata.get(), filepair);
             OpprettJournalpostResponse response = opprettJournalpostConsumer.opprettJournalpost(stsResponse.getAccess_token(), request);
-            log.info("Skanmotreferansenr har opprettet journalpost, journalpostId={}, fil={}, batch={}", response.getJournalpostId(), filepair.getName(), batchNavn);
+            log.info("Skanmotreferansenr har opprettet journalpost, journalpostId={}, referansenr={}, fil={}, batch={}",
+                    response.getJournalpostId(), skanningmetadata.get().getJournalpost().getReferansenummer(), filepair.getName(), batchNavn);
             return Optional.of(response);
 
         } catch (AbstractSkanmotreferansenrFunctionalException e) {
