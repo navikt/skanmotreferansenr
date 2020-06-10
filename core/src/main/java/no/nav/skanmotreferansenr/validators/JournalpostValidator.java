@@ -20,18 +20,6 @@ public class JournalpostValidator {
         return isNonEmptyString(batchnavn);
     }
 
-    public static boolean isValidFilnavn(String filnavn) {
-        if (isNonEmptyString(filnavn) && filnavn.length() >= 5) {
-            String fileEnding = filnavn.substring(filnavn.length() - 4);
-            return '.' == fileEnding.charAt(0);
-        }
-        return false;
-    }
-
-    public static boolean isValidEndorsernr(String endorsernr) {
-        return isNonEmptyString(endorsernr);
-    }
-
     private static boolean isNumeric(String string) {
         if (isNonEmptyString(string)) {
             try {

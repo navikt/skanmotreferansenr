@@ -25,6 +25,9 @@ public class SkanmotreferansenrProperties {
     @NotNull
     private String stsurl;
 
+    @NotNull
+    private String schedule;
+
     private final ServiceuserProperties serviceuser = new ServiceuserProperties();
 
     private final FilomraadeProperties filomraade = new FilomraadeProperties();
