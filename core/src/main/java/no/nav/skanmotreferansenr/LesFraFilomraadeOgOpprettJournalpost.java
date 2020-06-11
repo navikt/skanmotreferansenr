@@ -40,7 +40,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         this.opprettJournalpostService = opprettJournalpostService;
     }
 
-    //@Scheduled(cron = "${skanmotreferansenr.schedule}")
+    @Scheduled(cron = "${skanmotreferansenr.schedule}")
     public void scheduledJob() {
         lesOgLagreZipfiler();
     }
