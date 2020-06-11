@@ -29,16 +29,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import wiremock.org.apache.commons.io.FilenameUtils;
 
+import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
@@ -49,8 +54,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.awaitility.Awaitility.await;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = TestConfig.class,
@@ -59,6 +67,10 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("itest")
 public class LesFraFilomraadeOgOpprettJournalpostIT {
+
+    public static final String INNGAAENDE = "inngaaende";
+    public static final String FEILMAPPE = "feilmappe";
+
 
     private final String URL_DOKARKIV_JOURNALPOST_GEN = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
     private final String URL_FOERSTESIDEGENERATOR_OK_1 = "/api/foerstesidegenerator/v1/foersteside/1111111111111";
@@ -76,6 +88,10 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
     OpprettJournalpostService opprettJournalpostService;
     FoerstesidegeneratorService foerstesidegeneratorService;
 
+    @Inject
+    private Path sshdPath;
+
+    /*
     private int PORT = 2222;
     private SshServer sshd = SshServer.setUpDefaultServer();
     private Sftp sftp;
@@ -113,6 +129,23 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
         lesFraFilomraadeOgOpprettJournalpost = new LesFraFilomraadeOgOpprettJournalpost(filomraadeService, foerstesidegeneratorService, opprettJournalpostService);
         copyFileToSkanmotreferansenrFolder();
     }
+    */
+
+    @BeforeEach
+    void beforeEach() throws IOException {
+        final Path inngaaende = sshdPath.resolve(INNGAAENDE);
+        createDirectoryIfNotExists(inngaaende);
+        final Path processed = inngaaende.resolve("processed");
+        createDirectoryIfNotExists(processed);
+        final Path feilmappe = sshdPath.resolve(FEILMAPPE);
+        createDirectoryIfNotExists(feilmappe);
+    }
+
+    private void createDirectoryIfNotExists(Path processed) throws IOException {
+        if (!Files.exists(processed)) {
+            Files.createDirectory(processed);
+        }
+    }
 
     @AfterEach
     void tearDown() {
@@ -148,20 +181,6 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
                         .withStatus(HttpStatus.NOT_FOUND.value())));
     }
 
-    private void setUpBadStubs() {
-        stubFor(post(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN))
-                .willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
-                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBody("{}")));
-        stubFor(post(urlMatching(STSUrl))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withJsonBody(Json.node(
-                                "{\"access_token\":\"MockToken\",\"token_type\":\"Bearer\",\"expires_in\":3600}"
-                        )))
-        );
-    }
-
     @Test
     public void shouldLesOgLagreHappy() {
         setUpHappyStubs();
@@ -176,15 +195,32 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
         }
     }
 
-    /*
     @Test
-    public void shouldMoveFilesWhenBadRequest() {
-        setUpBadStubs();
-        lesFraFilomraadeOgOpprettJournalpost.lesOgLagre();
-        assertTrue("foo".equals("bar"));
+    public void shouldBehandleZip() throws IOException {
+        // 09.06.2020_R123456789_1_1000.zip
+        // OK   - 09.06.2020_R123456789_0001
+        // OK   - 09.06.2020_R123456789_0002 (mangler førstesidemetadata)
+        // FEIL - 09.06.2020_R123456789_0003 (valideringsfeil, mangler referansenr)
+        // FEIL - 09.06.2020_R123456789_0004 (mangler xml)
+        // FEIL - 09.06.2020_R123456789_0005 (mangler pdf)
+        copyFileFromClasspathToInngaaende("09.06.2020_R123456789_1_1000.zip");
+        setUpHappyStubs();
+
+        await().atMost(5, TimeUnit.SECONDS).untilAsserted(() ->
+                assertEquals(3, Files.list(sshdPath.resolve(FEILMAPPE)).count()));
+        final List<String> feilmappeContents = Files.list(sshdPath.resolve(FEILMAPPE))
+                .map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
+                .collect(Collectors.toList());
+        assertTrue(feilmappeContents.containsAll(List.of(
+                "nope.xml"
+        )));
+        verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
+
     }
 
-     */
+    private void copyFileFromClasspathToInngaaende(final String zipfilename) throws IOException {
+        Files.copy(new ClassPathResource("__files/" + zipfilename).getInputStream(), sshdPath.resolve(INNGAAENDE).resolve(zipfilename));
+    }
 
     private void copyFileToSkanmotreferansenrFolder() {
         try {
