@@ -11,15 +11,18 @@ import no.nav.skanmotreferansenr.opprettjournalpost.data.Dokument;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.DokumentVariant;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostRequest;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.Tilleggsopplysning;
+import no.nav.skanmotreferansenr.validators.SkanningMetadataValidator;
 import org.junit.Test;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class OpprettJournalpostRequestMapperTest {
@@ -55,7 +58,7 @@ public class OpprettJournalpostRequestMapperTest {
 
         OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
                 generateSkanningMetadata(),
-                generateFoerstesideMetadata(Bruker.builder().brukerId(BRUKER_ID).brukerType("PERSON").build()),
+                generateFoerstesideMetadata(),
                 generateFilepair()
         );
 
@@ -180,11 +183,43 @@ public class OpprettJournalpostRequestMapperTest {
         assertEquals(1, xmlCounter.get());
     }
 
+    @Test
+    public void shouldFilterOutMissingTilleggsopplysninger() {
+        Skanningmetadata skanningmetadataNoEndorsernrOrFysiskPostboks = Skanningmetadata.builder()
+                .journalpost(
+                        Journalpost.builder()
+                                .referansenummer(REFERANSENR)
+                                .referansenrChecksum(REFERANSENR_CHECKSUM)
+                                .datoMottatt(new Date())
+                                .mottakskanal(MOTTAKSKANAL)
+                                .batchNavn(BATCHNAVN)
+                                .filNavn(FILNAVN_I_XML)
+                                .endorsernr(null)
+                                .build()
+                )
+                .skanningInfo(SkanningInfo.builder()
+                        .fysiskPostboks(null)
+                        .strekkodePostboks(STREKKODE_POSTBOKS)
+                        .build())
+                .build();
+        OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
+                skanningmetadataNoEndorsernrOrFysiskPostboks,
+                generateFoerstesideMetadata(),
+                generateFilepair()
+        );
+
+        assertEquals(REFERANSENR + REFERANSENR_CHECKSUM, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "referansenr"));
+        assertEquals(STREKKODE_POSTBOKS, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "strekkodePostboks"));
+        assertEquals(BATCHNAVN, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "batchNavn"));
+        assertThrows(NoSuchElementException.class, () -> getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "endorsernr"));
+        assertThrows(NoSuchElementException.class, () -> getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "fysiskPostboks"));
+    }
+
     private String getTillegsopplysningerVerdiFromNokkel(List<Tilleggsopplysning> tilleggsopplysninger, String nokkel) {
         return tilleggsopplysninger.stream().filter(pair -> nokkel.equals(pair.getNokkel())).findFirst().get().getVerdi();
     }
 
-    private FoerstesideMetadata generateFoerstesideMetadata(Bruker bruker) {
+    private FoerstesideMetadata generateFoerstesideMetadata() {
         return FoerstesideMetadata.builder()
                 .arkivtittel(ARKIVTITTEL)
                 .avsender(Avsender.builder()
@@ -192,7 +227,10 @@ public class OpprettJournalpostRequestMapperTest {
                         .avsenderNavn(AVSENDER_NAVN)
                         .build())
                 .behandlingstema(BEHANDLINGSTEMA)
-                .bruker(bruker)
+                .bruker(Bruker.builder()
+                        .brukerId(BRUKER_ID)
+                        .brukerType("PERSON")
+                        .build())
                 .enhetsnummer(ENHETSNUMMER)
                 .navSkjemaId(NAV_SKJEMA_ID)
                 .tema(TEMA)
