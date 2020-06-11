@@ -71,20 +71,14 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                     Optional<Skanningmetadata> skanningmetadata = extractMetadata(filepair);
                     if (skanningmetadata.isEmpty()) {
                         lastOppFilpar(filepair, zipName);
-                        tearDownMDCforFile();
                     } else {
                         Optional<FoerstesideMetadata> foerstesideMetadata = foerstesidegeneratorService.hentFoersteside(skanningmetadata.get().getJournalpost().getReferansenummer());
                         Optional<OpprettJournalpostResponse> response = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
-                        try {
-                            if (response.isEmpty()) {
-                                lastOppFilpar(filepair, zipName);
-                            }
-                        } catch (Exception e) {
-                            log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", filepair.getName(), zipName, e.getMessage(), e);
-                        } finally {
-                            tearDownMDCforFile();
+                        if (response.isEmpty()) {
+                            lastOppFilpar(filepair, zipName);
                         }
                     }
+                    tearDownMDCforFile();
                 });
                 processedZipFiles.add(zipName);
                 tearDownMDCforZip();
@@ -113,10 +107,14 @@ public class LesFraFilomraadeOgOpprettJournalpost {
     }
 
     private void lastOppFilpar(Filepair filepair, String zipName) {
-        log.info("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
-        String path = Utils.removeFileExtensionInFilename(zipName);
-        filomraadeService.uploadFileToFeilomrade(filepair.getPdf(), filepair.getName() + ".pdf", path);
-        filomraadeService.uploadFileToFeilomrade(filepair.getXml(), filepair.getName() + ".xml", path);
+        try {
+            log.info("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
+            String path = Utils.removeFileExtensionInFilename(zipName);
+            filomraadeService.uploadFileToFeilomrade(filepair.getPdf(), filepair.getName() + ".pdf", path);
+            filomraadeService.uploadFileToFeilomrade(filepair.getXml(), filepair.getName() + ".xml", path);
+        } catch (Exception e) {
+            log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", filepair.getName(), zipName, e.getMessage(), e);
+        }
     }
 
     private void setUpMDCforZip(String zipname) {
