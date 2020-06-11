@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class OpprettJournalpostRequestMapperTest {
@@ -198,7 +199,7 @@ public class OpprettJournalpostRequestMapperTest {
                                 .build()
                 )
                 .skanningInfo(SkanningInfo.builder()
-                        .fysiskPostboks(null)
+                        .fysiskPostboks("")
                         .strekkodePostboks(STREKKODE_POSTBOKS)
                         .build())
                 .build();
@@ -208,6 +209,7 @@ public class OpprettJournalpostRequestMapperTest {
                 generateFilepair()
         );
 
+        assertEquals(3, opprettJournalpostRequest.getTilleggsopplysninger().size());
         assertEquals(REFERANSENR + REFERANSENR_CHECKSUM, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "referansenr"));
         assertEquals(STREKKODE_POSTBOKS, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "strekkodePostboks"));
         assertEquals(BATCHNAVN, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "batchNavn"));
