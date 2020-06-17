@@ -15,6 +15,7 @@ import no.nav.skanmotreferansenr.opprettjournalpost.data.Tilleggsopplysning;
 
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -39,6 +40,9 @@ public class OpprettJournalpostRequestMapper {
     private static final String FNR = "FNR";
     private static final String ORGNR = "ORGNR";
     private static final String TEMA_UKJENT = "UKJ";
+
+    private static final Pattern BRUKER_ID_PERSON_REGEX = Pattern.compile("[0-9]{11}");
+    private static final Pattern BRUKER_ID_ORGANISASJON_REGEX = Pattern.compile("[0-9]{9}");
 
     public OpprettJournalpostRequest mapMetadataToOpprettJournalpostRequest(Skanningmetadata skanningmetadata, FoerstesideMetadata foerstesideMetadata, Filepair filepair) {
         Journalpost journalpost = skanningmetadata.getJournalpost();
@@ -136,18 +140,19 @@ public class OpprettJournalpostRequestMapper {
     }
 
     private boolean isValidBruker(FoerstesideMetadata metadata) {
-        if (BRUKERTYPE_PERSON.equals(metadata.getBruker().getBrukerType())) {
-            if (metadata.getBruker().getBrukerId().length() == 11) {
+        no.nav.skanmotreferansenr.foersteside.data.Bruker bruker = metadata.getBruker();
+        if (BRUKERTYPE_PERSON.equals(bruker.getBrukerType())) {
+            if (BRUKER_ID_PERSON_REGEX.matcher(bruker.getBrukerId()).matches()) {
                 return true;
             }
-            log.warn("Brukerid av type {} hadde ikke en lengde på 11, setter bruker til null", BRUKERTYPE_PERSON);
-        } else if (BRUKERTYPE_ORGANISASJON.equals(metadata.getBruker().getBrukerType())) {
-            if (metadata.getBruker().getBrukerId().length() == 9) {
+            log.warn("Brukerid av type {} var ugyldig, setter bruker til null", BRUKERTYPE_PERSON);
+        } else if (BRUKERTYPE_ORGANISASJON.equals(bruker.getBrukerType())) {
+            if (BRUKER_ID_ORGANISASJON_REGEX.matcher(bruker.getBrukerId()).matches()) {
                 return true;
             }
-            log.warn("Brukerid av type {} hadde ikke en lengde på 9, setter bruker til null", BRUKERTYPE_ORGANISASJON);
+            log.warn("Brukerid av type {} var ugyldig, setter bruker til null", BRUKERTYPE_ORGANISASJON);
         } else {
-            log.warn("Brukertype {} er ikke en gyldig verdi: [{}, {}]. Setter bruker til null", metadata.getBruker().getBrukerId(), BRUKERTYPE_PERSON, BRUKERTYPE_ORGANISASJON);
+            log.warn("Brukertype {} er ikke en gyldig verdi: [{}, {}]. Setter bruker til null", bruker.getBrukerType(), BRUKERTYPE_PERSON, BRUKERTYPE_ORGANISASJON);
         }
         return false;
     }
