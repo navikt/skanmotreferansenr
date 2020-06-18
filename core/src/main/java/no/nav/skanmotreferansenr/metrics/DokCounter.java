@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Component
 public class DokCounter {
-    private final String DOK_SKANMOTOVRIG = "dok_skanmotovrig_";
+    private final String DOK_SKANMOTREFERANSENR = "dok_skanmotreferansenr_";
     private final String TOTAL = "_total";
     private final String EXCEPTION = "exception";
     private final String ERROR_TYPE = "error_type";
@@ -32,14 +32,14 @@ public class DokCounter {
     }
 
     private void incrementCounter(String key, String value) {
-        Counter.builder(DOK_SKANMOTOVRIG + key + TOTAL)
+        Counter.builder(DOK_SKANMOTREFERANSENR + key + TOTAL)
                 .tags(key, value)
                 .register(meterRegistry)
                 .increment();
     }
 
     public void incrementError(Throwable throwable){
-        Counter.builder(DOK_SKANMOTOVRIG + EXCEPTION)
+        Counter.builder(DOK_SKANMOTREFERANSENR + EXCEPTION)
                 .tags(ERROR_TYPE, isFunctionalException(throwable) ? FUNCTIONAL_ERROR : TECHNICAL_ERROR)
                 .tags(EXCEPTION_NAME, throwable.getClass().getSimpleName())
                 .tag(DOMAIN, REFERANSENR)
