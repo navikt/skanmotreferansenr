@@ -29,7 +29,7 @@ public class LeggTilLogiskVedleggConsumer {
 
     private final RestTemplate restTemplate;
     private final String dokarkivDokumentinfoUrl;
-    private final String LEGG_TIL_LOGISK_VEDLEGG_TJENESTE = "logiskVedlegg";
+    private final String LEGG_TIL_LOGISK_VEDLEGG_TJENESTE = "logiskVedlegg/";
 
     public LeggTilLogiskVedleggConsumer(RestTemplateBuilder restTemplateBuilder,
                                         SkanmotreferansenrProperties skanmotreferansenrProperties) {

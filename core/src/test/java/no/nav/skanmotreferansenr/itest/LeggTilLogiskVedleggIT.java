@@ -39,7 +39,7 @@ public class LeggTilLogiskVedleggIT {
 
     private final String DOKUMENT_INFO_ID_OK = "885522";
     private final String LOGISK_VEDLEGG_ID = "852";
-    private final String LEGG_TIL_LOGISK_VEDLEGG_TJENSTE = "/rest/journalpostapi/v1/dokumentInfo/" + DOKUMENT_INFO_ID_OK + "/logiskVedlegg";
+    private final String LEGG_TIL_LOGISK_VEDLEGG_TJENSTE = "/rest/journalpostapi/v1/dokumentInfo/" + DOKUMENT_INFO_ID_OK + "/logiskVedlegg/";
     private final String URL_STS = "/rest/v1/sts/token";
 
     private LeggTilLogiskVedleggConsumer leggTilLogiskVedleggConsumer;
