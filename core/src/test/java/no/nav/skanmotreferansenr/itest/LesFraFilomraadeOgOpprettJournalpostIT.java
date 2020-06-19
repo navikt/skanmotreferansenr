@@ -9,6 +9,8 @@ import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorConsumer;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.itest.config.TestConfig;
+import no.nav.skanmotreferansenr.logiskvedlegg.LeggTilLogiskVedleggConsumer;
+import no.nav.skanmotreferansenr.logiskvedlegg.LeggTilLogiskVedleggService;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostConsumer;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostService;
 import no.nav.skanmotreferansenr.sftp.Sftp;
@@ -61,20 +63,24 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class LesFraFilomraadeOgOpprettJournalpostIT {
 
     private final String URL_DOKARKIV_JOURNALPOST_GEN = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
+    private final String URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG = "/rest/journalpostapi/v1/dokumentInfo/[0-9]+/logiskVedlegg";
     private final String URL_FOERSTESIDEGENERATOR_OK_1 = "/api/foerstesidegenerator/v1/foersteside/1111111111111";
     private final String URL_FOERSTESIDEGENERATOR_OK_2 = "/api/foerstesidegenerator/v1/foersteside/2222222222222";
     private final String URL_FOERSTESIDEGENERATOR_NOT_FOUND = "/api/foerstesidegenerator/v1/foersteside/3333333333333";
-    private final String STSUrl = "/rest/v1/sts/token";
-    private static final String VALID_PUBLIC_KEY_PATH = "src/test/resources/sftp/itest_valid.pub";
+    private final String URL_STS = "/rest/v1/sts/token";
+    private final String VALID_PUBLIC_KEY_PATH = "src/test/resources/sftp/itest_valid.pub";
     private final String FOERSTESIDE_METADATA_HAPPY = "foersteside/foerseside_metadata_HAPPY.json";
+    private final String OPPRETT_JOURNALPOST_RESPONSE_HAPPY = "journalpost/opprett_journalpost_response_HAPPY.json";
 
     private final Path MOCKZIP = Path.of("src/test/resources/__files/xml_pdf_pairs/xml_pdf_pairs_testdata.zip");
     private final Path SKANMOTREFERANSENR_ZIP_PATH = Path.of("src/test/resources/inbound/xml_pdf_pairs_testdata.zip");
+    private final String LOGISK_VEDLEGG_ID = "885522";
 
     LesFraFilomraadeOgOpprettJournalpost lesFraFilomraadeOgOpprettJournalpost;
     FilomraadeService filomraadeService;
     OpprettJournalpostService opprettJournalpostService;
     FoerstesidegeneratorService foerstesidegeneratorService;
+    LeggTilLogiskVedleggService leggTilLogiskVedleggService;
 
     private int PORT = 2222;
     private SshServer sshd = SshServer.setUpDefaultServer();
@@ -102,15 +108,23 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
     @BeforeEach
     void setUpServices() {
         sftp = new Sftp(properties);
-        filomraadeService = new FilomraadeService(new FilomraadeConsumer(sftp, properties));
+        filomraadeService = new FilomraadeService(
+                new FilomraadeConsumer(sftp, properties)
+        );
         opprettJournalpostService = new OpprettJournalpostService(
                 new OpprettJournalpostConsumer(new RestTemplateBuilder(), properties),
                 new STSConsumer(new RestTemplateBuilder(), properties)
         );
         foerstesidegeneratorService = new FoerstesidegeneratorService(
                 new FoerstesidegeneratorConsumer(new RestTemplateBuilder(), properties),
-                new STSConsumer(new RestTemplateBuilder(), properties));
-        lesFraFilomraadeOgOpprettJournalpost = new LesFraFilomraadeOgOpprettJournalpost(filomraadeService, foerstesidegeneratorService, opprettJournalpostService);
+                new STSConsumer(new RestTemplateBuilder(), properties)
+        );
+        leggTilLogiskVedleggService = new LeggTilLogiskVedleggService(
+                new LeggTilLogiskVedleggConsumer(new RestTemplateBuilder(), properties)
+        );
+        lesFraFilomraadeOgOpprettJournalpost = new LesFraFilomraadeOgOpprettJournalpost(
+                filomraadeService, foerstesidegeneratorService, opprettJournalpostService, leggTilLogiskVedleggService
+        );
         copyFileToSkanmotreferansenrFolder();
     }
 
@@ -123,25 +137,30 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
 
     private void setUpHappyStubs() {
         stubFor(post(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN))
-                .willReturn(aResponse().withStatus(HttpStatus.OK.value())
-                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                        .withBody("{}")));
-        stubFor(post(urlMatching(STSUrl))
                 .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
+                        .withStatus(HttpStatus.OK.value())
+                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                        .withBodyFile(OPPRETT_JOURNALPOST_RESPONSE_HAPPY)));
+        stubFor(post(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG))
+                .willReturn(aResponse().withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                        .withJsonBody(Json.node(
+                                "{\"logiskVedleggId\": \"" + LOGISK_VEDLEGG_ID + "\"}"
+                        ))));
+        stubFor(post(urlMatching(URL_STS))
+                .willReturn(aResponse()
+                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withJsonBody(Json.node(
                                 "{\"access_token\":\"MockToken\",\"token_type\":\"Bearer\",\"expires_in\":3600}"
-                        )))
-        );
+                        ))));
         stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", "application/json")
+                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBodyFile(FOERSTESIDE_METADATA_HAPPY)));
         stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_OK_2))
                 .willReturn(aResponse()
                         .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", "application/json")
+                        .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBodyFile(FOERSTESIDE_METADATA_HAPPY)));
         stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND))
                 .willReturn(aResponse()
@@ -153,7 +172,7 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
                 .willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
                         .withHeader(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBody("{}")));
-        stubFor(post(urlMatching(STSUrl))
+        stubFor(post(urlMatching(URL_STS))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withJsonBody(Json.node(
@@ -167,10 +186,12 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
         setUpHappyStubs();
         try {
             lesFraFilomraadeOgOpprettJournalpost.lesOgLagreZipfiler();
+            System.out.println("Done");
             verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1)));
             verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_2)));
             verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
             verify(exactly(3), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
+            verify(exactly(3), postRequestedFor(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG)));
         } catch (Exception e) {
             fail();
         }

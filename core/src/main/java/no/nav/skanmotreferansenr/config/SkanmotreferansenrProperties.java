@@ -23,6 +23,9 @@ public class SkanmotreferansenrProperties {
     private String dokarkivjournalposturl;
 
     @NotNull
+    private String dokarkivdokumentinfourl;
+
+    @NotNull
     private String stsurl;
 
     @NotNull

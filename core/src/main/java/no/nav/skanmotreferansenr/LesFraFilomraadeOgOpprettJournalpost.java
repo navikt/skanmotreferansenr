@@ -8,6 +8,8 @@ import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrUnzippe
 import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
+import no.nav.skanmotreferansenr.logiskvedlegg.LeggTilLogiskVedleggService;
+import no.nav.skanmotreferansenr.logiskvedlegg.data.LeggTilLogiskVedleggResponse;
 import no.nav.skanmotreferansenr.mdc.MDCGenerate;
 import no.nav.skanmotreferansenr.metrics.Metrics;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostService;
@@ -32,12 +34,16 @@ public class LesFraFilomraadeOgOpprettJournalpost {
     private final FilomraadeService filomraadeService;
     private final FoerstesidegeneratorService foerstesidegeneratorService;
     private final OpprettJournalpostService opprettJournalpostService;
+    private final LeggTilLogiskVedleggService leggTilLogiskVedleggService;
 
-    public LesFraFilomraadeOgOpprettJournalpost(FilomraadeService filomraadeService, FoerstesidegeneratorService foerstesidegeneratorService,
-                                                OpprettJournalpostService opprettJournalpostService) {
+    public LesFraFilomraadeOgOpprettJournalpost(FilomraadeService filomraadeService,
+                                                FoerstesidegeneratorService foerstesidegeneratorService,
+                                                OpprettJournalpostService opprettJournalpostService,
+                                                LeggTilLogiskVedleggService leggTilLogiskVedleggService) {
         this.filomraadeService = filomraadeService;
         this.foerstesidegeneratorService = foerstesidegeneratorService;
         this.opprettJournalpostService = opprettJournalpostService;
+        this.leggTilLogiskVedleggService = leggTilLogiskVedleggService;
     }
 
     @Scheduled(cron = "${skanmotreferansenr.schedule}")
@@ -73,9 +79,11 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                         lastOppFilpar(filepair, zipName);
                     } else {
                         Optional<FoerstesideMetadata> foerstesideMetadata = foerstesidegeneratorService.hentFoersteside(skanningmetadata.get().getJournalpost().getReferansenummer());
-                        Optional<OpprettJournalpostResponse> response = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
-                        if (response.isEmpty()) {
+                        Optional<OpprettJournalpostResponse> opprettjournalpostResponse = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
+                        if (opprettjournalpostResponse.isEmpty()) {
                             lastOppFilpar(filepair, zipName);
+                        } else {
+                            leggTilLogiskVedleggService.leggTilLogiskVedlegg(opprettjournalpostResponse);
                         }
                     }
                     tearDownMDCforFile();
