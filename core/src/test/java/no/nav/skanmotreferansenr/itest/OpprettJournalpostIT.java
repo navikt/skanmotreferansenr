@@ -41,7 +41,7 @@ public class OpprettJournalpostIT {
     private final byte[] DUMMY_FILE = "dummyfile".getBytes();
     private final String JOURNALPOST_ID = "467010363";
     private final String MOTTA_DOKUMENT_UTGAAENDE_SKANNING_TJENESTE = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
-    private final String STSUrl = "/rest/v1/sts/token";
+    private final String URL_STS = "/rest/v1/sts/token";
 
     private OpprettJournalpostConsumer opprettJournalpostConsumer;
     private STSConsumer stsConsumer;
@@ -80,7 +80,7 @@ public class OpprettJournalpostIT {
                                         "}"
                         )))
         );
-        stubFor(post(urlMatching(STSUrl))
+        stubFor(post(urlMatching(URL_STS))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withJsonBody(Json.node(

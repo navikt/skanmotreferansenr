@@ -120,7 +120,8 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
                 new STSConsumer(new RestTemplateBuilder(), properties)
         );
         leggTilLogiskVedleggService = new LeggTilLogiskVedleggService(
-                new LeggTilLogiskVedleggConsumer(new RestTemplateBuilder(), properties)
+                new LeggTilLogiskVedleggConsumer(new RestTemplateBuilder(), properties),
+                new STSConsumer(new RestTemplateBuilder(), properties)
         );
         lesFraFilomraadeOgOpprettJournalpost = new LesFraFilomraadeOgOpprettJournalpost(
                 filomraadeService, foerstesidegeneratorService, opprettJournalpostService, leggTilLogiskVedleggService

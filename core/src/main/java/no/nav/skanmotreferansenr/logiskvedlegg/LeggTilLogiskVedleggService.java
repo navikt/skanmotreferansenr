@@ -9,6 +9,8 @@ import no.nav.skanmotreferansenr.logiskvedlegg.data.LeggTilLogiskVedleggRequest;
 import no.nav.skanmotreferansenr.logiskvedlegg.data.LeggTilLogiskVedleggResponse;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.DokumentInfo;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostResponse;
+import no.nav.skanmotreferansenr.sts.STSConsumer;
+import no.nav.skanmotreferansenr.sts.data.STSResponse;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -22,10 +24,12 @@ import java.util.stream.Collectors;
 public class LeggTilLogiskVedleggService {
 
     private LeggTilLogiskVedleggConsumer leggTilLogiskVedleggConsumer;
+    private STSConsumer stsConsumer;
 
     @Inject
-    public LeggTilLogiskVedleggService(LeggTilLogiskVedleggConsumer leggTilLogiskVedleggConsumer) {
+    public LeggTilLogiskVedleggService(LeggTilLogiskVedleggConsumer leggTilLogiskVedleggConsumer, STSConsumer stsConsumer) {
         this.leggTilLogiskVedleggConsumer = leggTilLogiskVedleggConsumer;
+        this.stsConsumer = stsConsumer;
     }
 
     public List<LeggTilLogiskVedleggResponse> leggTilLogiskVedlegg(Optional<OpprettJournalpostResponse> opprettJournalpostResponse) {
@@ -41,11 +45,12 @@ public class LeggTilLogiskVedleggService {
 
     private LeggTilLogiskVedleggResponse leggTilLogiskVedlegg(DokumentInfo dokumentInfo) {
         log.info("Skanmotreferansenr legger til logisk vedlegg, dokumentInfoId={}, dokumentTittel={}", dokumentInfo.getDokumentInfoId(), dokumentInfo.getTittel());
+        STSResponse stsResponse = stsConsumer.getSTSToken();
         LeggTilLogiskVedleggRequest request = LeggTilLogiskVedleggRequest.builder()
                 .tittel(dokumentInfo.getTittel())
                 .build();
         try {
-            return leggTilLogiskVedleggConsumer.leggTilLogiskVedlegg(request, dokumentInfo.getDokumentInfoId());
+            return leggTilLogiskVedleggConsumer.leggTilLogiskVedlegg(request, dokumentInfo.getDokumentInfoId(), stsResponse.getAccess_token());
         } catch (AbstractSkanmotreferansenrFunctionalException e) {
             log.warn("Skanmotreferansenr feilet funksjonelt med lagring av logisk vedlegg dokumentInfoId={}, dokumentTittel={}", dokumentInfo.getDokumentInfoId(), dokumentInfo.getTittel(), e);
             return null;

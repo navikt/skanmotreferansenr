@@ -39,9 +39,9 @@ public class LeggTilLogiskVedleggConsumer {
     }
 
     @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "opprettJournalpost"}, percentiles = {0.5, 0.95}, histogram = true)
-    public LeggTilLogiskVedleggResponse leggTilLogiskVedlegg(LeggTilLogiskVedleggRequest request, String dokumentInfoId) {
+    public LeggTilLogiskVedleggResponse leggTilLogiskVedlegg(LeggTilLogiskVedleggRequest request, String dokumentInfoId, String token) {
         try {
-            HttpHeaders headers = createHeaders();
+            HttpHeaders headers = createHeaders(token);
             HttpEntity<LeggTilLogiskVedleggRequest> requestEntity = new HttpEntity<>(request, headers);
 
             URI uri = UriComponentsBuilder.fromHttpUrl(dokarkivDokumentinfoUrl)
@@ -60,9 +60,10 @@ public class LeggTilLogiskVedleggConsumer {
     }
 
 
-    private HttpHeaders createHeaders() {
+    private HttpHeaders createHeaders(String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
         if (MDC.get(MDCConstants.MDC_NAV_CALL_ID) != null) {
             headers.add(MDCConstants.MDC_NAV_CALL_ID, MDC.get(MDCConstants.MDC_NAV_CALL_ID));
         }
