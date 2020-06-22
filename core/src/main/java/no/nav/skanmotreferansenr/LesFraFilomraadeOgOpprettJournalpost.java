@@ -9,6 +9,7 @@ import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.logiskvedlegg.LeggTilLogiskVedleggService;
+import no.nav.skanmotreferansenr.logiskvedlegg.data.LeggTilLogiskVedleggResponse;
 import no.nav.skanmotreferansenr.mdc.MDCGenerate;
 import no.nav.skanmotreferansenr.metrics.Metrics;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostService;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
@@ -82,7 +84,8 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                         if (opprettjournalpostResponse.isEmpty()) {
                             lastOppFilpar(filepair, zipName);
                         } else {
-                            leggTilLogiskVedleggService.leggTilLogiskVedlegg(opprettjournalpostResponse, foerstesideMetadata);
+                            List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses = leggTilLogiskVedleggService.leggTilLogiskVedlegg(opprettjournalpostResponse, foerstesideMetadata);
+                            logLogiskVedleggResponses(leggTilLogiskVedleggResponses);
                         }
                     }
                     tearDownMDCforFile();
@@ -121,6 +124,13 @@ public class LesFraFilomraadeOgOpprettJournalpost {
             filomraadeService.uploadFileToFeilomrade(filepair.getXml(), filepair.getName() + ".xml", path);
         } catch (Exception e) {
             log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", filepair.getName(), zipName, e.getMessage(), e);
+        }
+    }
+
+    private void logLogiskVedleggResponses(List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses) {
+        List<String> ids = leggTilLogiskVedleggResponses.stream().filter(res -> res != null).map(res -> res.getLogiskVedleggId()).collect(Collectors.toList());
+        if (!ids.isEmpty()) {
+            log.info("Skanmotreferansenr lagret logisk vedlegg med logiskVedleggIds: {}", ids);
         }
     }
 
