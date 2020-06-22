@@ -9,7 +9,6 @@ import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.logiskvedlegg.LeggTilLogiskVedleggService;
-import no.nav.skanmotreferansenr.logiskvedlegg.data.LeggTilLogiskVedleggResponse;
 import no.nav.skanmotreferansenr.mdc.MDCGenerate;
 import no.nav.skanmotreferansenr.metrics.Metrics;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostService;
@@ -83,7 +82,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                         if (opprettjournalpostResponse.isEmpty()) {
                             lastOppFilpar(filepair, zipName);
                         } else {
-                            leggTilLogiskVedleggService.leggTilLogiskVedlegg(opprettjournalpostResponse);
+                            leggTilLogiskVedleggService.leggTilLogiskVedlegg(opprettjournalpostResponse, foerstesideMetadata);
                         }
                     }
                     tearDownMDCforFile();

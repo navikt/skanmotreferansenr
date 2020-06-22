@@ -11,8 +11,4 @@ public class DokumentInfo {
 
     @NotNull
     private String dokumentInfoId;
-
-    private String brevkode;
-
-    private String tittel;
 }
