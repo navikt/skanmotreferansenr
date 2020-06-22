@@ -128,9 +128,9 @@ public class LesFraFilomraadeOgOpprettJournalpost {
     }
 
     private void logLogiskVedleggResponses(List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses) {
-        List<String> ids = leggTilLogiskVedleggResponses.stream().filter(res -> res != null).map(res -> res.getLogiskVedleggId()).collect(Collectors.toList());
-        if (!ids.isEmpty()) {
-            log.info("Skanmotreferansenr lagret logisk vedlegg med logiskVedleggIds: {}", ids);
+        List<String> logiskVedleggIds = leggTilLogiskVedleggResponses.stream().filter(res -> res != null).map(res -> res.getLogiskVedleggId()).collect(Collectors.toList());
+        if (!logiskVedleggIds.isEmpty()) {
+            log.info("Skanmotreferansenr lagret logisk vedlegg med logiskVedleggIds: {}", logiskVedleggIds);
         }
     }
 
