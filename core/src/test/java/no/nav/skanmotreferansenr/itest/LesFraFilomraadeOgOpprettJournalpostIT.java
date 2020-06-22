@@ -2,7 +2,6 @@ package no.nav.skanmotreferansenr.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.Json;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import no.nav.skanmotreferansenr.LesFraFilomraadeOgOpprettJournalpost;
 import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.filomraade.FilomraadeConsumer;
@@ -104,7 +103,6 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
 
     @BeforeEach
     void setUpServices() {
-        dokCounter = new DokCounter(new SimpleMeterRegistry());
         sftp = new Sftp(properties);
         filomraadeService = new FilomraadeService(new FilomraadeConsumer(sftp, properties));
         opprettJournalpostService = new OpprettJournalpostService(
@@ -114,7 +112,7 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
         foerstesidegeneratorService = new FoerstesidegeneratorService(
                 new FoerstesidegeneratorConsumer(new RestTemplateBuilder(), properties),
                 new STSConsumer(new RestTemplateBuilder(), properties));
-        lesFraFilomraadeOgOpprettJournalpost = new LesFraFilomraadeOgOpprettJournalpost(filomraadeService, foerstesidegeneratorService, opprettJournalpostService, dokCounter);
+        lesFraFilomraadeOgOpprettJournalpost = new LesFraFilomraadeOgOpprettJournalpost(filomraadeService, foerstesidegeneratorService, opprettJournalpostService);
         copyFileToSkanmotreferansenrFolder();
     }
 

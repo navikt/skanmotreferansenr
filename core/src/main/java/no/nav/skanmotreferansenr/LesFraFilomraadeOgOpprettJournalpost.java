@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.domain.Filepair;
 import no.nav.skanmotreferansenr.domain.SkanningInfo;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
-import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFinnesIkkeFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException;
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrUnzipperFunctionalException;
 import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
@@ -38,15 +37,12 @@ public class LesFraFilomraadeOgOpprettJournalpost {
     private final FilomraadeService filomraadeService;
     private final FoerstesidegeneratorService foerstesidegeneratorService;
     private final OpprettJournalpostService opprettJournalpostService;
-    private final DokCounter dokCounter;
 
     public LesFraFilomraadeOgOpprettJournalpost(FilomraadeService filomraadeService, FoerstesidegeneratorService foerstesidegeneratorService,
-                                                OpprettJournalpostService opprettJournalpostService,
-                                                DokCounter dokCounter) {
+                                                OpprettJournalpostService opprettJournalpostService) {
         this.filomraadeService = filomraadeService;
         this.foerstesidegeneratorService = foerstesidegeneratorService;
         this.opprettJournalpostService = opprettJournalpostService;
-        this.dokCounter = dokCounter;
     }
 
     @Scheduled(cron = "${skanmotreferansenr.schedule}")
@@ -69,7 +65,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                     filepairList = Unzipper.unzipXmlPdf(filomraadeService.getZipFile(zipName));
                 } catch (Exception e) {
                     log.error("Skanmotreferansenr klarte ikke lese zipfil {}", zipName, e);
-                    dokCounter.incrementError(e);
+                    DokCounter.incrementError(e);
                     moveZipFile(zipName); // TODO should this move to feilområde?
                     continue;
                 }
@@ -92,13 +88,13 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                 try {
                     moveZipFile(zipName);
                 } catch (Exception e) {
-                    dokCounter.incrementError(e);
+                    DokCounter.incrementError(e);
                 }
                 tearDownMDCforZip();
             }
         } catch (Exception e) {
             log.error("Skanmotreferansenr ukjent feil oppstod i lesOgLagre, feilmelding={}", e.getMessage(), e);
-            dokCounter.incrementError(e);
+            DokCounter.incrementError(e);
         } finally {
             // Feels like a leaky abstraction ...
             filomraadeService.disconnect();
@@ -115,11 +111,11 @@ public class LesFraFilomraadeOgOpprettJournalpost {
             return Optional.of(splitChecksumInReferansenummer(skanningmetadata));
         } catch (InvalidMetadataException e) {
             log.warn("Skanningmetadata hadde ugyldige verdier for fil {}. Skanmotreferansenr klarte ikke unmarshalle.", filepair.getName(), e);
-            dokCounter.incrementError(e);
+            DokCounter.incrementError(e);
             return Optional.empty();
         } catch (SkanmotreferansenrUnzipperFunctionalException e) {
             log.warn("Kunne ikke hente metadata fra {}, feilmelding={}", filepair.getName(), e.getMessage(), e);
-            dokCounter.incrementError(e);
+            DokCounter.incrementError(e);
             return Optional.empty();
         }
 
@@ -131,7 +127,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
             OpprettJournalpostResponse response = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
             return Optional.of(response);
         } catch (Exception e) {
-            dokCounter.incrementError(e);
+            DokCounter.incrementError(e);
             return Optional.empty();
         }
     }
@@ -144,7 +140,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
             filomraadeService.uploadFileToFeilomrade(filepair.getXml(), filepair.getName() + ".xml", path);
         } catch (Exception e) {
             log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", filepair.getName(), zipName, e.getMessage(), e);
-            dokCounter.incrementError(e);
+            DokCounter.incrementError(e);
         }
     }
 
@@ -152,7 +148,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         try{
             filomraadeService.moveZipFile(zipName, "processed");
         } catch (Exception e) {
-            dokCounter.incrementError(e);
+            DokCounter.incrementError(e);
         }
     }
 
@@ -179,7 +175,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         final String FYSISKPOSTBOKS = "fysiskPostboks";
         final String EMPTY = "empty";
 
-        dokCounter.incrementCounter(Map.of(
+        DokCounter.incrementCounter(Map.of(
                 STREKKODEPOSTBOKS, Optional.ofNullable(skanningmetadata)
                         .map(Skanningmetadata::getSkanningInfo)
                         .map(SkanningInfo::getStrekkodePostboks)
