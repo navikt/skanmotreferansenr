@@ -50,7 +50,6 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         lesOgLagreZipfiler();
     }
 
-    @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "lesOgLagreZipfiler"}, percentiles = {0.5, 0.95}, histogram = true)
     public void lesOgLagreZipfiler() {
         List<String> processedZipFiles = new ArrayList<>();
         try {
