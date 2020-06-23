@@ -118,7 +118,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
 
     private void lastOppFilpar(Filepair filepair, String zipName) {
         try {
-            log.info("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
+            log.warn("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
             String path = Utils.removeFileExtensionInFilename(zipName);
             filomraadeService.uploadFileToFeilomrade(filepair.getPdf(), filepair.getName() + ".pdf", path);
             filomraadeService.uploadFileToFeilomrade(filepair.getXml(), filepair.getName() + ".xml", path);
