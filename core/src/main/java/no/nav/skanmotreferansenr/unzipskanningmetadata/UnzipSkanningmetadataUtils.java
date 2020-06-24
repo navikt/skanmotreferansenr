@@ -50,9 +50,7 @@ public class UnzipSkanningmetadataUtils {
 
             Skanningmetadata skanningmetadata = (Skanningmetadata) jaxbUnmarshaller.unmarshal(xmlStreamReader);
 
-            skanningmetadata.verifyFields();
-
-            return splitChecksumInReferansenummer(skanningmetadata);
+            return skanningmetadata;
         } catch (JAXBException | XMLStreamException e) {
             throw new SkanmotreferansenrUnzipperFunctionalException("Skanmotreferansenr klarte ikke lese metadata i zipfil", e);
         } catch (NullPointerException e) {

@@ -2,6 +2,7 @@ package no.nav.skanmotreferansenr;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.domain.Filepair;
+import no.nav.skanmotreferansenr.domain.SkanningInfo;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException;
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrUnzipperFunctionalException;
@@ -9,6 +10,7 @@ import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.mdc.MDCGenerate;
+import no.nav.skanmotreferansenr.metrics.DokCounter;
 import no.nav.skanmotreferansenr.metrics.Metrics;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostService;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostResponse;
@@ -20,10 +22,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
+import static no.nav.skanmotreferansenr.unzipskanningmetadata.UnzipSkanningmetadataUtils.splitChecksumInReferansenummer;
 
 @Slf4j
 @Component
@@ -45,7 +50,6 @@ public class LesFraFilomraadeOgOpprettJournalpost {
         lesOgLagreZipfiler();
     }
 
-    @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "lesOgLagreZipfiler"}, percentiles = {0.5, 0.95}, histogram = true)
     public void lesOgLagreZipfiler() {
         List<String> processedZipFiles = new ArrayList<>();
         try {
@@ -60,7 +64,8 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                     filepairList = Unzipper.unzipXmlPdf(filomraadeService.getZipFile(zipName));
                 } catch (Exception e) {
                     log.error("Skanmotreferansenr klarte ikke lese zipfil {}", zipName, e);
-                    processedZipFiles.add(zipName);
+                    DokCounter.incrementError(e);
+                    moveZipFile(zipName); // TODO should this move to feilområde?
                     continue;
                 }
                 log.info("Skanmotreferansenr begynner behandling av {}", zipName);
@@ -72,22 +77,24 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                     if (skanningmetadata.isEmpty()) {
                         lastOppFilpar(filepair, zipName);
                     } else {
-                        Optional<FoerstesideMetadata> foerstesideMetadata = foerstesidegeneratorService.hentFoersteside(skanningmetadata.get().getJournalpost().getReferansenummer());
-                        Optional<OpprettJournalpostResponse> response = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
+                        Optional<OpprettJournalpostResponse> response = opprettJournalpost(skanningmetadata, filepair);
                         if (response.isEmpty()) {
                             lastOppFilpar(filepair, zipName);
                         }
                     }
                     tearDownMDCforFile();
                 });
-                processedZipFiles.add(zipName);
+                try {
+                    moveZipFile(zipName);
+                } catch (Exception e) {
+                    DokCounter.incrementError(e);
+                }
                 tearDownMDCforZip();
             }
         } catch (Exception e) {
             log.error("Skanmotreferansenr ukjent feil oppstod i lesOgLagre, feilmelding={}", e.getMessage(), e);
+            DokCounter.incrementError(e);
         } finally {
-            filomraadeService.moveZipFiles(processedZipFiles, "processed");
-
             // Feels like a leaky abstraction ...
             filomraadeService.disconnect();
         }
@@ -95,15 +102,33 @@ public class LesFraFilomraadeOgOpprettJournalpost {
 
     private Optional<Skanningmetadata> extractMetadata(Filepair filepair) {
         try {
-            return Optional.of(UnzipSkanningmetadataUtils.bytesToSkanningmetadata(filepair.getXml()));
+            Skanningmetadata skanningmetadata = UnzipSkanningmetadataUtils.bytesToSkanningmetadata(filepair.getXml());
+
+            incrementMetadataMetrics(skanningmetadata);
+            skanningmetadata.verifyFields();
+
+            return Optional.of(splitChecksumInReferansenummer(skanningmetadata));
         } catch (InvalidMetadataException e) {
             log.warn("Skanningmetadata hadde ugyldige verdier for fil {}. Skanmotreferansenr klarte ikke unmarshalle.", filepair.getName(), e);
+            DokCounter.incrementError(e);
             return Optional.empty();
         } catch (SkanmotreferansenrUnzipperFunctionalException e) {
             log.warn("Kunne ikke hente metadata fra {}, feilmelding={}", filepair.getName(), e.getMessage(), e);
+            DokCounter.incrementError(e);
             return Optional.empty();
         }
 
+    }
+
+    private Optional<OpprettJournalpostResponse> opprettJournalpost(Optional<Skanningmetadata> skanningmetadata, Filepair filepair){
+        try{
+            Optional<FoerstesideMetadata> foerstesideMetadata = foerstesidegeneratorService.hentFoersteside(skanningmetadata.get().getJournalpost().getReferansenummer());
+            OpprettJournalpostResponse response = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
+            return Optional.of(response);
+        } catch (Exception e) {
+            DokCounter.incrementError(e);
+            return Optional.empty();
+        }
     }
 
     private void lastOppFilpar(Filepair filepair, String zipName) {
@@ -114,6 +139,15 @@ public class LesFraFilomraadeOgOpprettJournalpost {
             filomraadeService.uploadFileToFeilomrade(filepair.getXml(), filepair.getName() + ".xml", path);
         } catch (Exception e) {
             log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", filepair.getName(), zipName, e.getMessage(), e);
+            DokCounter.incrementError(e);
+        }
+    }
+
+    private void moveZipFile(String zipName) {
+        try{
+            filomraadeService.moveZipFile(zipName, "processed");
+        } catch (Exception e) {
+            DokCounter.incrementError(e);
         }
     }
 
@@ -133,5 +167,24 @@ public class LesFraFilomraadeOgOpprettJournalpost {
     private void tearDownMDCforFile() {
         MDCGenerate.clearFilename();
         MDCGenerate.clearCallId();
+    }
+
+    private void incrementMetadataMetrics(Skanningmetadata skanningmetadata){
+        final String STREKKODEPOSTBOKS = "strekkodePostboks";
+        final String FYSISKPOSTBOKS = "fysiskPostboks";
+        final String EMPTY = "empty";
+
+        DokCounter.incrementCounter(Map.of(
+                STREKKODEPOSTBOKS, Optional.ofNullable(skanningmetadata)
+                        .map(Skanningmetadata::getSkanningInfo)
+                        .map(SkanningInfo::getStrekkodePostboks)
+                        .filter(Predicate.not(String::isBlank))
+                        .orElse(EMPTY),
+                FYSISKPOSTBOKS, Optional.ofNullable(skanningmetadata)
+                        .map(Skanningmetadata::getSkanningInfo)
+                        .map(SkanningInfo::getFysiskPostboks)
+                        .filter(Predicate.not(String::isBlank))
+                        .orElse(EMPTY)
+        ));
     }
 }

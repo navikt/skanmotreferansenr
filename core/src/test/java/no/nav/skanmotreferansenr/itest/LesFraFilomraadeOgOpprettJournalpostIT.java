@@ -9,6 +9,7 @@ import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorConsumer;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.itest.config.TestConfig;
+import no.nav.skanmotreferansenr.metrics.DokCounter;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostConsumer;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostService;
 import no.nav.skanmotreferansenr.sftp.Sftp;
@@ -75,6 +76,7 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
     FilomraadeService filomraadeService;
     OpprettJournalpostService opprettJournalpostService;
     FoerstesidegeneratorService foerstesidegeneratorService;
+    DokCounter dokCounter;
 
     private int PORT = 2222;
     private SshServer sshd = SshServer.setUpDefaultServer();
@@ -170,7 +172,7 @@ public class LesFraFilomraadeOgOpprettJournalpostIT {
             verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1)));
             verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_2)));
             verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
-            verify(exactly(3), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
+            verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
         } catch (Exception e) {
             fail();
         }

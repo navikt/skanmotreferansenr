@@ -3,6 +3,7 @@ package no.nav.skanmotreferansenr.itest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.Json;
 import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFinnesIkkeFunctionalException;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorConsumer;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
@@ -30,6 +31,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
@@ -99,14 +101,6 @@ public class FoerstesideIT {
 
     @Test
     void shouldGetNullIfNotExisting() {
-        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside("222").get();
-
-        assertNull(metadata.getAvsender());
-        assertNull(metadata.getBruker());
-        assertNull(metadata.getTema());
-        assertNull(metadata.getBehandlingstema());
-        assertNull(metadata.getArkivtittel());
-        assertNull(metadata.getNavSkjemaId());
-        assertNull(metadata.getEnhetsnummer());
+        assertThrows(HentMetadataFoerstesideFinnesIkkeFunctionalException.class, ()->foerstesidegeneratorService.hentFoersteside("222").get());
     }
 }

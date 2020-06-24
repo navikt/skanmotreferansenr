@@ -7,6 +7,7 @@ import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideTi
 import no.nav.skanmotreferansenr.exceptions.technical.HentMetadataFoerstesideTechnicalException;
 import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.mdc.MDCConstants;
+import no.nav.skanmotreferansenr.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -22,6 +23,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.time.Duration;
+
+import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
+import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
 
 @Component
 public class FoerstesidegeneratorConsumer {
@@ -39,6 +43,7 @@ public class FoerstesidegeneratorConsumer {
                 .build();
     }
 
+    @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "hentFoersteside"}, percentiles = {0.5, 0.95}, histogram = true)
     public FoerstesideMetadata hentFoersteside(String token, String loepenr) {
         try {
             HttpHeaders headers = createHeaders(token);
