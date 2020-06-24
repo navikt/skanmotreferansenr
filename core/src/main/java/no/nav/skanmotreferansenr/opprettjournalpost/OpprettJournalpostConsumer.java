@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
@@ -29,11 +29,13 @@ import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
 public class OpprettJournalpostConsumer {
 
     private final RestTemplate restTemplate;
-    private final String dokarkivJournalpostUrl;
+    private final String dokarkivUrl;
+    private final String REST_JOURNALPOST = "rest/journalpostapi/v1/journalpost";
+    private final String QUERY_FERDIGSTILL_FALSE = "foersoekFerdigstill=false";
 
     public OpprettJournalpostConsumer(RestTemplateBuilder restTemplateBuilder,
                                       SkanmotreferansenrProperties skanmotreferansenrProperties) {
-        this.dokarkivJournalpostUrl = skanmotreferansenrProperties.getDokarkivjournalposturl();
+        this.dokarkivUrl = skanmotreferansenrProperties.getDokarkivurl();
         this.restTemplate = restTemplateBuilder
                 .build();
     }
@@ -44,7 +46,10 @@ public class OpprettJournalpostConsumer {
             HttpHeaders headers = createHeaders(token);
             HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(opprettJournalpostRequest, headers);
 
-            URI uri = new URI(dokarkivJournalpostUrl);
+            URI uri = UriComponentsBuilder.fromHttpUrl(dokarkivUrl)
+                    .pathSegment(REST_JOURNALPOST)
+                    .query(QUERY_FERDIGSTILL_FALSE)
+                    .build().toUri();
             return restTemplate.exchange(uri, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class)
                     .getBody();
 
@@ -54,9 +59,6 @@ public class OpprettJournalpostConsumer {
         } catch (HttpServerErrorException e) {
             throw new OpprettJournalpostTechnicalException(String.format("opprettJournalpost feilet teknisk med statusKode=%s. Feilmelding=%s", e
                     .getStatusCode(), e.getMessage()), e);
-        } catch (URISyntaxException e) {
-            throw new OpprettJournalpostTechnicalException(String.format("opprettJournalpost feilet teknisk. Feilmelding=%s",
-                    e.getMessage()), e);
         }
     }
 

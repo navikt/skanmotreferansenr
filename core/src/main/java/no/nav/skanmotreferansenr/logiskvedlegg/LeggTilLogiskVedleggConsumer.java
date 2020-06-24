@@ -1,8 +1,8 @@
 package no.nav.skanmotreferansenr.logiskvedlegg;
 
 import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
-import no.nav.skanmotreferansenr.exceptions.functional.OpprettJournalpostFunctionalException;
-import no.nav.skanmotreferansenr.exceptions.technical.OpprettJournalpostTechnicalException;
+import no.nav.skanmotreferansenr.exceptions.functional.LeggTilLogiskVedleggFunctionalException;
+import no.nav.skanmotreferansenr.exceptions.technical.LeggTilLogiskVedleggTechnicalException;
 import no.nav.skanmotreferansenr.logiskvedlegg.data.LeggTilLogiskVedleggRequest;
 import no.nav.skanmotreferansenr.logiskvedlegg.data.LeggTilLogiskVedleggResponse;
 import no.nav.skanmotreferansenr.mdc.MDCConstants;
@@ -28,33 +28,34 @@ import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
 public class LeggTilLogiskVedleggConsumer {
 
     private final RestTemplate restTemplate;
-    private final String dokarkivDokumentinfoUrl;
+    private final String dokarkivUrl;
+    private final String REST_DOKUMENTINFO = "rest/journalpostapi/v1/dokumentInfo";
     private final String LEGG_TIL_LOGISK_VEDLEGG_TJENESTE = "logiskVedlegg/";
 
     public LeggTilLogiskVedleggConsumer(RestTemplateBuilder restTemplateBuilder,
                                         SkanmotreferansenrProperties skanmotreferansenrProperties) {
-        this.dokarkivDokumentinfoUrl = skanmotreferansenrProperties.getDokarkivdokumentinfourl();
+        this.dokarkivUrl = skanmotreferansenrProperties.getDokarkivurl();
         this.restTemplate = restTemplateBuilder
                 .build();
     }
 
-    @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "opprettJournalpost"}, percentiles = {0.5, 0.95}, histogram = true)
+    @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "leggTilLogiskVedlegg"}, percentiles = {0.5, 0.95}, histogram = true)
     public LeggTilLogiskVedleggResponse leggTilLogiskVedlegg(LeggTilLogiskVedleggRequest request, String dokumentInfoId, String token) {
         try {
             HttpHeaders headers = createHeaders(token);
             HttpEntity<LeggTilLogiskVedleggRequest> requestEntity = new HttpEntity<>(request, headers);
 
-            URI uri = UriComponentsBuilder.fromHttpUrl(dokarkivDokumentinfoUrl)
-                    .pathSegment(dokumentInfoId, LEGG_TIL_LOGISK_VEDLEGG_TJENESTE)
+            URI uri = UriComponentsBuilder.fromHttpUrl(dokarkivUrl)
+                    .pathSegment(REST_DOKUMENTINFO, dokumentInfoId, LEGG_TIL_LOGISK_VEDLEGG_TJENESTE)
                     .build().toUri();
             return restTemplate.exchange(uri, HttpMethod.POST, requestEntity, LeggTilLogiskVedleggResponse.class)
                     .getBody();
 
         } catch (HttpClientErrorException e) {
-            throw new OpprettJournalpostFunctionalException(String.format("leggTilLogiskVedlegg feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
+            throw new LeggTilLogiskVedleggFunctionalException(String.format("leggTilLogiskVedlegg feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
                     .getStatusCode(), e.getMessage()), e);
         } catch (HttpServerErrorException e) {
-            throw new OpprettJournalpostTechnicalException(String.format("leggTilLogiskVedlegg feilet teknisk med statusKode=%s. Feilmelding=%s", e
+            throw new LeggTilLogiskVedleggTechnicalException(String.format("leggTilLogiskVedlegg feilet teknisk med statusKode=%s. Feilmelding=%s", e
                     .getStatusCode(), e.getMessage()), e);
         }
     }

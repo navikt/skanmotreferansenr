@@ -20,10 +20,7 @@ public class SkanmotreferansenrProperties {
     private String getmetadatafoerstesideurl;
 
     @NotNull
-    private String dokarkivjournalposturl;
-
-    @NotNull
-    private String dokarkivdokumentinfourl;
+    private String dokarkivurl;
 
     @NotNull
     private String stsurl;
