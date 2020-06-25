@@ -25,10 +25,10 @@ public class FoerstesidegeneratorService {
         this.stsConsumer = stsConsumer;
     }
 
-    public Optional<FoerstesideMetadata> hentFoersteside(String loepenr) {
+    public FoerstesideMetadata hentFoersteside(String loepenr) {
         STSResponse stsResponse = stsConsumer.getSTSToken();
         try {
-            return Optional.of(foerstesidegeneratorConsumer.hentFoersteside(stsResponse.getAccess_token(), loepenr));
+            return foerstesidegeneratorConsumer.hentFoersteside(stsResponse.getAccess_token(), loepenr);
         } catch (HentMetadataFoerstesideFinnesIkkeFunctionalException e) {
             log.warn("Fant ikke metadata for foersteside med lopenummer {}", loepenr, e);
             throw e;

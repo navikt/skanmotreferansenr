@@ -1,11 +1,11 @@
-package no.nav.skanmotreferansenr.opprettjournalpost;
+package no.nav.skanmotreferansenr.logiskvedlegg;
 
 import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
-import no.nav.skanmotreferansenr.exceptions.functional.OpprettJournalpostFunctionalException;
-import no.nav.skanmotreferansenr.exceptions.technical.OpprettJournalpostTechnicalException;
+import no.nav.skanmotreferansenr.exceptions.functional.LeggTilLogiskVedleggFunctionalException;
+import no.nav.skanmotreferansenr.exceptions.technical.LeggTilLogiskVedleggTechnicalException;
+import no.nav.skanmotreferansenr.logiskvedlegg.data.LeggTilLogiskVedleggRequest;
+import no.nav.skanmotreferansenr.logiskvedlegg.data.LeggTilLogiskVedleggResponse;
 import no.nav.skanmotreferansenr.mdc.MDCConstants;
-import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostRequest;
-import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostResponse;
 import no.nav.skanmotreferansenr.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -24,40 +24,38 @@ import java.net.URI;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
 
-
 @Component
-public class OpprettJournalpostConsumer {
+public class LeggTilLogiskVedleggConsumer {
 
     private final RestTemplate restTemplate;
     private final String dokarkivUrl;
-    private final String REST_JOURNALPOST = "rest/journalpostapi/v1/journalpost";
-    private final String QUERY_FERDIGSTILL_FALSE = "foersoekFerdigstill=false";
+    private final String REST_DOKUMENTINFO = "rest/journalpostapi/v1/dokumentInfo";
+    private final String LEGG_TIL_LOGISK_VEDLEGG_TJENESTE = "logiskVedlegg/";
 
-    public OpprettJournalpostConsumer(RestTemplateBuilder restTemplateBuilder,
-                                      SkanmotreferansenrProperties skanmotreferansenrProperties) {
+    public LeggTilLogiskVedleggConsumer(RestTemplateBuilder restTemplateBuilder,
+                                        SkanmotreferansenrProperties skanmotreferansenrProperties) {
         this.dokarkivUrl = skanmotreferansenrProperties.getDokarkivurl();
         this.restTemplate = restTemplateBuilder
                 .build();
     }
 
-    @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "opprettJournalpost"}, percentiles = {0.5, 0.95}, histogram = true)
-    public OpprettJournalpostResponse opprettJournalpost(String token, OpprettJournalpostRequest opprettJournalpostRequest) {
+    @Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "leggTilLogiskVedlegg"}, percentiles = {0.5, 0.95}, histogram = true)
+    public LeggTilLogiskVedleggResponse leggTilLogiskVedlegg(LeggTilLogiskVedleggRequest request, String dokumentInfoId, String token) {
         try {
             HttpHeaders headers = createHeaders(token);
-            HttpEntity<OpprettJournalpostRequest> requestEntity = new HttpEntity<>(opprettJournalpostRequest, headers);
+            HttpEntity<LeggTilLogiskVedleggRequest> requestEntity = new HttpEntity<>(request, headers);
 
             URI uri = UriComponentsBuilder.fromHttpUrl(dokarkivUrl)
-                    .pathSegment(REST_JOURNALPOST)
-                    .query(QUERY_FERDIGSTILL_FALSE)
+                    .pathSegment(REST_DOKUMENTINFO, dokumentInfoId, LEGG_TIL_LOGISK_VEDLEGG_TJENESTE)
                     .build().toUri();
-            return restTemplate.exchange(uri, HttpMethod.POST, requestEntity, OpprettJournalpostResponse.class)
+            return restTemplate.exchange(uri, HttpMethod.POST, requestEntity, LeggTilLogiskVedleggResponse.class)
                     .getBody();
 
         } catch (HttpClientErrorException e) {
-            throw new OpprettJournalpostFunctionalException(String.format("opprettJournalpost feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
+            throw new LeggTilLogiskVedleggFunctionalException(String.format("leggTilLogiskVedlegg feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
                     .getStatusCode(), e.getMessage()), e);
         } catch (HttpServerErrorException e) {
-            throw new OpprettJournalpostTechnicalException(String.format("opprettJournalpost feilet teknisk med statusKode=%s. Feilmelding=%s", e
+            throw new LeggTilLogiskVedleggTechnicalException(String.format("leggTilLogiskVedlegg feilet teknisk med statusKode=%s. Feilmelding=%s", e
                     .getStatusCode(), e.getMessage()), e);
         }
     }
@@ -75,4 +73,5 @@ public class OpprettJournalpostConsumer {
         }
         return headers;
     }
+
 }

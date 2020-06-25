@@ -11,7 +11,6 @@ import no.nav.skanmotreferansenr.opprettjournalpost.data.Dokument;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.DokumentVariant;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostRequest;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.Tilleggsopplysning;
-import no.nav.skanmotreferansenr.validators.SkanningMetadataValidator;
 import org.junit.Test;
 
 import java.util.Date;

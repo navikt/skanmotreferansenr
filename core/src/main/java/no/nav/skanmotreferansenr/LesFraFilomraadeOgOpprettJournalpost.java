@@ -9,6 +9,8 @@ import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrUnzippe
 import no.nav.skanmotreferansenr.filomraade.FilomraadeService;
 import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
+import no.nav.skanmotreferansenr.logiskvedlegg.LeggTilLogiskVedleggService;
+import no.nav.skanmotreferansenr.logiskvedlegg.data.LeggTilLogiskVedleggResponse;
 import no.nav.skanmotreferansenr.mdc.MDCGenerate;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
 import no.nav.skanmotreferansenr.metrics.Metrics;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.function.Predicate;
 
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
@@ -37,12 +40,16 @@ public class LesFraFilomraadeOgOpprettJournalpost {
     private final FilomraadeService filomraadeService;
     private final FoerstesidegeneratorService foerstesidegeneratorService;
     private final OpprettJournalpostService opprettJournalpostService;
+    private final LeggTilLogiskVedleggService leggTilLogiskVedleggService;
 
-    public LesFraFilomraadeOgOpprettJournalpost(FilomraadeService filomraadeService, FoerstesidegeneratorService foerstesidegeneratorService,
-                                                OpprettJournalpostService opprettJournalpostService) {
+    public LesFraFilomraadeOgOpprettJournalpost(FilomraadeService filomraadeService,
+                                                FoerstesidegeneratorService foerstesidegeneratorService,
+                                                OpprettJournalpostService opprettJournalpostService,
+                                                LeggTilLogiskVedleggService leggTilLogiskVedleggService) {
         this.filomraadeService = filomraadeService;
         this.foerstesidegeneratorService = foerstesidegeneratorService;
         this.opprettJournalpostService = opprettJournalpostService;
+        this.leggTilLogiskVedleggService = leggTilLogiskVedleggService;
     }
 
     @Scheduled(cron = "${skanmotreferansenr.schedule}")
@@ -77,9 +84,13 @@ public class LesFraFilomraadeOgOpprettJournalpost {
                     if (skanningmetadata.isEmpty()) {
                         lastOppFilpar(filepair, zipName);
                     } else {
-                        Optional<OpprettJournalpostResponse> response = opprettJournalpost(skanningmetadata, filepair);
-                        if (response.isEmpty()) {
+                        Optional<FoerstesideMetadata> foerstesideMetadata = hentFoersteside(skanningmetadata.get().getJournalpost().getReferansenummer());
+                        Optional<OpprettJournalpostResponse> opprettjournalpostResponse = opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
+                        if (opprettjournalpostResponse.isEmpty()) {
                             lastOppFilpar(filepair, zipName);
+                        } else {
+                            List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses = leggTilLogiskVedleggService.leggTilLogiskVedlegg(opprettjournalpostResponse, foerstesideMetadata);
+                            logLogiskVedleggResponses(leggTilLogiskVedleggResponses);
                         }
                     }
                     tearDownMDCforFile();
@@ -120,11 +131,21 @@ public class LesFraFilomraadeOgOpprettJournalpost {
 
     }
 
-    private Optional<OpprettJournalpostResponse> opprettJournalpost(Optional<Skanningmetadata> skanningmetadata, Filepair filepair){
+    private Optional<FoerstesideMetadata> hentFoersteside(String referansenr) {
         try{
-            Optional<FoerstesideMetadata> foerstesideMetadata = foerstesidegeneratorService.hentFoersteside(skanningmetadata.get().getJournalpost().getReferansenummer());
-            OpprettJournalpostResponse response = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair);
-            return Optional.of(response);
+            return Optional.of(foerstesidegeneratorService.hentFoersteside(referansenr));
+        } catch (Exception e) {
+            DokCounter.incrementError(e);
+            return Optional.empty();
+        }
+    }
+
+    private Optional<OpprettJournalpostResponse> opprettJournalpost(Optional<Skanningmetadata> skanningmetadata, Optional<FoerstesideMetadata> foerstesideMetadata, Filepair filepair){
+        if (foerstesideMetadata.isEmpty()) {
+            return Optional.empty();
+        }
+        try{
+            return Optional.of(opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, filepair));
         } catch (Exception e) {
             DokCounter.incrementError(e);
             return Optional.empty();
@@ -133,7 +154,7 @@ public class LesFraFilomraadeOgOpprettJournalpost {
 
     private void lastOppFilpar(Filepair filepair, String zipName) {
         try {
-            log.info("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
+            log.warn("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
             String path = Utils.removeFileExtensionInFilename(zipName);
             filomraadeService.uploadFileToFeilomrade(filepair.getPdf(), filepair.getName() + ".pdf", path);
             filomraadeService.uploadFileToFeilomrade(filepair.getXml(), filepair.getName() + ".xml", path);
@@ -148,6 +169,13 @@ public class LesFraFilomraadeOgOpprettJournalpost {
             filomraadeService.moveZipFile(zipName, "processed");
         } catch (Exception e) {
             DokCounter.incrementError(e);
+        }
+    }
+
+    private void logLogiskVedleggResponses(List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses) {
+        List<String> logiskVedleggIds = leggTilLogiskVedleggResponses.stream().filter(res -> res != null).map(res -> res.getLogiskVedleggId()).collect(Collectors.toList());
+        if (!logiskVedleggIds.isEmpty()) {
+            log.info("Skanmotreferansenr lagret logisk vedlegg med logiskVedleggIds: {}", logiskVedleggIds);
         }
     }
 
