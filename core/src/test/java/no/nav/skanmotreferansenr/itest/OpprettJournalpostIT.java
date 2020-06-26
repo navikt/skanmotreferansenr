@@ -104,7 +104,6 @@ public class OpprettJournalpostIT {
 
     private OpprettJournalpostRequest createOpprettJournalpostRequest() {
         List<Tilleggsopplysning> tilleggsopplysninger = List.of(
-                new Tilleggsopplysning("batchNavn", "xml_pdf_pairs_testdata.zip"),
                 new Tilleggsopplysning("fysiskPostboks", "1400"),
                 new Tilleggsopplysning("strekkodePostboks", "1400"),
                 new Tilleggsopplysning("endorsernr", "3110190003NAV743506")
@@ -115,6 +114,7 @@ public class OpprettJournalpostIT {
                 .variantformat("ARKIV")
                 .fysiskDokument(DUMMY_FILE)
                 .filnavn("dummy.pdf")
+                .batchnavn("xml_pdf_pairs_testdata.zip")
                 .build();
 
         DokumentVariant xml = DokumentVariant.builder()
@@ -122,6 +122,7 @@ public class OpprettJournalpostIT {
                 .variantformat("ORIGINAL")
                 .fysiskDokument(DUMMY_FILE)
                 .filnavn("dummy.xml")
+                .batchnavn("xml_pdf_pairs_testdata.zip")
                 .build();
 
         List<Dokument> dokumenter = List.of(

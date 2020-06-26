@@ -63,8 +63,7 @@ public class OpprettJournalpostRequestMapper {
                 new Tilleggsopplysning(REFERANSENR, journalpost.getReferansenummer() + journalpost.getReferansenrChecksum()),
                 new Tilleggsopplysning(ENDORSERNR, journalpost.getEndorsernr()),
                 new Tilleggsopplysning(FYSISKPOSTBOKS, skanningInfo.getFysiskPostboks()),
-                new Tilleggsopplysning(STREKKODEPOSTBOKS, skanningInfo.getStrekkodePostboks()),
-                new Tilleggsopplysning(BATCHNAVN, journalpost.getBatchNavn())
+                new Tilleggsopplysning(STREKKODEPOSTBOKS, skanningInfo.getStrekkodePostboks())
         ).stream().filter(tilleggsopplysning -> notNullOrEmpty(tilleggsopplysning.getVerdi())).collect(Collectors.toList());
 
         DokumentVariant pdf = DokumentVariant.builder()
@@ -72,6 +71,7 @@ public class OpprettJournalpostRequestMapper {
                 .variantformat(VARIANTFORMAT_PDF)
                 .fysiskDokument(filepair.getPdf())
                 .filnavn(appendFileType(filepair.getName(), FIL_EXTENSION_PDF))
+                .batchnavn(journalpost.getBatchNavn())
                 .build();
 
         DokumentVariant xml = DokumentVariant.builder()
@@ -79,6 +79,7 @@ public class OpprettJournalpostRequestMapper {
                 .variantformat(VARIANTFORMAT_XML)
                 .fysiskDokument(filepair.getXml())
                 .filnavn(appendFileType(filepair.getName(), FIL_EXTENSION_XML))
+                .batchnavn(journalpost.getBatchNavn())
                 .build();
 
         Dokument dokument = Dokument.builder()
