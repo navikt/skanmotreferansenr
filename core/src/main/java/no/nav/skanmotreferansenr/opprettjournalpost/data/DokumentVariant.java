@@ -19,4 +19,7 @@ public class DokumentVariant {
 
     @NotNull(message = "navn kan ikke være null")
     private String filnavn;
+
+    @NotNull(message = "batchnavn kan ikke være null")
+    private String batchnavn;
 }
