@@ -61,6 +61,7 @@ public class FilomraadeService {
             filomraadeConsumer.moveFile(from, to, newFilename);
         } catch (Exception e) {
             log.error("Skanmotreferansenr klarte ikke flytte fil {} til {}/{}", from, to, newFilename, e);
+            throw e;
         }
     }
 

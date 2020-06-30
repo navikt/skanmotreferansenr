@@ -11,5 +11,9 @@
   "navSkjemaId": "VANL",
   "enhetsnummer": "9999",
   "arkivsak": null,
-  "foerstesideOpprettetAv": "gosys-dokument-auth-proxy"
+  "foerstesideOpprettetAv": "gosys-dokument-auth-proxy",
+  "vedleggsliste": [
+    "Terminbekreftelse",
+    "Dokumentasjon av inntekt"
+  ]
 }

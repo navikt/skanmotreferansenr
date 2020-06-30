@@ -15,11 +15,14 @@ import org.junit.Test;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class OpprettJournalpostRequestMapperTest {
@@ -55,7 +58,7 @@ public class OpprettJournalpostRequestMapperTest {
 
         OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
                 generateSkanningMetadata(),
-                generateFoerstesideMetadata(Bruker.builder().brukerId(BRUKER_ID).brukerType("PERSON").build()),
+                generateFoerstesideMetadata(),
                 generateFilepair()
         );
 
@@ -79,7 +82,6 @@ public class OpprettJournalpostRequestMapperTest {
         assertEquals(ENDORSERNR, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "endorsernr"));
         assertEquals(FYSISK_POSTBOKS, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "fysiskPostboks"));
         assertEquals(STREKKODE_POSTBOKS, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "strekkodePostboks"));
-        assertEquals(BATCHNAVN, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "batchNavn"));
 
         assertEquals(1, opprettJournalpostRequest.getDokumenter().size());
         Dokument dokument = opprettJournalpostRequest.getDokumenter().iterator().next();
@@ -101,12 +103,14 @@ public class OpprettJournalpostRequestMapperTest {
                     pdfCounter.getAndIncrement();
                     assertEquals(FILNAVN_PDF, dokumentVariant.getFilnavn());
                     assertEquals("ARKIV", dokumentVariant.getVariantformat());
+                    assertEquals(BATCHNAVN, dokumentVariant.getBatchnavn());
                     assertArrayEquals(DUMMY_FILE, dokumentVariant.getFysiskDokument());
                     break;
                 case "XML":
                     xmlCounter.getAndIncrement();
                     assertEquals(FILNAVN_XML, dokumentVariant.getFilnavn());
                     assertEquals("SKANNING_META", dokumentVariant.getVariantformat());
+                    assertEquals(BATCHNAVN, dokumentVariant.getBatchnavn());
                     assertArrayEquals(DUMMY_FILE, dokumentVariant.getFysiskDokument());
                     break;
                 default:
@@ -142,7 +146,6 @@ public class OpprettJournalpostRequestMapperTest {
         assertEquals(ENDORSERNR, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "endorsernr"));
         assertEquals(FYSISK_POSTBOKS, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "fysiskPostboks"));
         assertEquals(STREKKODE_POSTBOKS, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "strekkodePostboks"));
-        assertEquals(BATCHNAVN, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "batchNavn"));
 
         assertEquals(1, opprettJournalpostRequest.getDokumenter().size());
         Dokument dokument = opprettJournalpostRequest.getDokumenter().iterator().next();
@@ -164,12 +167,14 @@ public class OpprettJournalpostRequestMapperTest {
                     pdfCounter.getAndIncrement();
                     assertEquals(FILNAVN_PDF, dokumentVariant.getFilnavn());
                     assertEquals("ARKIV", dokumentVariant.getVariantformat());
+                    assertEquals(BATCHNAVN, dokumentVariant.getBatchnavn());
                     assertArrayEquals(DUMMY_FILE, dokumentVariant.getFysiskDokument());
                     break;
                 case "XML":
                     xmlCounter.getAndIncrement();
                     assertEquals(FILNAVN_XML, dokumentVariant.getFilnavn());
                     assertEquals("SKANNING_META", dokumentVariant.getVariantformat());
+                    assertEquals(BATCHNAVN, dokumentVariant.getBatchnavn());
                     assertArrayEquals(DUMMY_FILE, dokumentVariant.getFysiskDokument());
                     break;
                 default:
@@ -180,11 +185,43 @@ public class OpprettJournalpostRequestMapperTest {
         assertEquals(1, xmlCounter.get());
     }
 
+    @Test
+    public void shouldFilterOutMissingTilleggsopplysninger() {
+        Skanningmetadata skanningmetadataNoEndorsernrOrFysiskPostboks = Skanningmetadata.builder()
+                .journalpost(
+                        Journalpost.builder()
+                                .referansenummer(REFERANSENR)
+                                .referansenrChecksum(REFERANSENR_CHECKSUM)
+                                .datoMottatt(new Date())
+                                .mottakskanal(MOTTAKSKANAL)
+                                .batchNavn(BATCHNAVN)
+                                .filNavn(FILNAVN_I_XML)
+                                .endorsernr(null)
+                                .build()
+                )
+                .skanningInfo(SkanningInfo.builder()
+                        .fysiskPostboks("")
+                        .strekkodePostboks(STREKKODE_POSTBOKS)
+                        .build())
+                .build();
+        OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
+                skanningmetadataNoEndorsernrOrFysiskPostboks,
+                generateFoerstesideMetadata(),
+                generateFilepair()
+        );
+
+        assertEquals(2, opprettJournalpostRequest.getTilleggsopplysninger().size());
+        assertEquals(REFERANSENR + REFERANSENR_CHECKSUM, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "referansenr"));
+        assertEquals(STREKKODE_POSTBOKS, getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "strekkodePostboks"));
+        assertThrows(NoSuchElementException.class, () -> getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "endorsernr"));
+        assertThrows(NoSuchElementException.class, () -> getTillegsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "fysiskPostboks"));
+    }
+
     private String getTillegsopplysningerVerdiFromNokkel(List<Tilleggsopplysning> tilleggsopplysninger, String nokkel) {
         return tilleggsopplysninger.stream().filter(pair -> nokkel.equals(pair.getNokkel())).findFirst().get().getVerdi();
     }
 
-    private FoerstesideMetadata generateFoerstesideMetadata(Bruker bruker) {
+    private FoerstesideMetadata generateFoerstesideMetadata() {
         return FoerstesideMetadata.builder()
                 .arkivtittel(ARKIVTITTEL)
                 .avsender(Avsender.builder()
@@ -192,7 +229,10 @@ public class OpprettJournalpostRequestMapperTest {
                         .avsenderNavn(AVSENDER_NAVN)
                         .build())
                 .behandlingstema(BEHANDLINGSTEMA)
-                .bruker(bruker)
+                .bruker(Bruker.builder()
+                        .brukerId(BRUKER_ID)
+                        .brukerType("PERSON")
+                        .build())
                 .enhetsnummer(ENHETSNUMMER)
                 .navSkjemaId(NAV_SKJEMA_ID)
                 .tema(TEMA)

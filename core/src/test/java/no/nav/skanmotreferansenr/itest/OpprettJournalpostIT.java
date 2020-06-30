@@ -5,13 +5,13 @@ import com.github.tomakehurst.wiremock.common.Json;
 import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.itest.config.TestConfig;
 import no.nav.skanmotreferansenr.opprettjournalpost.OpprettJournalpostConsumer;
-import no.nav.skanmotreferansenr.sts.STSConsumer;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.Dokument;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.DokumentVariant;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostRequest;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.OpprettJournalpostResponse;
-import no.nav.skanmotreferansenr.sts.data.STSResponse;
 import no.nav.skanmotreferansenr.opprettjournalpost.data.Tilleggsopplysning;
+import no.nav.skanmotreferansenr.sts.STSConsumer;
+import no.nav.skanmotreferansenr.sts.data.STSResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,8 +40,10 @@ public class OpprettJournalpostIT {
 
     private final byte[] DUMMY_FILE = "dummyfile".getBytes();
     private final String JOURNALPOST_ID = "467010363";
+    private final String DOKUMENT_TITTEL = "Søknad om dagpenger ved permittering";
+    private final String DOKUMENT_INFO_ID = "485227498";
     private final String MOTTA_DOKUMENT_UTGAAENDE_SKANNING_TJENESTE = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
-    private final String STSUrl = "/rest/v1/sts/token";
+    private final String URL_STS = "/rest/v1/sts/token";
 
     private OpprettJournalpostConsumer opprettJournalpostConsumer;
     private STSConsumer stsConsumer;
@@ -72,15 +74,15 @@ public class OpprettJournalpostIT {
                                         "\"journalpostferdigstilt\": true," +
                                         "  \"dokumenter\": [" +
                                         "    {" +
-                                        "      \"dokumentInfoId\": \"485227498\"," +
+                                        "      \"dokumentInfoId\": \"" + DOKUMENT_INFO_ID + "\"," +
                                         "      \"brevkode\": \"NAV 04-01.04\"," +
-                                        "      \"tittel\": \"Søknad om dagpenger ved permittering\"" +
+                                        "      \"tittel\": \"" + DOKUMENT_TITTEL + "\"" +
                                         "    }" +
                                         "  ]" +
                                         "}"
                         )))
         );
-        stubFor(post(urlMatching(STSUrl))
+        stubFor(post(urlMatching(URL_STS))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withJsonBody(Json.node(
@@ -96,11 +98,12 @@ public class OpprettJournalpostIT {
         STSResponse stsResponse = stsConsumer.getSTSToken();
         OpprettJournalpostResponse res = opprettJournalpostConsumer.opprettJournalpost(stsResponse.getAccess_token(), request);
         assertEquals(JOURNALPOST_ID, res.getJournalpostId());
+        assertEquals(1, res.getDokumenter().size());
+        assertEquals(DOKUMENT_INFO_ID, res.getDokumenter().get(0).getDokumentInfoId());
     }
 
     private OpprettJournalpostRequest createOpprettJournalpostRequest() {
         List<Tilleggsopplysning> tilleggsopplysninger = List.of(
-                new Tilleggsopplysning("batchNavn", "xml_pdf_pairs_testdata.zip"),
                 new Tilleggsopplysning("fysiskPostboks", "1400"),
                 new Tilleggsopplysning("strekkodePostboks", "1400"),
                 new Tilleggsopplysning("endorsernr", "3110190003NAV743506")
@@ -111,6 +114,7 @@ public class OpprettJournalpostIT {
                 .variantformat("ARKIV")
                 .fysiskDokument(DUMMY_FILE)
                 .filnavn("dummy.pdf")
+                .batchnavn("xml_pdf_pairs_testdata.zip")
                 .build();
 
         DokumentVariant xml = DokumentVariant.builder()
@@ -118,6 +122,7 @@ public class OpprettJournalpostIT {
                 .variantformat("ORIGINAL")
                 .fysiskDokument(DUMMY_FILE)
                 .filnavn("dummy.xml")
+                .batchnavn("xml_pdf_pairs_testdata.zip")
                 .build();
 
         List<Dokument> dokumenter = List.of(

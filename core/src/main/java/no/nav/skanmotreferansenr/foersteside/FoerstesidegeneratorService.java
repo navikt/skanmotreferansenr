@@ -25,22 +25,22 @@ public class FoerstesidegeneratorService {
         this.stsConsumer = stsConsumer;
     }
 
-    public Optional<FoerstesideMetadata> hentFoersteside(String loepenr) {
+    public FoerstesideMetadata hentFoersteside(String loepenr) {
         STSResponse stsResponse = stsConsumer.getSTSToken();
         try {
-            return Optional.of(foerstesidegeneratorConsumer.hentFoersteside(stsResponse.getAccess_token(), loepenr));
+            return foerstesidegeneratorConsumer.hentFoersteside(stsResponse.getAccess_token(), loepenr);
         } catch (HentMetadataFoerstesideFinnesIkkeFunctionalException e) {
             log.warn("Fant ikke metadata for foersteside med lopenummer {}", loepenr, e);
-            return Optional.of(new FoerstesideMetadata());
+            throw e;
         } catch (AbstractSkanmotreferansenrFunctionalException e) {
             log.error("Skanmotreferansenr feilet funksjonelt med henting av foerstesidemetadata loepenr={}", loepenr, e);
-            return Optional.empty();
+            throw e;
         } catch (AbstractSkanmotreferansenrTechnicalException e) {
             log.error("Skanmotreferansenr feilet teknisk med henting av foerstesidemetadata loepenr={}", loepenr, e);
-            return Optional.empty();
+            throw e;
         } catch (Exception e) {
             log.error("Skanmotreferansenr feilet med ukjent feil ved henting av foerstesidemetadata loepenr={}", loepenr, e);
-            return Optional.empty();
+            throw e;
         }
     }
 }

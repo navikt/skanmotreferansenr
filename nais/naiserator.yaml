@@ -9,10 +9,12 @@ spec:
   env:
     - name: SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL
       value: {{ SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL }}
-    - name: SKANMOTREFERANSENR_DOKARKIVJOURNALPOSTURL
-      value: {{ SKANMOTREFERANSENR_DOKARKIVJOURNALPOSTURL }}
+    - name: SKANMOTREFERANSENR_DOKARKIVURL
+      value: {{ SKANMOTREFERANSENR_DOKARKIVURL }}
     - name: SKANMOTREFERANSENR_STSURL
       value: {{ SKANMOTREFERANSENR_STSURL }}
+    - name: SKANMOTREFERANSENR_SCHEDULE
+      value: {{ SKANMOTREFERANSENR_SCHEDULE }}
     - name: SKANMOTREFERANSENR_SFTP_PRIVATEKEY
       value: /var/run/secrets/nais.io/keys/privatekey
     - name: SKANMOTREFERANSENR_SFTP_HOSTKEY
@@ -30,7 +32,7 @@ spec:
   port: 8080
   prometheus:
     enabled: true
-    path: /prometheus
+    path: /actuator/prometheus
   readiness:
     path: /isReady
     port: 8080

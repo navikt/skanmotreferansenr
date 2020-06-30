@@ -2,6 +2,7 @@ package no.nav.skanmotreferansenr.itest.config;
 
 import no.nav.skanmotreferansenr.config.CoreConfig;
 import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.metrics.DokCounter;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.UserAuthNoneFactory;
@@ -26,7 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Configuration
 @EnableAutoConfiguration
 @EnableConfigurationProperties(SkanmotreferansenrProperties.class)
-@Import(CoreConfig.class)
+@Import({CoreConfig.class, DokCounter.class})
 public class TestConfig {
 
     private static final String sftpPort = String.valueOf(ThreadLocalRandom.current().nextInt(2000, 2999));

@@ -14,19 +14,21 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.ByteArrayInputStream;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 public class UnzipSkanningmetadataUtils {
 
     public static List<Filepair> pairFiles(Map<String, byte[]> pdfs, Map<String, byte[]> xmls) {
-        return pdfs.keySet().stream().map(pdfName ->
+        return getAllFileNamesWithoutFileExtensions(pdfs.keySet(), xmls.keySet()).stream().map(name ->
                 Filepair.builder()
-                        .name(Utils.removeFileExtensionInFilename(pdfName))
-                        .pdf(pdfs.get(pdfName))
-                        .xml(xmls.get(Utils.changeFiletypeInFilename(pdfName, "xml")))
+                        .name(name)
+                        .pdf(pdfs.get(name + ".pdf"))
+                        .xml(xmls.get(name + ".xml"))
                         .build()
         ).collect(Collectors.toList());
     }
@@ -50,9 +52,7 @@ public class UnzipSkanningmetadataUtils {
 
             Skanningmetadata skanningmetadata = (Skanningmetadata) jaxbUnmarshaller.unmarshal(xmlStreamReader);
 
-            skanningmetadata.verifyFields();
-
-            return splitChecksumInReferansenummer(skanningmetadata);
+            return skanningmetadata;
         } catch (JAXBException | XMLStreamException e) {
             throw new SkanmotreferansenrUnzipperFunctionalException("Skanmotreferansenr klarte ikke lese metadata i zipfil", e);
         } catch (NullPointerException e) {
@@ -79,5 +79,12 @@ public class UnzipSkanningmetadataUtils {
                         .build())
                 .skanningInfo(old.getSkanningInfo())
                 .build();
+    }
+
+    private static Set<String> getAllFileNamesWithoutFileExtensions(Set<String> pdfNames, Set<String> xmlNames) {
+        Set<String> allNames = new HashSet<>();
+        pdfNames.stream().forEach(name -> allNames.add(Utils.removeFileExtensionInFilename(name)));
+        xmlNames.stream().forEach(name -> allNames.add(Utils.removeFileExtensionInFilename(name)));
+        return allNames;
     }
 }

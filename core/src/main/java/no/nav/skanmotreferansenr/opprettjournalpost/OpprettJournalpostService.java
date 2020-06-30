@@ -31,30 +31,27 @@ public class OpprettJournalpostService {
         this.opprettJournalpostRequestMapper = new OpprettJournalpostRequestMapper();
     }
 
-    public Optional<OpprettJournalpostResponse> opprettJournalpost(Optional<Skanningmetadata> skanningmetadata, Optional<FoerstesideMetadata> foerstesideMetadata, Filepair filepair) {
+    public OpprettJournalpostResponse opprettJournalpost(Optional<Skanningmetadata> skanningmetadata, Optional<FoerstesideMetadata> foerstesideMetadata, Filepair filepair) {
 
-        if (skanningmetadata.isEmpty() || foerstesideMetadata.isEmpty()) {
-            return Optional.empty();
-        }
         STSResponse stsResponse = stsConsumer.getSTSToken();
         String batchNavn = skanningmetadata.map(Skanningmetadata::getJournalpost).map(Journalpost::getBatchNavn).orElse(null);
         try {
-
             log.info("Skanmotreferansenr oppretter journalpost fil={}, batch={}", filepair.getName(), batchNavn);
             OpprettJournalpostRequest request = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(skanningmetadata.get(), foerstesideMetadata.get(), filepair);
             OpprettJournalpostResponse response = opprettJournalpostConsumer.opprettJournalpost(stsResponse.getAccess_token(), request);
-            log.info("Skanmotreferansenr har opprettet journalpost, journalpostId={}, fil={}, batch={}", response.getJournalpostId(), filepair.getName(), batchNavn);
-            return Optional.of(response);
+            log.info("Skanmotreferansenr har opprettet journalpost, journalpostId={}, referansenr={}, fil={}, batch={}",
+                    response.getJournalpostId(), skanningmetadata.get().getJournalpost().getReferansenummer(), filepair.getName(), batchNavn);
+            return response;
 
         } catch (AbstractSkanmotreferansenrFunctionalException e) {
             log.warn("Skanmotreferansenr feilet funksjonelt med oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
-            return Optional.empty();
+            throw e;
         } catch (AbstractSkanmotreferansenrTechnicalException e) {
             log.warn("Skanmotreferansenr feilet teknisk med  oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
-            return Optional.empty();
+            throw e;
         } catch (Exception e) {
             log.warn("Skanmotreferansenr feilet med ukjent feil ved oppretting av journalpost fil={}, batch={}", filepair.getName(), batchNavn, e);
-            return Optional.empty();
+            throw e;
         }
     }
 }

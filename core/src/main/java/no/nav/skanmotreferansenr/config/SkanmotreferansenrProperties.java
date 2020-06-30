@@ -20,10 +20,13 @@ public class SkanmotreferansenrProperties {
     private String getmetadatafoerstesideurl;
 
     @NotNull
-    private String dokarkivjournalposturl;
+    private String dokarkivurl;
 
     @NotNull
     private String stsurl;
+
+    @NotNull
+    private String schedule;
 
     private final ServiceuserProperties serviceuser = new ServiceuserProperties();
 

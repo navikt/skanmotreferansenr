@@ -37,23 +37,15 @@ public class SkanningMetadataValidator {
         if (!JournalpostValidator.isValidBatchNavn(journalpost.getBatchNavn())) {
             throw new InvalidMetadataException("Batchnavn is not valid: " + journalpost.getBatchNavn());
         }
-        if (!JournalpostValidator.isValidFilnavn(journalpost.getFilNavn())) {
-            log.warn("Skanmotreferansenr Filnavn is not valid but gernerating journalpost anyway, Filnavn={}", journalpost.getFilNavn());
-        }
-        if (!JournalpostValidator.isValidEndorsernr(journalpost.getEndorsernr())) {
-            throw new InvalidMetadataException("Endorsernr is not valid: " + journalpost.getEndorsernr());
-        }
     }
 
     private static void verifySkanningInfoIsValid(SkanningInfo skanningInfo) {
-        if (null == skanningInfo) {
+        if (skanningInfo == null) {
             throw new InvalidMetadataException("SkanningInfo is null");
         }
-        if (!SkanningInfoValidator.isValidFysiskPostboks(skanningInfo.getFysiskPostboks())) {
-            log.warn("Skanmotreferansenr FysiskPostboks is not valid but generating journalpost anyway, FysiskPostboks={}", skanningInfo.getFysiskPostboks());
-        }
         if (!SkanningInfoValidator.isValidStrekkodePostboks(skanningInfo.getStrekkodePostboks())) {
-            log.warn("Skanmotreferansenr StrekkodePostboks is not valid but generating journalpost anyway, StrekkodePostboks={}", skanningInfo.getStrekkodePostboks());
+            throw new InvalidMetadataException("Strekkodepostboks is not valid: " + skanningInfo.getStrekkodePostboks() +
+                    ". Must be one of: " + SkanningInfoValidator.strekkodePostboksVerdier);
         }
     }
 }
