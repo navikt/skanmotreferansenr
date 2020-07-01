@@ -23,7 +23,6 @@
     <properties>
         <application.version>${project.version}</application.version>
         <apache.commons.version>1.20</apache.commons.version>
-        <awaitility.version>4.0.3</awaitility.version>
         <foerstesidegenerator-api.version>0.1.1</foerstesidegenerator-api.version>
         <freg.sercurity.version>3.1.0</freg.sercurity.version>
         <glassfish.jaxb.version>2.3.2</glassfish.jaxb.version>
@@ -177,13 +176,6 @@
                 <groupId>org.apache.sshd</groupId>
                 <artifactId>sshd-scp</artifactId>
                 <version>${sshd-core.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.awaitility</groupId>
-                <artifactId>awaitility</artifactId>
-                <version>${awaitility.version}</version>
-                <scope>test</scope>
             </dependency>
 
             <!--Selftest metrics-->
