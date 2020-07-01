@@ -153,13 +153,17 @@ public class LesFraFilomraadeOgOpprettJournalpost {
     }
 
     private void lastOppFilpar(Filepair filepair, String zipName) {
-        try {
             log.warn("Skanmotreferansenr laster opp fil til feilområde fil={} zipFil={}", filepair.getName(), zipName);
             String path = Utils.removeFileExtensionInFilename(zipName);
-            filomraadeService.uploadFileToFeilomrade(filepair.getPdf(), filepair.getName() + ".pdf", path);
-            filomraadeService.uploadFileToFeilomrade(filepair.getXml(), filepair.getName() + ".xml", path);
+            lastOppFil(filepair.getPdf(), filepair.getName() + ".pdf", path, zipName);
+            lastOppFil(filepair.getXml(), filepair.getName() + ".xml", path, zipName);
+    }
+
+    private void lastOppFil(byte[] file, String name, String path, String zipName) {
+        try {
+            filomraadeService.uploadFileToFeilomrade(file, name, path);
         } catch (Exception e) {
-            log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", filepair.getName(), zipName, e.getMessage(), e);
+            log.error("Skanmotreferansenr feilet ved opplasting til feilområde fil={} zipFil={} feilmelding={}", name, zipName, e.getMessage(), e);
             DokCounter.incrementError(e);
         }
     }
