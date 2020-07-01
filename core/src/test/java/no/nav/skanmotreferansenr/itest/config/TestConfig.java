@@ -3,6 +3,7 @@ package no.nav.skanmotreferansenr.itest.config;
 import no.nav.skanmotreferansenr.config.CoreConfig;
 import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
+import no.nav.skanmotreferansenr.sftp.Sftp;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.UserAuthNoneFactory;
@@ -56,6 +57,5 @@ public class TestConfig {
             sshd.setFileSystemFactory(new VirtualFileSystemFactory(sshdPath));
             return sshd;
         }
-
     }
 }

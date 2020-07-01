@@ -104,7 +104,6 @@ public class SftpTestIT {
 
     @Test
     public void shouldFailToChangeDirectoryToInvalidPath() {
-        String ugyldigPath = "ikke/en/gyldig/path";
         try {
             sftp.changeDirectory("ikke/en/gyldig/path");
             Assert.fail();
