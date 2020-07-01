@@ -3,7 +3,6 @@ package no.nav.skanmotreferansenr.itest.config;
 import no.nav.skanmotreferansenr.config.CoreConfig;
 import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
-import no.nav.skanmotreferansenr.sftp.Sftp;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.UserAuthNoneFactory;
@@ -31,12 +30,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @Import({CoreConfig.class, DokCounter.class})
 public class TestConfig {
 
-    private static final String sftpPort = String.valueOf(ThreadLocalRandom.current().nextInt(2000, 2999));
-
-    static {
-        System.setProperty("skanmotreferansenr.sftp.port", sftpPort);
-    }
-
     @Configuration
     static class SshdSftpServerConfig {
         @Bean
@@ -46,7 +39,11 @@ public class TestConfig {
 
         @Bean(initMethod = "start", destroyMethod = "stop")
         public SshServer sshServer(final Path sshdPath,
-                                   final SkanmotreferansenrProperties properties) throws IOException {
+                                   final SkanmotreferansenrProperties properties) {
+
+            String sftpPort = String.valueOf(ThreadLocalRandom.current().nextInt(2000, 2999));
+            System.setProperty("skanmotreferansenr.sftp.port", sftpPort);
+
             SshServer sshd = SshServer.setUpDefaultServer();
             sshd.setPort(Integer.parseInt(properties.getSftp().getPort()));
             sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider(Path.of("src/test/resources/sftp/itest.ser")));

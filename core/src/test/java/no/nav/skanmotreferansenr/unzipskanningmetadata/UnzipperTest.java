@@ -2,13 +2,9 @@ package no.nav.skanmotreferansenr.unzipskanningmetadata;
 
 import no.nav.skanmotreferansenr.domain.Filepair;
 import no.nav.skanmotreferansenr.domain.FilepairWithMetadata;
-
 import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.domain.SkanningInfo;
-import no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException;
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrUnzipperFunctionalException;
-import no.nav.skanmotreferansenr.unzipskanningmetadata.UnzipSkanningmetadataUtils;
-import no.nav.skanmotreferansenr.unzipskanningmetadata.Unzipper;
 import org.junit.Test;
 
 import java.io.File;
@@ -27,7 +23,6 @@ public class UnzipperTest {
 
     private final String ZIP_FILE_PATH = "src/test/resources/__files/xml_pdf_pairs/xml_pdf_pairs_testdata.zip";
     private final String BROKEN_ZIP_FILE_PATH = "src/test/resources/__files/xml_pdf_pairs/xml_pdf_pairs_broken_testdata.zip";
-    private final String INVALID_ZIP_FILE_PATH = "src/test/resources/__files/xml_pdf_pairs/xml_pdf_pairs_invalid_testdata.zip";
     private final String PDF_PATH = "src/test/resources/__files/xml_pdf_pairs/mockDokument-1.pdf";
     private final String XML_PATH = "src/test/resources/__files/xml_pdf_pairs/mockDokument-1.xml";
     private final String ZIPPED_PDF_NAME = "mockDokument-1.pdf";
@@ -66,7 +61,7 @@ public class UnzipperTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfUnableToReadMetadata() throws IOException {
+    public void shouldThrowExceptionIfUnableToReadMetadata() {
         File zip = Paths.get(BROKEN_ZIP_FILE_PATH).toFile();
         assertThrows(SkanmotreferansenrUnzipperFunctionalException.class, () ->
                 Unzipper.unzipXmlPdf(zip).stream().map(filepair ->
@@ -74,16 +69,6 @@ public class UnzipperTest {
                         .collect(Collectors.toList()));
     }
 
-/*
-    @Test
-    public void shouldThrowExceptionIfInvalidMetadata() {
-        File zip = Paths.get(INVALID_ZIP_FILE_PATH).toFile();
-        assertThrows(InvalidMetadataException.class, () ->
-                Unzipper.unzipXmlPdf(zip).stream().map(filepair ->
-                        UnzipSkanningmetadataUtils.extractMetadata(filepair))
-                        .collect(Collectors.toList()));
-    }
-*/
     private void assertArrayEqualsIgnoreCR(byte[] expected, byte[] actual) {
         int len = Math.min(expected.length, actual.length);
         byte[] expectedIgnored = removeCR(expected, len);
