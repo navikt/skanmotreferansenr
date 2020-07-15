@@ -23,6 +23,6 @@ public class Skanningmetadata {
     @XmlElement(required = true, name = "journalpost")
     private Journalpost journalpost;
 
-    @XmlElement(required = true, name = "skanninginfo")
+    @XmlElement(required = true, name = "skanningInfo")
     private SkanningInfo skanningInfo;
 }

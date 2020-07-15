@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" version="3.0.0">
+    <xs:element name="skanningmetadata" type="skanningmetadataType"/>
+    <xs:complexType name="skanningmetadataType">
+        <xs:sequence>
+            <xs:element name="journalpost" type="journalpostType" minOccurs="1"/>
+            <xs:element name="skanningInfo" type="skanninginfoType" minOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="journalpostType">
+        <xs:sequence>
+            <xs:element name="referansenummer" type="referansenummerType" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Strekkode 2, posisjon 2-15</xs:documentation>
+                    <xs:documentation>Posisjon 15 er mod10 av posisjon 2-14</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="mottakskanal" type="xs:string" minOccurs="1" fixed="SKAN_IM"/>
+            <xs:element name="datoMottatt" type="xs:date" minOccurs="1"/>
+            <xs:element name="batchnavn" type="xs:string" minOccurs="1"/>
+            <xs:element name="filnavn" type="xs:string" minOccurs="0"/>
+            <xs:element name="endorsernr" type="xs:string" minOccurs="0"/>
+            <xs:element name="antallSider" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="skanninginfoType">
+        <xs:sequence>
+            <xs:element name="fysiskPostboks" type="xs:string" minOccurs="0"/>
+            <xs:element name="strekkodePostboks" type="strekkodePostboksType" minOccurs="1">
+                <xs:annotation>
+                    <xs:documentation>Strekkode 2, posisjon 16-19</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="referansenummerType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]{14}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="strekkodePostboksType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="1400"/>
+            <xs:enumeration value="1402"/>
+            <xs:enumeration value="1405"/>
+            <xs:enumeration value="8888"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

@@ -29,10 +29,3 @@ atlassian-ide-plugin.xml
 *.tm*.epoch
 *.lck
 *.log
-
-**/application-t*.properties
-**/application-q*.properties
-**/application-local.properties
-
-### Test generated files ###
-core/src/test/resources/inbound/

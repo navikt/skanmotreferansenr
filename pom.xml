@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.7.RELEASE</version>
+        <version>2.3.1.RELEASE</version>
     </parent>
 
     <groupId>no.nav.skanmotreferansenr</groupId>
@@ -19,37 +19,39 @@
         <module>core</module>
     </modules>
 
-
     <properties>
-        <application.version>${project.version}</application.version>
-        <apache.commons.version>1.20</apache.commons.version>
+        <java.version>11</java.version>
+
+        <camel.version>3.4.0</camel.version>
+        <commons-compress.version>1.20</commons-compress.version>
+        <commons-io.version>2.7</commons-io.version>
         <foerstesidegenerator-api.version>0.1.1</foerstesidegenerator-api.version>
-        <freg.sercurity.version>3.1.0</freg.sercurity.version>
         <glassfish.jaxb.version>2.3.2</glassfish.jaxb.version>
-        <jackson.version>2.9.0</jackson.version>
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <javax.activation.version>1.1.1</javax.activation.version>
         <javax.inject.version>1</javax.inject.version>
         <javax.bind.version>2.3.1</javax.bind.version>
         <jcraft.jsch.version>0.1.55</jcraft.jsch.version>
-        <junit5.version>5.3.2</junit5.version>
-        <junit5.mockito.version>2.23.0</junit5.mockito.version>
-        <logstash-logback-encoder.version>5.2</logstash-logback-encoder.version>
-        <logback-syslog4j.version>1.0.0</logback-syslog4j.version>
-        <lombok.version>1.18.4</lombok.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-        <opencsv.version>4.3.1</opencsv.version>
-        <pep1-jira-client.version>0.5</pep1-jira-client.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <resilience4j.version>0.11.0</resilience4j.version>
+        <logstash-logback-encoder.version>6.4</logstash-logback-encoder.version>
+        <lombok.version>1.18.12</lombok.version>
         <spring-cloud-contract-wiremock.version>2.2.2.RELEASE</spring-cloud-contract-wiremock.version>
         <sshd-core.version>2.4.0</sshd-core.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>no.nav.skanmotreferansenr</groupId>
+                <artifactId>core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.camel.springboot</groupId>
+                <artifactId>camel-spring-boot-dependencies</artifactId>
+                <version>${camel.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
@@ -75,80 +77,38 @@
                 <artifactId>logstash-logback-encoder</artifactId>
                 <version>${logstash-logback-encoder.version}</version>
             </dependency>
-
-            <dependency>
-                <groupId>com.papertrailapp</groupId>
-                <artifactId>logback-syslog4j</artifactId>
-                <version>${logback-syslog4j.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-                <scope>provided</scope>
-            </dependency>
-
             <dependency>
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
                 <version>${glassfish.jaxb.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>${apache.commons.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-csv</artifactId>
-                <version>${jackson.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-databind</artifactId>
-                <version>${jackson.version}</version>
+                <version>${commons-compress.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.pep1.jira</groupId>
-                <artifactId>jira-spring-boot-client-starter</artifactId>
-                <version>${pep1-jira-client.version}</version>
-                <type>pom</type>
-            </dependency>
-
-            <dependency>
-                <groupId>no.nav.freg</groupId>
-                <artifactId>freg-security-oidc</artifactId>
-                <version>${freg.sercurity.version}</version>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.nav.dok</groupId>
                 <artifactId>foerstesidegenerator-api-v1</artifactId>
                 <version>${foerstesidegenerator-api.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.jcraft</groupId>
                 <artifactId>jsch</artifactId>
                 <version>${jcraft.jsch.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>provided</scope>
+            </dependency>
             <!--test-->
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-engine</artifactId>
-                <version>${junit5.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.junit.jupiter</groupId>
-                <artifactId>junit-jupiter-api</artifactId>
-                <version>${junit5.version}</version>
-                <scope>test</scope>
-            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-contract-wiremock</artifactId>
@@ -156,68 +116,36 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-junit-jupiter</artifactId>
-                <version>${junit5.mockito.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.sshd</groupId>
                 <artifactId>sshd-core</artifactId>
                 <version>${sshd-core.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.sshd</groupId>
                 <artifactId>sshd-sftp</artifactId>
                 <version>${sshd-core.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.sshd</groupId>
                 <artifactId>sshd-scp</artifactId>
                 <version>${sshd-core.version}</version>
-            </dependency>
-
-            <!--Selftest metrics-->
-            <dependency>
-                <groupId>io.github.resilience4j</groupId>
-                <artifactId>resilience4j-spring-boot</artifactId>
-                <version>${resilience4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.resilience4j</groupId>
-                <artifactId>resilience4j-metrics</artifactId>
-                <version>${resilience4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.resilience4j</groupId>
-                <artifactId>resilience4j-prometheus</artifactId>
-                <version>${resilience4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.resilience4j</groupId>
-                <artifactId>resilience4j-timelimiter</artifactId>
-                <version>${resilience4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.github.resilience4j</groupId>
-                <artifactId>resilience4j-circuitbreaker</artifactId>
-                <version>${resilience4j.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

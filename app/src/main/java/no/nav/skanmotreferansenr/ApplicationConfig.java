@@ -24,5 +24,4 @@ public class ApplicationConfig {
         return new DokTimedAspect(meterRegistry);
     }
 
-
 }

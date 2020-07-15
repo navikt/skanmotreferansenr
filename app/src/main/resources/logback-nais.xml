@@ -23,21 +23,4 @@
     <logger name="no.nav.skanmotreferansenr" level="INFO" additivity="false">
         <appender-ref ref="stdout_json"/>
     </logger>
-
-
-
-    <logger name="org.springframework.security.ldap" level="INFO" additivity="false">
-        <appender-ref ref="stdout_json"/>
-    </logger>
-
-    <!-- Hibernate deprecated warnings -->
-    <logger name="org.hibernate.orm.deprecation" additivity="false" level="ERROR"/>
-    <!-- Remove noise due to wrong use of AddressingFeature -->
-    <logger name="org.apache.cxf.ws.addressing.ContextUtils" additivity="false" level="ERROR"/>
-    <logger name="org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor" additivity="false" level="ERROR"/>
-    <logger name="org.apache.cxf.ws.addressing.soap.MAPCodec" additivity="false" level="ERROR"/>
-    <logger name="org.apache.wss4j.common.crypto.CryptoBase" additivity="false" level="ERROR"/>
-    <logger name="log4j.logger.org.apache.cxf.interceptor" additivity="false" level="ERROR"/>
-
-
 </configuration>

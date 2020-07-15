@@ -3,12 +3,10 @@ package no.nav.skanmotreferansenr.itest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.Json;
 import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
-import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFinnesIkkeFunctionalException;
-import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorConsumer;
-import no.nav.skanmotreferansenr.foersteside.FoerstesidegeneratorService;
-import no.nav.skanmotreferansenr.foersteside.data.FoerstesideMetadata;
-import no.nav.skanmotreferansenr.itest.config.TestConfig;
-import no.nav.skanmotreferansenr.sts.STSConsumer;
+import no.nav.skanmotreferansenr.consumer.foersteside.FoerstesidegeneratorConsumer;
+import no.nav.skanmotreferansenr.consumer.foersteside.FoerstesidegeneratorService;
+import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
+import no.nav.skanmotreferansenr.consumer.sts.STSConsumer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,18 +19,16 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
-
 import java.util.List;
-import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
@@ -46,7 +42,7 @@ public class FoerstesideIT {
     private final String LOEPENR_NOT_FOUND = "222";
     private final String HENT_FOERSTESIDE_METADATA = "/api/foerstesidegenerator/v1/foersteside/";
     private final String STS_URL = "/rest/v1/sts/token";
-    private final String METADATA_HAPPY = "foersteside/foerseside_metadata_HAPPY.json";
+    private final String METADATA_HAPPY = "foersteside/foersteside_HAPPY.json";
 
     private FoerstesidegeneratorService foerstesidegeneratorService;
 
@@ -88,7 +84,7 @@ public class FoerstesideIT {
 
     @Test
     void shouldGetFoerstesideMetadata() {
-        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside(LOEPENR_OK);
+        FoerstesideMetadata metadata = foerstesidegeneratorService.hentFoersteside(LOEPENR_OK).orElse(new FoerstesideMetadata());
 
         assertNull(metadata.getAvsender());
         assertEquals("12345678910", metadata.getBruker().getBrukerId());
@@ -103,7 +99,7 @@ public class FoerstesideIT {
     }
 
     @Test
-    void shouldGetNullIfNotExisting() {
-        assertThrows(HentMetadataFoerstesideFinnesIkkeFunctionalException.class, ()->foerstesidegeneratorService.hentFoersteside("222"));
+    void shouldGetEmptyOptionalIfNotExisting() {
+        assertThat(foerstesidegeneratorService.hentFoersteside("222")).isEmpty();
     }
 }

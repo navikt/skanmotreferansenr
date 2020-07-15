@@ -1,0 +1,88 @@
+package no.nav.skanmotreferansenr;
+
+import lombok.extern.slf4j.Slf4j;
+import no.nav.skanmotreferansenr.consumer.foersteside.FoerstesidegeneratorService;
+import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
+import no.nav.skanmotreferansenr.consumer.logiskvedlegg.LeggTilLogiskVedleggService;
+import no.nav.skanmotreferansenr.consumer.logiskvedlegg.data.LeggTilLogiskVedleggResponse;
+import no.nav.skanmotreferansenr.consumer.opprettjournalpost.OpprettJournalpostService;
+import no.nav.skanmotreferansenr.consumer.opprettjournalpost.data.OpprettJournalpostResponse;
+import no.nav.skanmotreferansenr.domain.Filepair;
+import no.nav.skanmotreferansenr.domain.SkanningInfo;
+import no.nav.skanmotreferansenr.domain.Skanningmetadata;
+import no.nav.skanmotreferansenr.metrics.DokCounter;
+import org.apache.camel.Body;
+import org.apache.camel.Handler;
+import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+/**
+ * @author Joakim Bjørnstad, Jbit AS
+ */
+@Slf4j
+@Component
+public class PostboksReferansenrService {
+
+    private final FoerstesidegeneratorService foerstesidegeneratorService;
+    private final OpprettJournalpostService opprettJournalpostService;
+    private final LeggTilLogiskVedleggService leggTilLogiskVedleggService;
+
+    @Inject
+    public PostboksReferansenrService(FoerstesidegeneratorService foerstesidegeneratorService,
+                                      OpprettJournalpostService opprettJournalpostService,
+                                      LeggTilLogiskVedleggService leggTilLogiskVedleggService) {
+        this.foerstesidegeneratorService = foerstesidegeneratorService;
+        this.opprettJournalpostService = opprettJournalpostService;
+        this.leggTilLogiskVedleggService = leggTilLogiskVedleggService;
+    }
+
+    @Handler
+    public void behandleForsendelse(@Body PostboksReferansenrEnvelope envelope) {
+        final Skanningmetadata skanningmetadata = envelope.getSkanningmetadata();
+        skanningmetadata.verifyFields();
+        incrementMetadataMetrics(skanningmetadata);
+        final String referansenummerWithoutChecksum = skanningmetadata.getJournalpost().getReferansenummerWithoutChecksum();
+        FoerstesideMetadata foerstesideMetadata = foerstesidegeneratorService.hentFoersteside(referansenummerWithoutChecksum).orElse(new FoerstesideMetadata());
+        OpprettJournalpostResponse opprettjournalpostResponse = opprettJournalpostService.opprettJournalpost(skanningmetadata, foerstesideMetadata, Filepair.builder()
+                .name(envelope.getFilebasename())
+                .xml(envelope.getXml())
+                .pdf(envelope.getPdf())
+                .build());
+        List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses = leggTilLogiskVedleggService.leggTilLogiskVedlegg(opprettjournalpostResponse, foerstesideMetadata);
+        logLogiskVedleggResponses(leggTilLogiskVedleggResponses);
+    }
+
+    private void logLogiskVedleggResponses(List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses) {
+        List<String> logiskVedleggIds = leggTilLogiskVedleggResponses.stream()
+                .filter(Objects::nonNull)
+                .map(LeggTilLogiskVedleggResponse::getLogiskVedleggId)
+                .collect(Collectors.toList());
+        log.info("Skanmotreferansenr lagret logisk vedlegg med logiskVedleggIds: {}", logiskVedleggIds);
+    }
+
+    private void incrementMetadataMetrics(Skanningmetadata skanningmetadata) {
+        final String STREKKODEPOSTBOKS = "strekkodePostboks";
+        final String FYSISKPOSTBOKS = "fysiskPostboks";
+        final String EMPTY = "empty";
+
+        DokCounter.incrementCounter(Map.of(
+                STREKKODEPOSTBOKS, Optional.ofNullable(skanningmetadata)
+                        .map(Skanningmetadata::getSkanningInfo)
+                        .map(SkanningInfo::getStrekkodePostboks)
+                        .filter(Predicate.not(String::isBlank))
+                        .orElse(EMPTY),
+                FYSISKPOSTBOKS, Optional.ofNullable(skanningmetadata)
+                        .map(Skanningmetadata::getSkanningInfo)
+                        .map(SkanningInfo::getFysiskPostboks)
+                        .filter(Predicate.not(String::isBlank))
+                        .orElse(EMPTY)
+        ));
+    }
+}

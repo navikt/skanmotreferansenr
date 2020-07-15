@@ -25,6 +25,12 @@ public class SkanmotreferansenrProperties {
     @NotNull
     private String stsurl;
 
+    @NotEmpty
+    private String endpointuri;
+
+    @NotEmpty
+    private String endpointconfig;
+
     @NotNull
     private String schedule;
 
