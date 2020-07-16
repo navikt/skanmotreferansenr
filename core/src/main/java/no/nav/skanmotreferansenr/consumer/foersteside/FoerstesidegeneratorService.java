@@ -28,18 +28,20 @@ public class FoerstesidegeneratorService {
     public Optional<FoerstesideMetadata> hentFoersteside(String loepenr) {
         STSResponse stsResponse = stsConsumer.getSTSToken();
         try {
-            return Optional.of(foerstesidegeneratorConsumer.hentFoersteside(stsResponse.getAccess_token(), loepenr));
+            final FoerstesideMetadata foerstesideMetadata = foerstesidegeneratorConsumer.hentFoersteside(stsResponse.getAccess_token(), loepenr);
+            log.info("Skanmotreferansenr har hentet førsteside. løpenummer={}.", loepenr);
+            return Optional.of(foerstesideMetadata);
         } catch (HentMetadataFoerstesideFinnesIkkeFunctionalException e) {
-            log.warn("Fant ikke metadata for foersteside med lopenummer {}", loepenr, e);
+            log.warn("Fant ikke metadata for førsteside. løpenummer={}.", loepenr, e);
             return Optional.empty();
         } catch (AbstractSkanmotreferansenrFunctionalException e) {
-            log.error("Skanmotreferansenr feilet funksjonelt med henting av foerstesidemetadata loepenr={}", loepenr, e);
+            log.error("Skanmotreferansenr feilet funksjonelt med henting av førsteside. løpenummer={}.", loepenr, e);
             throw e;
         } catch (AbstractSkanmotreferansenrTechnicalException e) {
-            log.error("Skanmotreferansenr feilet teknisk med henting av foerstesidemetadata loepenr={}", loepenr, e);
+            log.error("Skanmotreferansenr feilet teknisk med henting av førsteside. løpenummer={}.", loepenr, e);
             throw e;
         } catch (Exception e) {
-            log.error("Skanmotreferansenr feilet med ukjent feil ved henting av foerstesidemetadata loepenr={}", loepenr, e);
+            log.error("Skanmotreferansenr feilet med ukjent feil ved henting av førsteside. løpenummer={}.", loepenr, e);
             throw e;
         }
     }

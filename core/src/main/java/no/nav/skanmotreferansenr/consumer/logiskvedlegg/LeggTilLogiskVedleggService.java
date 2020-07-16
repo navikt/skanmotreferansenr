@@ -37,7 +37,7 @@ public class LeggTilLogiskVedleggService {
         if(opprettJournalpostResponse.getDokumenter().isEmpty() || foerstesideMetadata.getVedleggsliste() == null) {
             return new ArrayList<>();
         }
-        String dokumentInfoId = opprettJournalpostResponse.getDokumenter().get(0).getDokumentInfoId();
+        final String dokumentInfoId = opprettJournalpostResponse.getDokumenter().get(0).getDokumentInfoId();
         return foerstesideMetadata.getVedleggsliste().stream()
                 .map(tittel -> leggTilLogiskVedlegg(dokumentInfoId, tittel))
                 .filter(Objects::nonNull)

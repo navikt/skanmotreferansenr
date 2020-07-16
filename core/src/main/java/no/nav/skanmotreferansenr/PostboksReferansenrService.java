@@ -56,7 +56,9 @@ public class PostboksReferansenrService {
                 .pdf(envelope.getPdf())
                 .build());
         List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses = leggTilLogiskVedleggService.leggTilLogiskVedlegg(opprettjournalpostResponse, foerstesideMetadata);
-        logLogiskVedleggResponses(leggTilLogiskVedleggResponses);
+        if(!leggTilLogiskVedleggResponses.isEmpty()) {
+            logLogiskVedleggResponses(leggTilLogiskVedleggResponses);
+        }
     }
 
     private void logLogiskVedleggResponses(List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses) {
