@@ -13,9 +13,9 @@ import javax.xml.bind.annotation.XmlElement;
 @AllArgsConstructor
 public class SkanningInfo {
 
-    @XmlElement(required = false, name = "fysiskpostboks")
+    @XmlElement(required = false, name = "fysiskPostboks")
     private String fysiskPostboks;
 
-    @XmlElement(required = true, name = "strekkodepostboks")
+    @XmlElement(required = true, name = "strekkodePostboks")
     private String strekkodePostboks;
 }

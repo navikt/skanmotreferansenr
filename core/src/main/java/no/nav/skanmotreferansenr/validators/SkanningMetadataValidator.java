@@ -34,8 +34,8 @@ public class SkanningMetadataValidator {
         if (!JournalpostValidator.isValidDatoMottatt(journalpost.getDatoMottatt())) {
             throw new InvalidMetadataException("DatoMottatt is not valid: " + journalpost.getDatoMottatt());
         }
-        if (!JournalpostValidator.isValidBatchNavn(journalpost.getBatchNavn())) {
-            throw new InvalidMetadataException("Batchnavn is not valid: " + journalpost.getBatchNavn());
+        if (!JournalpostValidator.isValidBatchNavn(journalpost.getBatchnavn())) {
+            throw new InvalidMetadataException("Batchnavn is not valid: " + journalpost.getBatchnavn());
         }
     }
 
