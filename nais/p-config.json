@@ -6,7 +6,7 @@
   "SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL": "https://foerstesidegenerator.nais.adeo.no/api/foerstesidegenerator/v1/foersteside",
   "SKANMOTREFERANSENR_DOKARKIVURL": "https://dokarkiv.nais.adeo.no",
   "SKANMOTREFERANSENR_STSURL": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
-  "SKANMOTREFERANSENR_SCHEDULE": "0 0/30 8-16 * *  MON-FRI",
+  "SKANMOTREFERANSENR_SCHEDULE": "0+0/15+*+*+*+*",
   "INGRESSES": [
     "https://skanmotreferansenr.nais.adeo.no"
   ]

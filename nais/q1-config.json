@@ -6,7 +6,7 @@
   "SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL": "https://foerstesidegenerator-q1.nais.preprod.local/api/foerstesidegenerator/v1/foersteside",
   "SKANMOTREFERANSENR_DOKARKIVURL": "https://dokarkiv-q1.nais.preprod.local",
   "SKANMOTREFERANSENR_STSURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
-  "SKANMOTREFERANSENR_SCHEDULE": "0 0/5 * * * *",
+  "SKANMOTREFERANSENR_SCHEDULE": "0+0/5+*+*+*+*",
   "INGRESSES": [
     "https://skanmotreferansenr-q1.nais.preprod.local"
   ]
