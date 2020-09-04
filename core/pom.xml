@@ -69,10 +69,6 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.nav.dok</groupId>
-            <artifactId>foerstesidegenerator-api-v1</artifactId>
-        </dependency>
-        <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
         </dependency>
