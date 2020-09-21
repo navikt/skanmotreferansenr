@@ -61,9 +61,10 @@ public class PostboksReferansenrIT {
     private final String URL_STS = "/rest/v1/sts/token";
     private final String FOERSTESIDE_METADATA_HAPPY = "foersteside/foersteside_HAPPY.json";
     private final String OPPRETT_JOURNALPOST_RESPONSE_HAPPY = "journalpost/opprett_journalpost_response_HAPPY.json";
+    private final String LOGISK_VEDLEGG_ID = "885522";
 
     private final String ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456789_1_1000";
-    private final String LOGISK_VEDLEGG_ID = "885522";
+    private final String ZIP_FILE_NAME_ORDERED_XML_FIRST_NO_EXTENSION = "09.06.2020_R100000000_1_1000_ordered_xml_first_big";
 
     @Inject
     private Path sshdPath;
@@ -99,7 +100,7 @@ public class PostboksReferansenrIT {
         copyFileFromClasspathToInngaaende(ZIP_FILE_NAME_NO_EXTENSION + ".zip");
         setUpHappyStubs();
 
-        await().atMost(ofSeconds(10)).untilAsserted(() -> {
+        await().atMost(ofSeconds(15)).untilAsserted(() -> {
             try {
                 assertThat(Files.list(sshdPath.resolve(FEILMAPPE)
                         .resolve(ZIP_FILE_NAME_NO_EXTENSION))
@@ -121,6 +122,43 @@ public class PostboksReferansenrIT {
         verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
         verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG)));
 
+    }
+
+    @Test
+    public void shouldBehandleZipXmlOrderedLastWithinCompletionTimeout() throws IOException {
+        // 09.06.2020_R100000000_1_1000_ordered_xml_first_big.zip
+        // OK   - 09.06.2020_R100000000_0001
+        // OK   - 09.06.2020_R100000000_0002 (mangler førstesidemetadata, Oppretter journalpost med tema UKJ)
+        // FEIL - 09.06.2020_R100000000_0003 (valideringsfeil, mangler referansenr)
+        // FEIL - 09.06.2020_R100000000_0004 (mangler xml)
+        // FEIL - 09.06.2020_R100000000_0005 (mangler pdf)
+        // OK   - 09.06.2020_R100000000_0006
+        // ...
+        // OK   - 09.06.2020_R100000000_0059
+        copyFileFromClasspathToInngaaende(ZIP_FILE_NAME_ORDERED_XML_FIRST_NO_EXTENSION + ".zip");
+        setUpHappyStubs();
+
+        await().atMost(ofSeconds(15)).untilAsserted(() -> {
+            try {
+                assertThat(Files.list(sshdPath.resolve(FEILMAPPE)
+                        .resolve(ZIP_FILE_NAME_ORDERED_XML_FIRST_NO_EXTENSION))
+                        .collect(Collectors.toList())).hasSize(3);
+            } catch (NoSuchFileException e) {
+                fail();
+            }
+        });
+
+        final List<String> feilmappeContents = Files.list(sshdPath.resolve(FEILMAPPE).resolve(ZIP_FILE_NAME_ORDERED_XML_FIRST_NO_EXTENSION))
+                .map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
+                .collect(Collectors.toList());
+        assertThat(feilmappeContents).containsExactlyInAnyOrder(
+                "09.06.2020_R100000000_0003.zip",
+                "09.06.2020_R100000000_0004.zip",
+                "09.06.2020_R100000000_0005.zip");
+        verify(exactly(55), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1)));
+        verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
+        verify(exactly(56), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
+        verify(exactly(110), postRequestedFor(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG)));
     }
 
     private void preparePath(Path path) throws IOException {

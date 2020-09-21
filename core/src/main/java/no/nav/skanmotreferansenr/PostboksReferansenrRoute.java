@@ -1,6 +1,7 @@
 package no.nav.skanmotreferansenr;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
@@ -23,11 +24,13 @@ public class PostboksReferansenrRoute extends RouteBuilder {
     public static final String KEY_LOGGING_INFO = "fil=${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}, batch=${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}";
     static final int FORVENTET_ANTALL_PER_FORSENDELSE = 2;
 
+    private final SkanmotreferansenrProperties skanmotreferansenrProperties;
     private final PostboksReferansenrService postboksReferansenrService;
     private final ErrorMetricsProcessor errorMetricsProcessor;
 
     @Inject
-    public PostboksReferansenrRoute(PostboksReferansenrService postboksReferansenrService) {
+    public PostboksReferansenrRoute(SkanmotreferansenrProperties skanmotreferansenrProperties, PostboksReferansenrService postboksReferansenrService) {
+        this.skanmotreferansenrProperties = skanmotreferansenrProperties;
         this.postboksReferansenrService = postboksReferansenrService;
         this.errorMetricsProcessor = new ErrorMetricsProcessor();
     }
@@ -69,7 +72,7 @@ public class PostboksReferansenrRoute extends RouteBuilder {
                 .split(new ZipSplitter()).streaming()
                 .aggregate(simple("${file:name.noext.single}"), new PostboksReferansenrSkanningAggregator())
                 .completionSize(FORVENTET_ANTALL_PER_FORSENDELSE)
-                .completionTimeout(TimeUnit.SECONDS.toMillis(1))
+                .completionTimeout(skanmotreferansenrProperties.getCompletiontimeout().toMillis())
                 .setProperty(PROPERTY_FORSENDELSE_FILEBASENAME, simple("${exchangeProperty.CamelAggregatedCorrelationKey}"))
                 .process(new MdcSetterProcessor())
                 .process(exchange -> exchange.getIn().getBody(PostboksReferansenrEnvelope.class).validate())

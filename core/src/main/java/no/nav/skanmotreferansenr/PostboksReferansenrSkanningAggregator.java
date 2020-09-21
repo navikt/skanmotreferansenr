@@ -51,7 +51,7 @@ public class PostboksReferansenrSkanningAggregator implements AggregationStrateg
             final InputStream inputStream = newExchange.getIn().getBody(InputStream.class);
             final byte[] xml = IOUtils.toByteArray(inputStream);
             envelope.setXml(xml);
-        } else if (PDF_EXTENSION.equals(extension)) {
+        } else if (PDF_EXTENSION.equals(extension) || PDF_EXTENSION.toUpperCase().equals(extension)) {
             final InputStream inputStream = newExchange.getIn().getBody(InputStream.class);
             envelope.setPdf(IOUtils.toByteArray(inputStream));
         }
