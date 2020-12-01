@@ -2,7 +2,7 @@ package no.nav.skanmotreferansenr.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.Json;
-import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.consumer.foersteside.FoerstesidegeneratorConsumer;
 import no.nav.skanmotreferansenr.consumer.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {TestConfig.class},
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "spring.cloud.vault.token=123456")
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
 public class FoerstesideIT {

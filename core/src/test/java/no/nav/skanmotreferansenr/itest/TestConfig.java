@@ -2,7 +2,7 @@ package no.nav.skanmotreferansenr.itest;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.CoreConfig;
-import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
 import org.apache.camel.CamelContext;
 import org.apache.camel.spring.boot.CamelContextConfiguration;
