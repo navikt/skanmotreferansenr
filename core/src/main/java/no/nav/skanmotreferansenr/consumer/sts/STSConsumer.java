@@ -1,7 +1,7 @@
 package no.nav.skanmotreferansenr.consumer.sts;
 
 
-import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.consumer.NavHeaders;
 import no.nav.skanmotreferansenr.consumer.sts.data.STSResponse;
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrStsFunctionalException;

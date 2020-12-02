@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.common.Json;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,7 +40,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -49,7 +50,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @AutoConfigureWireMock(port = 0)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("itest")
-public class PostboksReferansenrIT {
+public class PostboksReferansenrEncryptIT {
 
     public static final String INNGAAENDE = "inngaaende";
     public static final String FEILMAPPE = "feilmappe";
@@ -64,8 +65,10 @@ public class PostboksReferansenrIT {
     private final String OPPRETT_JOURNALPOST_RESPONSE_HAPPY = "journalpost/opprett_journalpost_response_HAPPY.json";
     private final String LOGISK_VEDLEGG_ID = "885522";
 
-    private final String ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456789_1_1000";
-    private final String ZIP_FILE_NAME_ORDERED_XML_FIRST_NO_EXTENSION = "09.06.2020_R100000000_1_1000_ordered_xml_first_big";
+    private final String ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456780_1_2000";
+    private final String UNENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456781_2_1000";
+    private final String FAIL_ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456783_3_1000";
+
 
     @Inject
     private Path sshdPath;
@@ -75,7 +78,7 @@ public class PostboksReferansenrIT {
 
     @BeforeEach
     void beforeEach() throws IOException {
-         final Path inngaaende = sshdPath.resolve(INNGAAENDE);
+        final Path inngaaende = sshdPath.resolve(INNGAAENDE);
         final Path processed = inngaaende.resolve("processed");
         final Path feilmappe = sshdPath.resolve(FEILMAPPE);
         try {
@@ -102,33 +105,33 @@ public class PostboksReferansenrIT {
     }
 
     @Test
-    public void shouldBehandleZip() throws IOException {
-        // 09.06.2020_R123456789_1_1000.zip
-        // OK   - 09.06.2020_R123456789_0001
-        // OK   - 09.06.2020_R123456789_0002 (mangler førstesidemetadata, Oppretter journalpost med tema UKJ)
-        // FEIL - 09.06.2020_R123456789_0003 (valideringsfeil, mangler referansenr)
-        // FEIL - 09.06.2020_R123456789_0004 (mangler xml)
-        // FEIL - 09.06.2020_R123456789_0005 (mangler pdf)
-        copyFileFromClasspathToInngaaende(ZIP_FILE_NAME_NO_EXTENSION + ".zip");
+    public void shouldBehandleEncryptedZip() throws IOException {
+        // 09.06.2020_R123456780_1_2000.zip
+        // OK   - 09.06.2020_R123456780_0001
+        // OK   - 09.06.2020_R123456780_0002 (mangler førstesidemetadata, Oppretter journalpost med tema UKJ)
+        // FEIL - 09.06.2020_R123456780_0003 (valideringsfeil, mangler referansenr)
+        // FEIL - 09.06.2020_R123456780_0004 (mangler xml)
+        // FEIL - 09.06.2020_R123456780_0005 (mangler pdf)
+        copyFileFromClasspathToInngaaende(ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".enc.zip");
         setUpHappyStubs();
 
         await().atMost(ofSeconds(15)).untilAsserted(() -> {
             try {
                 assertThat(Files.list(sshdPath.resolve(FEILMAPPE)
-                        .resolve(ZIP_FILE_NAME_NO_EXTENSION))
+                        .resolve(ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION))
                         .collect(Collectors.toList())).hasSize(3);
             } catch (NoSuchFileException e) {
                 fail();
             }
         });
 
-        final List<String> feilmappeContents = Files.list(sshdPath.resolve(FEILMAPPE).resolve(ZIP_FILE_NAME_NO_EXTENSION))
+        final List<String> feilmappeContents = Files.list(sshdPath.resolve(FEILMAPPE).resolve(ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION))
                 .map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
                 .collect(Collectors.toList());
         assertThat(feilmappeContents).containsExactlyInAnyOrder(
-                "09.06.2020_R123456789_0003.zip",
-                "09.06.2020_R123456789_0004.zip",
-                "09.06.2020_R123456789_0005.zip");
+                "09.06.2020_R123456780_0003.zip",
+                "09.06.2020_R123456780_0004.zip",
+                "09.06.2020_R123456780_0005.zip");
         verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1)));
         verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
         verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
@@ -137,41 +140,44 @@ public class PostboksReferansenrIT {
     }
 
     @Test
-    public void shouldBehandleZipXmlOrderedLastWithinCompletionTimeout() throws IOException {
-        // 09.06.2020_R100000000_1_1000_ordered_xml_first_big.zip
-        // OK   - 09.06.2020_R100000000_0001
-        // OK   - 09.06.2020_R100000000_0002 (mangler førstesidemetadata, Oppretter journalpost med tema UKJ)
-        // FEIL - 09.06.2020_R100000000_0003 (valideringsfeil, mangler referansenr)
-        // FEIL - 09.06.2020_R100000000_0004 (mangler xml)
-        // FEIL - 09.06.2020_R100000000_0005 (mangler pdf)
-        // OK   - 09.06.2020_R100000000_0006
-        // ...
-        // OK   - 09.06.2020_R100000000_0059
-        copyFileFromClasspathToInngaaende(ZIP_FILE_NAME_ORDERED_XML_FIRST_NO_EXTENSION + ".zip");
+    public void shouldFailWithUnEncryptedDotEncDotZipExtension() throws IOException {
+        //ZipException: En .enc-file kom inn men filene er ukrypterte
+        //should be sent to feilmappe
+        copyFileFromClasspathToInngaaende(UNENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".enc.zip");
         setUpHappyStubs();
 
         await().atMost(ofSeconds(15)).untilAsserted(() -> {
             try {
-                assertThat(Files.list(sshdPath.resolve(FEILMAPPE)
-                        .resolve(ZIP_FILE_NAME_ORDERED_XML_FIRST_NO_EXTENSION))
-                        .collect(Collectors.toList())).hasSize(3);
+                final List<String> feilmappeContents = Files.list(sshdPath.resolve(FEILMAPPE))
+                        .map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
+                        .collect(Collectors.toList());
+                assertTrue(feilmappeContents.contains(UNENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".enc.zip"));
             } catch (NoSuchFileException e) {
                 fail();
             }
         });
 
-        final List<String> feilmappeContents = Files.list(sshdPath.resolve(FEILMAPPE).resolve(ZIP_FILE_NAME_ORDERED_XML_FIRST_NO_EXTENSION))
-                .map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
-                .collect(Collectors.toList());
-        assertThat(feilmappeContents).containsExactlyInAnyOrder(
-                "09.06.2020_R100000000_0003.zip",
-                "09.06.2020_R100000000_0004.zip",
-                "09.06.2020_R100000000_0005.zip");
-        verify(exactly(55), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1)));
-        verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
-        verify(exactly(56), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
-        verify(exactly(110), postRequestedFor(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG)));
     }
+
+    @Test
+    public void shouldMoveZipToFeilomraadeWhenBadEncryption() throws IOException {
+        //ZipException: Filene er ikke kryptert med AES men en annen krypteringsmetode
+        //should be sent to feilmappe
+        copyFileFromClasspathToInngaaende(FAIL_ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".enc.zip");
+
+        await().atMost(ofSeconds(15)).untilAsserted(() -> {
+            try {
+                final List<String> feilmappeContents = Files.list(sshdPath.resolve(FEILMAPPE))
+                        .map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
+                        .collect(Collectors.toList());
+                assertTrue(feilmappeContents.contains(FAIL_ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".enc.zip"));
+            } catch (NoSuchFileException e) {
+                fail();
+            }
+        });
+
+    }
+
 
     private void preparePath(Path path) throws IOException {
         if (!Files.exists(path)) {

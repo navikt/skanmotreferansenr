@@ -1,7 +1,8 @@
 package no.nav.skanmotreferansenr;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrVaultProperties;
 import no.nav.skanmotreferansenr.metrics.DokTimedAspect;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @ComponentScan(basePackages = "no.nav.skanmotreferansenr")
 @Configuration
-@EnableConfigurationProperties(value = {SkanmotreferansenrProperties.class})
+@EnableConfigurationProperties(value = {SkanmotreferansenrProperties.class, SkanmotreferansenrVaultProperties.class})
 @EnableAspectJAutoProxy
 @EnableRetry
 @EnableScheduling

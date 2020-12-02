@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.config;
+package no.nav.skanmotreferansenr.config.props;
 
 import lombok.Getter;
 import lombok.Setter;

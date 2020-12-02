@@ -1,6 +1,6 @@
 package no.nav.skanmotreferansenr.consumer.foersteside;
 
-import no.nav.skanmotreferansenr.config.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.consumer.NavHeaders;
 import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFinnesIkkeFunctionalException;
