@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
+import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.zipfile.ZipSplitter;
 import org.springframework.stereotype.Component;
@@ -20,9 +22,6 @@ import static org.apache.camel.LoggingLevel.ERROR;
 import static org.apache.camel.LoggingLevel.INFO;
 import static org.apache.camel.LoggingLevel.WARN;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Slf4j
 @Component
 public class PostboksReferansenrRoute extends RouteBuilder {
@@ -48,13 +47,14 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 
 	@Override
 	public void configure() {
-		onException(Exception.class)
+		onException(Exception.class) // legge tilbake paa input mappa
 				.handled(true)
 				.process(new MdcSetterProcessor())
 				.process(errorMetricsProcessor)
 				.log(ERROR, log, "Skanmotreferansenr feilet teknisk for " + KEY_LOGGING_INFO + ". ${exception}. ${exception.stacktrace}")
 				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}-teknisk.zip"))
 				.to("direct:avvik")
+				.to("direct:avvik_teknisk")
 				.log(ERROR, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".");
 
 		// Kjente funksjonelle feil
@@ -103,6 +103,12 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 				.bean(postboksReferansenrService)
 				.process(exchange -> DokCounter.incrementCounter("antall_vellykkede", List.of(DOMAIN, REFERANSENR)))
 				.process(new MdcRemoverProcessor());
+
+		from("direct:avvik_teknisk")
+				.routeId("avvik_teknisk")
+				//.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_OUTPUT_FOLDER + "}_" + avviksFil + ".csv"))
+				.to("{{skanmotreferansenr.endpointuri}}")
+				.log(ERROR, log, "Flytter skanmotreferansenr med " + KEY_LOGGING_INFO + ". Blir flyttet tilbake til filområde.");
 
 		from("direct:avvik")
 				.routeId("avvik")
