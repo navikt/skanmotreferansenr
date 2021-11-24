@@ -2,6 +2,7 @@ package no.nav.skanmotreferansenr.itest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.Json;
+import lombok.SneakyThrows;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +37,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.lang.Thread.sleep;
 import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
@@ -101,6 +103,7 @@ public class PostboksReferansenrIT {
         WireMock.removeAllMappings();
     }
 
+    @SneakyThrows
     @Test
     public void shouldBehandleZip() throws IOException {
         // 09.06.2020_R123456789_1_1000.zip
@@ -112,15 +115,16 @@ public class PostboksReferansenrIT {
         copyFileFromClasspathToInngaaende(ZIP_FILE_NAME_NO_EXTENSION + ".zip");
         setUpHappyStubs();
 
-        await().atMost(ofSeconds(15)).untilAsserted(() -> {
-            try {
-                assertThat(Files.list(sshdPath.resolve(FEILMAPPE)
-                        .resolve(ZIP_FILE_NAME_NO_EXTENSION))
-                        .collect(Collectors.toList())).hasSize(3);
-            } catch (NoSuchFileException e) {
-                fail();
-            }
-        });
+        sleep(15000);
+//        await().atMost(ofSeconds(15)).untilAsserted(() -> {
+//            try {
+//                assertThat(Files.list(sshdPath.resolve(FEILMAPPE)
+//                        .resolve(ZIP_FILE_NAME_NO_EXTENSION))
+//                        .collect(Collectors.toList())).hasSize(1);
+//            } catch (NoSuchFileException e) {
+//                fail();
+//            }
+//        });
 
         final List<String> feilmappeContents = Files.list(sshdPath.resolve(FEILMAPPE).resolve(ZIP_FILE_NAME_NO_EXTENSION))
                 .map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
@@ -136,6 +140,7 @@ public class PostboksReferansenrIT {
 
     }
 
+    @SneakyThrows
     @Test
     public void shouldBehandleZipXmlOrderedLastWithinCompletionTimeout() throws IOException {
         // 09.06.2020_R100000000_1_1000_ordered_xml_first_big.zip
@@ -150,7 +155,9 @@ public class PostboksReferansenrIT {
         copyFileFromClasspathToInngaaende(ZIP_FILE_NAME_ORDERED_XML_FIRST_NO_EXTENSION + ".zip");
         setUpHappyStubs();
 
-        await().atMost(ofSeconds(15)).untilAsserted(() -> {
+//        sleep(5000);
+
+        await().atMost(ofSeconds(20)).untilAsserted(() -> {
             try {
                 assertThat(Files.list(sshdPath.resolve(FEILMAPPE)
                         .resolve(ZIP_FILE_NAME_ORDERED_XML_FIRST_NO_EXTENSION))

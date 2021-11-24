@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
-import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.zipfile.ZipSplitter;
@@ -47,23 +46,23 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 
 	@Override
 	public void configure() {
-		onException(Exception.class) // legge tilbake paa input mappa
+		onException(AbstractSkanmotreferansenrFunctionalException.class) // legge tilbake paa input mappa
 				.handled(true)
 				.process(new MdcSetterProcessor())
 				.process(errorMetricsProcessor)
 				.log(ERROR, log, "Skanmotreferansenr feilet teknisk for " + KEY_LOGGING_INFO + ". ${exception}. ${exception.stacktrace}")
-				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}-teknisk.zip"))
-				.to("direct:avvik")
+				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}.zip"))
+				//.to("direct:avvik")
 				.to("direct:avvik_teknisk")
-				.log(ERROR, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".");
+				.log(ERROR, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til inputmappa. " + KEY_LOGGING_INFO + ".");
 
 		// Kjente funksjonelle feil
-		onException(AbstractSkanmotreferansenrFunctionalException.class)
+		onException(Exception.class)
 				.handled(true)
 				.process(new MdcSetterProcessor())
 				.process(errorMetricsProcessor)
 				.log(WARN, log, "Skanmotreferansenr feilet funksjonelt for " + KEY_LOGGING_INFO + ". ${exception}")
-				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}.zip"))
+				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}.zip"))
 				.to("direct:avvik")
 				.log(WARN, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".");
 
@@ -106,8 +105,10 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 
 		from("direct:avvik_teknisk")
 				.routeId("avvik_teknisk")
-				//.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_OUTPUT_FOLDER + "}_" + avviksFil + ".csv"))
-				.to("{{skanmotreferansenr.endpointuri}}")
+				.setBody(simple("${body.createZip}"))
+				.to("{{skanmotreferansenr.endpointuri}}/{{skanmotreferansenr.filomraade.inngaaendemappe}}" +
+						"?{{skanmotreferansenr.endpointconfig}}")
+				.log(INFO, log, "Dette er filnavn> " + "${header." + FILE_NAME + "}")
 				.log(ERROR, log, "Flytter skanmotreferansenr med " + KEY_LOGGING_INFO + ". Blir flyttet tilbake til filområde.");
 
 		from("direct:avvik")
