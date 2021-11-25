@@ -1,5 +1,8 @@
 package no.nav.skanmotreferansenr.consumer.opprettjournalpost;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.consumer.opprettjournalpost.data.OpprettJournalpostRequest;
 import no.nav.skanmotreferansenr.consumer.opprettjournalpost.data.OpprettJournalpostResponse;
@@ -28,9 +31,10 @@ import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_CALL_ID;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-
+@Slf4j
 @Component
 public class OpprettJournalpostConsumer {
 
@@ -40,10 +44,14 @@ public class OpprettJournalpostConsumer {
 	private final String REST_JOURNALPOST = "rest/journalpostapi/v1/journalpost";
 	private final String QUERY_FERDIGSTILL_FALSE = "foersoekFerdigstill=false";
 
+	private final ObjectMapper mapper;
+
 	public OpprettJournalpostConsumer(
 			RestTemplateBuilder restTemplateBuilder,
-			SkanmotreferansenrProperties skanmotreferansenrProperties
+			SkanmotreferansenrProperties skanmotreferansenrProperties,
+			ObjectMapper mapper
 	) {
+		this.mapper = mapper;
 		this.serviceusername = skanmotreferansenrProperties.getServiceuser().getUsername();
 		this.dokarkivUrl = skanmotreferansenrProperties.getDokarkivurl();
 		this.restTemplate = restTemplateBuilder
@@ -68,6 +76,15 @@ public class OpprettJournalpostConsumer {
 					.getBody();
 
 		} catch (HttpClientErrorException e) {
+			if (CONFLICT.value() == e.getRawStatusCode()) {
+				try {
+					OpprettJournalpostResponse journalpost = mapper.readValue(e.getResponseBodyAsString(), OpprettJournalpostResponse.class);
+					log.info("Det eksisterer allerede en journalpost i dokarkiv med JournalpostId: {}", journalpost.getJournalpostId());
+					return journalpost;
+				} catch (JsonProcessingException jsonProcessingException) {
+					throw new OpprettJournalpostFunctionalException("Ikke mulig å konvertere respons ifra dokarkiv med eksternReferanseId=" + opprettJournalpostRequest.getEksternReferanseId(), e);
+				}
+			}
 			throw new OpprettJournalpostFunctionalException(String.format("opprettJournalpost feilet funksjonelt med statusKode=%s. Feilmelding=%s", e
 					.getStatusCode(), e.getMessage()), e);
 		} catch (HttpServerErrorException e) {

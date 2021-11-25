@@ -11,8 +11,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -23,8 +21,6 @@ import java.net.URI;
 
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CALL_ID;
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CONSUMER_ID;
-import static no.nav.skanmotreferansenr.consumer.RetryConstants.RETRY_DELAY;
-import static no.nav.skanmotreferansenr.consumer.RetryConstants.RETRY_RETRIES;
 import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_CALL_ID;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
@@ -39,8 +35,6 @@ public class LeggTilLogiskVedleggConsumer {
 	private final String REST_DOKUMENTINFO = "rest/journalpostapi/v1/dokumentInfo";
 	private final String LEGG_TIL_LOGISK_VEDLEGG_TJENESTE = "logiskVedlegg/";
 
-
-
 	public LeggTilLogiskVedleggConsumer(
 			RestTemplateBuilder restTemplateBuilder,
 			SkanmotreferansenrProperties skanmotreferansenrProperties
@@ -51,7 +45,6 @@ public class LeggTilLogiskVedleggConsumer {
 	}
 
 	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "leggTilLogiskVedlegg"}, percentiles = {0.5, 0.95}, histogram = true)
-	@Retryable(maxAttempts = RETRY_RETRIES, backoff = @Backoff(delay = RETRY_DELAY))
 	public LeggTilLogiskVedleggResponse leggTilLogiskVedlegg(
 			LeggTilLogiskVedleggRequest request,
 			String dokumentInfoId, String token

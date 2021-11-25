@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
+import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.zipfile.ZipSplitter;
@@ -11,16 +12,11 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static no.nav.skanmotreferansenr.metrics.DokCounter.DOMAIN;
-import static no.nav.skanmotreferansenr.metrics.DokCounter.REFERANSENR;
-import static org.apache.camel.Exchange.FILE_NAME;
-import static org.apache.camel.Exchange.FILE_NAME_PRODUCED;
-import static org.apache.camel.LoggingLevel.ERROR;
-import static org.apache.camel.LoggingLevel.INFO;
-import static org.apache.camel.LoggingLevel.WARN;
-
+/**
+ * @author Joakim Bjørnstad, Jbit AS
+ */
 @Slf4j
 @Component
 public class PostboksReferansenrRoute extends RouteBuilder {
@@ -35,40 +31,36 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 	private final ErrorMetricsProcessor errorMetricsProcessor;
 
 	@Inject
-	public PostboksReferansenrRoute(
-			SkanmotreferansenrProperties skanmotreferansenrProperties,
-			PostboksReferansenrService postboksReferansenrService
-	) {
+	public PostboksReferansenrRoute(SkanmotreferansenrProperties skanmotreferansenrProperties, PostboksReferansenrService postboksReferansenrService) {
 		this.skanmotreferansenrProperties = skanmotreferansenrProperties;
 		this.postboksReferansenrService = postboksReferansenrService;
 		this.errorMetricsProcessor = new ErrorMetricsProcessor();
 	}
 
 	@Override
-	public void configure() {
-		onException(AbstractSkanmotreferansenrFunctionalException.class) // legge tilbake paa input mappa
-				.handled(true)
-				.process(new MdcSetterProcessor())
-				.process(errorMetricsProcessor)
-				.log(ERROR, log, "Skanmotreferansenr feilet teknisk for " + KEY_LOGGING_INFO + ". ${exception}. ${exception.stacktrace}")
-				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}.zip"))
-				//.to("direct:avvik")
-				.to("direct:avvik_teknisk")
-				.log(ERROR, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til inputmappa. " + KEY_LOGGING_INFO + ".");
-
-		// Kjente funksjonelle feil
+	public void configure() throws Exception {
 		onException(Exception.class)
 				.handled(true)
 				.process(new MdcSetterProcessor())
 				.process(errorMetricsProcessor)
-				.log(WARN, log, "Skanmotreferansenr feilet funksjonelt for " + KEY_LOGGING_INFO + ". ${exception}")
-				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}.zip"))
+				.log(LoggingLevel.ERROR, log, "Skanmotreferansenr feilet teknisk for " + KEY_LOGGING_INFO + ". ${exception}. ${exception.stacktrace}")
+				.setHeader(Exchange.FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}-teknisk.zip"))
 				.to("direct:avvik")
-				.log(WARN, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".");
+				.log(LoggingLevel.ERROR, log, "Skanmotreferansenr skrev feiletzip=${header." + Exchange.FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".");
+
+		// Kjente funksjonelle feil
+		onException(AbstractSkanmotreferansenrFunctionalException.class)
+				.handled(true)
+				.process(new MdcSetterProcessor())
+				.process(errorMetricsProcessor)
+				.log(LoggingLevel.WARN, log, "Skanmotreferansenr feilet funksjonelt for " + KEY_LOGGING_INFO + ". ${exception}")
+				.setHeader(Exchange.FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}.zip"))
+				.to("direct:avvik")
+				.log(LoggingLevel.WARN, log, "Skanmotreferansenr skrev feiletzip=${header." + Exchange.FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".");
 
 		from("{{skanmotreferansenr.endpointuri}}/{{skanmotreferansenr.filomraade.inngaaendemappe}}" +
 				"?{{skanmotreferansenr.endpointconfig}}" +
-				"&delay=" + SECONDS.toMillis(60) +
+				"&delay=" + TimeUnit.SECONDS.toMillis(60) +
 				"&antExclude=*enc.zip, *enc.ZIP" +
 				"&antInclude=*.zip,*.ZIP" +
 				"&initialDelay=1000" +
@@ -76,7 +68,7 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 				"&move=processed" +
 				"&scheduler=spring&scheduler.cron={{skanmotreferansenr.schedule}}")
 				.routeId("read_zip_from_sftp")
-				.log(INFO, log, "Skanmotreferansenr starter behandling av fil=${file:absolute.path}.")
+				.log(LoggingLevel.INFO, log, "Skanmotreferansenr starter behandling av fil=${file:absolute.path}.")
 				.setProperty(PROPERTY_FORSENDELSE_ZIPNAME, simple("${file:name}"))
 				.setProperty(PROPERTY_FORSENDELSE_BATCHNAVN, simple("${file:name.noext.single}"))
 				.process(new MdcSetterProcessor())
@@ -86,7 +78,7 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 				.completionTimeout(skanmotreferansenrProperties.getCompletiontimeout().toMillis())
 				.setProperty(PROPERTY_FORSENDELSE_FILEBASENAME, simple("${exchangeProperty.CamelAggregatedCorrelationKey}"))
 				.process(new MdcSetterProcessor())
-				.process(exchange -> DokCounter.incrementCounter("antall_innkommende", List.of(DOMAIN, REFERANSENR)))
+				.process(exchange -> DokCounter.incrementCounter("antall_innkommende", List.of(DokCounter.DOMAIN, DokCounter.REFERANSENR)))
 				.process(exchange -> exchange.getIn().getBody(PostboksReferansenrEnvelope.class).validate())
 				.bean(new SkanningmetadataUnmarshaller())
 				.setProperty(PROPERTY_FORSENDELSE_BATCHNAVN, simple("${body.skanningmetadata.journalpost.batchnavn}"))
@@ -94,22 +86,14 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 				.end() // aggregate
 				.end() // split
 				.process(new MdcRemoverProcessor())
-				.log(INFO, log, "Skanmotreferansenr behandlet ferdig fil=${file:absolute.path}.");
+				.log(LoggingLevel.INFO, log, "Skanmotreferansenr behandlet ferdig fil=${file:absolute.path}.");
 
 		from("direct:process_referansenr")
 				.routeId("process_referansenr")
 				.process(new MdcSetterProcessor())
 				.bean(postboksReferansenrService)
-				.process(exchange -> DokCounter.incrementCounter("antall_vellykkede", List.of(DOMAIN, REFERANSENR)))
+				.process(exchange -> DokCounter.incrementCounter("antall_vellykkede", List.of(DokCounter.DOMAIN, DokCounter.REFERANSENR)))
 				.process(new MdcRemoverProcessor());
-
-		from("direct:avvik_teknisk")
-				.routeId("avvik_teknisk")
-				.setBody(simple("${body.createZip}"))
-				.to("{{skanmotreferansenr.endpointuri}}/{{skanmotreferansenr.filomraade.inngaaendemappe}}" +
-						"?{{skanmotreferansenr.endpointconfig}}")
-				.log(INFO, log, "Dette er filnavn> " + "${header." + FILE_NAME + "}")
-				.log(ERROR, log, "Flytter skanmotreferansenr med " + KEY_LOGGING_INFO + ". Blir flyttet tilbake til filområde.");
 
 		from("direct:avvik")
 				.routeId("avvik")
@@ -118,7 +102,7 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 				.to("{{skanmotreferansenr.endpointuri}}/{{skanmotreferansenr.filomraade.feilmappe}}" +
 						"?{{skanmotreferansenr.endpointconfig}}")
 				.otherwise()
-				.log(ERROR, log, "Skanmotreferansenr teknisk feil der " + KEY_LOGGING_INFO + ". ikke ble flyttet til feilområde. Må analyseres.")
+				.log(LoggingLevel.ERROR, log, "Skanmotreferansenr teknisk feil der " + KEY_LOGGING_INFO + ". ikke ble flyttet til feilområde. Må analyseres.")
 				.end()
 				.process(new MdcRemoverProcessor());
 	}
