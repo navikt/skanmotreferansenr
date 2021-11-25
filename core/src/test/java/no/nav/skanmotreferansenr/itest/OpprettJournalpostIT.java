@@ -10,6 +10,7 @@ import no.nav.skanmotreferansenr.consumer.opprettjournalpost.data.OpprettJournal
 import no.nav.skanmotreferansenr.consumer.opprettjournalpost.data.Tilleggsopplysning;
 import no.nav.skanmotreferansenr.consumer.sts.STSConsumer;
 import no.nav.skanmotreferansenr.consumer.sts.data.STSResponse;
+import no.nav.skanmotreferansenr.exceptions.functional.OpprettJournalpostFunctionalException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OpprettJournalpostIT extends AbstractItest{
 
@@ -48,6 +50,25 @@ public class OpprettJournalpostIT extends AbstractItest{
 		assertEquals(JOURNALPOST_ID, res.getJournalpostId());
 		assertEquals(1, res.getDokumenter().size());
 		assertEquals(DOKUMENT_INFO_ID, res.getDokumenter().get(0).getDokumentInfoId());
+	}
+
+
+	@Test
+	public void shouldGetJournalpostWhenResponseIs () {
+		this.StubOpprettJournalpostResponseConflictWithValidResponse();
+
+		OpprettJournalpostResponse response = opprettJournalpostConsumer.opprettJournalpost("token", null);
+		assertEquals("567010363", response.getJournalpostId());
+	}
+
+	@Test
+	public void shouldNotGetJournalpostWhenConflictDoesNotCorrectHaveBody() {
+		this.StubOpprettJournalpostResponseConflictWithInvalidResponse();
+
+		assertThrows(
+				OpprettJournalpostFunctionalException.class,
+				() -> opprettJournalpostConsumer.opprettJournalpost("token", null)
+		);
 	}
 
 	private OpprettJournalpostRequest createOpprettJournalpostRequest() {
