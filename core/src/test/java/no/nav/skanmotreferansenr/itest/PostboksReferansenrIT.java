@@ -51,8 +51,16 @@ public class PostboksReferansenrIT extends AbstractItest {
 
 		try {
 			preparePath(inngaaende);
-			preparePath(feilmappe);
+		} catch (Exception e) {
+			//noop. Windows sliter med å slette filene, de blir kun satt til "unavailable"
+		}
+		try {
 			preparePath(processed);
+		} catch (Exception e) {
+			//noop. Windows sliter med å slette filene, de blir kun satt til "unavailable"
+		}
+		try {
+			preparePath(feilmappe);
 		} catch (Exception e) {
 			//noop. Windows sliter med å slette filene, de blir kun satt til "unavailable"
 		}
