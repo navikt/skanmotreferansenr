@@ -82,7 +82,7 @@ public class OpprettJournalpostConsumer {
 					log.info("Det eksisterer allerede en journalpost i dokarkiv med JournalpostId: {}", journalpost.getJournalpostId());
 					return journalpost;
 				} catch (JsonProcessingException jsonProcessingException) {
-					throw new OpprettJournalpostFunctionalException("Ikke mulig å konvertere respons ifra dokarkiv med eksternReferanseId=" + opprettJournalpostRequest.getEksternReferanseId(), e);
+					throw new OpprettJournalpostFunctionalException("Ikke mulig å konvertere respons ifra dokarkiv.", e);
 				}
 			}
 			throw new OpprettJournalpostFunctionalException(String.format("opprettJournalpost feilet funksjonelt med statusKode=%s. Feilmelding=%s", e

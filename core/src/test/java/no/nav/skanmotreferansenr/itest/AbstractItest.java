@@ -10,12 +10,9 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -26,6 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -46,7 +44,6 @@ public class AbstractItest {
 	String URL_FOERSTESIDEGENERATOR_OK_1 = "/api/foerstesidegenerator/v1/foersteside/1111111111111";
 	String URL_FOERSTESIDEGENERATOR_NOT_FOUND = "/api/foerstesidegenerator/v1/foersteside/2222222222222";
 
-	private final String MOTTA_DOKUMENT_UTGAAENDE_SKANNING_TJENESTE = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
 	String URL_DOKARKIV_JOURNALPOST_GEN = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
 	String URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG = "/rest/journalpostapi/v1/dokumentInfo/[0-9]+/logiskVedlegg/";
 
@@ -82,17 +79,12 @@ public class AbstractItest {
 
 	}
 
-	public void stubForDokArkiv() throws IOException {
+	public void stubForDokArkiv() {
 		stubFor(post(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN))
 				.willReturn(aResponse()
 						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("journalpost/opprett_journalpost_response_HAPPY.json")));
-
-		stubFor(post(urlMatching(MOTTA_DOKUMENT_UTGAAENDE_SKANNING_TJENESTE))
-				.willReturn(aResponse()
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withBody(classpathToString("__files/journalpost/opprett_journalpost_response_HAPPY.json"))));
 
 		stubFor(post(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG))
 				.willReturn(aResponse()
@@ -102,7 +94,21 @@ public class AbstractItest {
 						))));
 	}
 
-	private static String classpathToString(String classpathResource) throws IOException {
+	public void StubOpprettJournalpostResponseConflictWithValidResponse() {
+			stubFor(post("/rest/journalpostapi/v1/journalpost?foersoekFerdigstill=false").willReturn(aResponse()
+					.withStatus(CONFLICT.value())
+					.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+					.withBody(classpathToString("__files/journalpost/allerede_opprett_journalpost_response_HAPPY.json"))));
+	}
+
+	protected void StubOpprettJournalpostResponseConflictWithInvalidResponse() {
+		stubFor(post("/rest/journalpostapi/v1/journalpost?foersoekFerdigstill=false").willReturn(aResponse()
+				.withStatus(CONFLICT.value())
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
+	}
+
+	@SneakyThrows
+	private static String classpathToString(String classpathResource) {
 		InputStream inputStream = new ClassPathResource(classpathResource).getInputStream();
 		return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
 	}
