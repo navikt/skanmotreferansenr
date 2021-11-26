@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.Duration;
 
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CALL_ID;
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CONSUMER_ID;
@@ -55,6 +56,8 @@ public class OpprettJournalpostConsumer {
 		this.serviceusername = skanmotreferansenrProperties.getServiceuser().getUsername();
 		this.dokarkivUrl = skanmotreferansenrProperties.getDokarkivurl();
 		this.restTemplate = restTemplateBuilder
+				.setReadTimeout(Duration.ofMillis(10000L))
+				.setConnectTimeout(Duration.ofMillis(10000L))
 				.build();
 	}
 
