@@ -27,7 +27,7 @@ import java.time.Duration;
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CALL_ID;
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CONSUMER_ID;
 import static no.nav.skanmotreferansenr.consumer.RetryConstants.RETRY_DELAY;
-import static no.nav.skanmotreferansenr.consumer.RetryConstants.RETRY_RETRIES;
+import static no.nav.skanmotreferansenr.consumer.RetryConstants.MAX_RETRIES;
 import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_CALL_ID;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
@@ -56,12 +56,12 @@ public class OpprettJournalpostConsumer {
 		this.serviceusername = skanmotreferansenrProperties.getServiceuser().getUsername();
 		this.dokarkivUrl = skanmotreferansenrProperties.getDokarkivurl();
 		this.restTemplate = restTemplateBuilder
-				.setReadTimeout(Duration.ofMillis(10000L))
-				.setConnectTimeout(Duration.ofMillis(10000L))
+				.setReadTimeout(Duration.ofSeconds(150))
+				.setConnectTimeout(Duration.ofSeconds(5))
 				.build();
 	}
 
-	@Retryable(maxAttempts = RETRY_RETRIES, backoff = @Backoff(delay = RETRY_DELAY))
+	@Retryable(maxAttempts = MAX_RETRIES, backoff = @Backoff(delay = RETRY_DELAY))
 	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "opprettJournalpost"}, percentiles = {0.5, 0.95}, histogram = true)
 	public OpprettJournalpostResponse opprettJournalpost(
 			String token,
@@ -79,10 +79,13 @@ public class OpprettJournalpostConsumer {
 					.getBody();
 
 		} catch (HttpClientErrorException e) {
-			if (CONFLICT.value() == e.getRawStatusCode()) {
+			if (CONFLICT == e.getStatusCode()) {
 				try {
 					OpprettJournalpostResponse journalpost = mapper.readValue(e.getResponseBodyAsString(), OpprettJournalpostResponse.class);
-					log.info("Det eksisterer allerede en journalpost i dokarkiv med JournalpostId: {}", journalpost.getJournalpostId());
+					log.info("Det eksisterer allerede en journalpost i dokarkiv dokarkiv med fil={}. " +
+							"Denne har journalpostId={}. Oppretter ikke ny journalpost.",
+							opprettJournalpostRequest.getEksternReferanseId(),
+							journalpost.getJournalpostId());
 					return journalpost;
 				} catch (JsonProcessingException jsonProcessingException) {
 					throw new OpprettJournalpostFunctionalException("Ikke mulig å konvertere respons ifra dokarkiv.", e);

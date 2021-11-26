@@ -56,8 +56,11 @@ public class OpprettJournalpostIT extends AbstractItest{
 	@Test
 	public void shouldGetJournalpostWhenResponseIs () {
 		this.StubOpprettJournalpostResponseConflictWithValidResponse();
+		OpprettJournalpostRequest request = OpprettJournalpostRequest.builder()
+				.eksternReferanseId("ekstern")
+				.build();
 
-		OpprettJournalpostResponse response = opprettJournalpostConsumer.opprettJournalpost("token", null);
+		OpprettJournalpostResponse response = opprettJournalpostConsumer.opprettJournalpost("token", request);
 		assertEquals("567010363", response.getJournalpostId());
 	}
 

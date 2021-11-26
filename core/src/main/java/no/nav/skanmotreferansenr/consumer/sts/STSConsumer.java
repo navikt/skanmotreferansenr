@@ -2,18 +2,15 @@ package no.nav.skanmotreferansenr.consumer.sts;
 
 
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
-import no.nav.skanmotreferansenr.consumer.NavHeaders;
 import no.nav.skanmotreferansenr.consumer.sts.data.STSResponse;
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrStsFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.SkanmotreferansenrStsTechnicalException;
-import no.nav.skanmotreferansenr.mdc.MDCConstants;
 import no.nav.skanmotreferansenr.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -28,7 +25,7 @@ import static no.nav.skanmotreferansenr.config.LocalCacheConfig.STS_CACHE;
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CALL_ID;
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CONSUMER_ID;
 import static no.nav.skanmotreferansenr.consumer.RetryConstants.RETRY_DELAY;
-import static no.nav.skanmotreferansenr.consumer.RetryConstants.RETRY_RETRIES;
+import static no.nav.skanmotreferansenr.consumer.RetryConstants.MAX_RETRIES;
 import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_CALL_ID;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
@@ -59,7 +56,7 @@ public class STSConsumer {
 	}
 
 	@Cacheable(STS_CACHE)
-	@Retryable(maxAttempts = RETRY_RETRIES, backoff = @Backoff(delay = RETRY_DELAY))
+	@Retryable(maxAttempts = MAX_RETRIES, backoff = @Backoff(delay = RETRY_DELAY))
 	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "getSTSToken"}, percentiles = {0.5, 0.95}, histogram = true)
 	public STSResponse getSTSToken() {
 		try {
