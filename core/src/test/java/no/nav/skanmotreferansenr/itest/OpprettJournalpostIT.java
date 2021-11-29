@@ -21,7 +21,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class OpprettJournalpostIT extends AbstractItest{
+public class OpprettJournalpostIT extends AbstractItest {
 
 	private final byte[] DUMMY_FILE = "dummyfile".getBytes();
 	private final String JOURNALPOST_ID = "467010363";
@@ -54,7 +54,7 @@ public class OpprettJournalpostIT extends AbstractItest{
 
 
 	@Test
-	public void shouldGetJournalpostWhenResponseIs () {
+	public void shouldGetJournalpostWhenResponseIs() {
 		this.StubOpprettJournalpostResponseConflictWithValidResponse();
 		OpprettJournalpostRequest request = OpprettJournalpostRequest.builder()
 				.eksternReferanseId("ekstern")
