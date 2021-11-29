@@ -1,7 +1,6 @@
 package no.nav.skanmotreferansenr.itest;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.common.Json;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.consumer.opprettjournalpost.OpprettJournalpostConsumer;
 import no.nav.skanmotreferansenr.consumer.opprettjournalpost.data.Dokument;
@@ -11,128 +10,102 @@ import no.nav.skanmotreferansenr.consumer.opprettjournalpost.data.OpprettJournal
 import no.nav.skanmotreferansenr.consumer.opprettjournalpost.data.Tilleggsopplysning;
 import no.nav.skanmotreferansenr.consumer.sts.STSConsumer;
 import no.nav.skanmotreferansenr.consumer.sts.data.STSResponse;
-import org.junit.jupiter.api.AfterEach;
+import no.nav.skanmotreferansenr.exceptions.functional.OpprettJournalpostFunctionalException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {TestConfig.class},
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "spring.cloud.vault.token=123456")
-@AutoConfigureWireMock(port = 0)
-@ActiveProfiles("itest")
-public class OpprettJournalpostIT {
+public class OpprettJournalpostIT extends AbstractItest {
 
-    private final byte[] DUMMY_FILE = "dummyfile".getBytes();
-    private final String JOURNALPOST_ID = "467010363";
-    private final String DOKUMENT_TITTEL = "Søknad om dagpenger ved permittering";
-    private final String DOKUMENT_INFO_ID = "485227498";
-    private final String MOTTA_DOKUMENT_UTGAAENDE_SKANNING_TJENESTE = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
-    private final String URL_STS = "/rest/v1/sts/token";
+	private final byte[] DUMMY_FILE = "dummyfile".getBytes();
+	private final String JOURNALPOST_ID = "467010363";
+	private final String DOKUMENT_INFO_ID = "485227498";
 
-    private OpprettJournalpostConsumer opprettJournalpostConsumer;
-    private STSConsumer stsConsumer;
+	private OpprettJournalpostConsumer opprettJournalpostConsumer;
+	private STSConsumer stsConsumer;
 
-    @Autowired
-    private SkanmotreferansenrProperties properties;
+	@Autowired
+	private SkanmotreferansenrProperties properties;
 
-    @BeforeEach
-    void setUpConsumer() {
-        setUpStubs();
-        stsConsumer = new STSConsumer(new RestTemplateBuilder(), properties);
-        opprettJournalpostConsumer = new OpprettJournalpostConsumer(new RestTemplateBuilder(), properties);
-    }
+	@Autowired
+	private ObjectMapper objectMapper;
 
-    @AfterEach
-    void tearDown() {
-        WireMock.reset();
-        WireMock.resetAllRequests();
-        WireMock.removeAllMappings();
-    }
+	@BeforeEach
+	void setUpConsumer() {
+		stsConsumer = new STSConsumer(new RestTemplateBuilder(), properties);
+		opprettJournalpostConsumer = new OpprettJournalpostConsumer(new RestTemplateBuilder(), properties, objectMapper);
+	}
 
-    private void setUpStubs() {
-        stubFor(post(urlMatching(MOTTA_DOKUMENT_UTGAAENDE_SKANNING_TJENESTE))
-                .willReturn(aResponse().withHeader("Content-Type", "application/json")
-                        .withJsonBody(Json.node(
-                                "{" +
-                                        "\"journalpostId\": \"467010363\"," +
-                                        "\"journalpostferdigstilt\": true," +
-                                        "  \"dokumenter\": [" +
-                                        "    {" +
-                                        "      \"dokumentInfoId\": \"" + DOKUMENT_INFO_ID + "\"," +
-                                        "      \"brevkode\": \"NAV 04-01.04\"," +
-                                        "      \"tittel\": \"" + DOKUMENT_TITTEL + "\"" +
-                                        "    }" +
-                                        "  ]" +
-                                        "}"
-                        )))
-        );
-        stubFor(post(urlMatching(URL_STS))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withJsonBody(Json.node(
-                                "{\"access_token\":\"MockToken\",\"token_type\":\"Bearer\",\"expires_in\":3600}"
-                        )))
-        );
-    }
+	@Test
+	public void shouldOpprettJournalpost() {
+		OpprettJournalpostRequest request = createOpprettJournalpostRequest();
+		STSResponse stsResponse = stsConsumer.getSTSToken();
+		OpprettJournalpostResponse res = opprettJournalpostConsumer.opprettJournalpost(stsResponse.getAccess_token(), request);
+		assertEquals(JOURNALPOST_ID, res.getJournalpostId());
+		assertEquals(1, res.getDokumenter().size());
+		assertEquals(DOKUMENT_INFO_ID, res.getDokumenter().get(0).getDokumentInfoId());
+	}
 
 
-    @Test
-    public void shouldOpprettJournalpost() {
-        OpprettJournalpostRequest request = createOpprettJournalpostRequest();
-        STSResponse stsResponse = stsConsumer.getSTSToken();
-        OpprettJournalpostResponse res = opprettJournalpostConsumer.opprettJournalpost(stsResponse.getAccess_token(), request);
-        assertEquals(JOURNALPOST_ID, res.getJournalpostId());
-        assertEquals(1, res.getDokumenter().size());
-        assertEquals(DOKUMENT_INFO_ID, res.getDokumenter().get(0).getDokumentInfoId());
-    }
+	@Test
+	public void shouldGetJournalpostWhenResponseIs() {
+		this.StubOpprettJournalpostResponseConflictWithValidResponse();
+		OpprettJournalpostRequest request = OpprettJournalpostRequest.builder()
+				.eksternReferanseId("ekstern")
+				.build();
 
-    private OpprettJournalpostRequest createOpprettJournalpostRequest() {
-        List<Tilleggsopplysning> tilleggsopplysninger = List.of(
-                new Tilleggsopplysning("fysiskPostboks", "1400"),
-                new Tilleggsopplysning("strekkodePostboks", "1400"),
-                new Tilleggsopplysning("endorsernr", "3110190003NAV743506")
-        );
+		OpprettJournalpostResponse response = opprettJournalpostConsumer.opprettJournalpost("token", request);
+		assertEquals("567010363", response.getJournalpostId());
+	}
 
-        DokumentVariant pdf = DokumentVariant.builder()
-                .filtype("pdf")
-                .variantformat("ARKIV")
-                .fysiskDokument(DUMMY_FILE)
-                .filnavn("dummy.pdf")
-                .batchnavn("xml_pdf_pairs_testdata.zip")
-                .build();
+	@Test
+	public void shouldNotGetJournalpostWhenConflictDoesNotCorrectHaveBody() {
+		this.StubOpprettJournalpostResponseConflictWithInvalidResponse();
 
-        DokumentVariant xml = DokumentVariant.builder()
-                .filtype("xml")
-                .variantformat("ORIGINAL")
-                .fysiskDokument(DUMMY_FILE)
-                .filnavn("dummy.xml")
-                .batchnavn("xml_pdf_pairs_testdata.zip")
-                .build();
+		assertThrows(
+				OpprettJournalpostFunctionalException.class,
+				() -> opprettJournalpostConsumer.opprettJournalpost("token", null)
+		);
+	}
 
-        List<Dokument> dokumenter = List.of(
-                Dokument.builder()
-                        .dokumentVarianter(List.of(pdf, xml))
-                        .build()
-        );
+	private OpprettJournalpostRequest createOpprettJournalpostRequest() {
+		List<Tilleggsopplysning> tilleggsopplysninger = List.of(
+				new Tilleggsopplysning("fysiskPostboks", "1400"),
+				new Tilleggsopplysning("strekkodePostboks", "1400"),
+				new Tilleggsopplysning("endorsernr", "3110190003NAV743506")
+		);
 
-        return OpprettJournalpostRequest.builder()
-                .tilleggsopplysninger(tilleggsopplysninger)
-                .dokumenter(dokumenter)
-                .build();
-    }
+		DokumentVariant pdf = DokumentVariant.builder()
+				.filtype("pdf")
+				.variantformat("ARKIV")
+				.fysiskDokument(DUMMY_FILE)
+				.filnavn("dummy.pdf")
+				.batchnavn("xml_pdf_pairs_testdata.zip")
+				.build();
+
+		DokumentVariant xml = DokumentVariant.builder()
+				.filtype("xml")
+				.variantformat("ORIGINAL")
+				.fysiskDokument(DUMMY_FILE)
+				.filnavn("dummy.xml")
+				.batchnavn("xml_pdf_pairs_testdata.zip")
+				.build();
+
+		List<Dokument> dokumenter = List.of(
+				Dokument.builder()
+						.dokumentVarianter(List.of(pdf, xml))
+						.build()
+		);
+
+		return OpprettJournalpostRequest.builder()
+				.tilleggsopplysninger(tilleggsopplysninger)
+				.dokumenter(dokumenter)
+				.build();
+	}
 }

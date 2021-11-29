@@ -33,7 +33,7 @@
         <javax.bind.version>2.3.1</javax.bind.version>
         <jcraft.jsch.version>0.1.55</jcraft.jsch.version>
         <logstash-logback-encoder.version>6.4</logstash-logback-encoder.version>
-        <lombok.version>1.18.12</lombok.version>
+        <lombok.version>1.18.22</lombok.version>
         <spring-cloud-contract-wiremock.version>2.2.2.RELEASE</spring-cloud-contract-wiremock.version>
         <sshd-core.version>2.4.0</sshd-core.version>
     </properties>
