@@ -12,7 +12,6 @@ import java.util.Map;
 @Component
 public class DokCounter {
     private static final String DOK_SKANMOTREFERANSENR = "dok_skanmotreferansenr_";
-    private static final String DOK_SKANMOT = "dok_skanmot_";
     private static final String TOTAL = "_total";
     private static final String EXCEPTION = "exception";
     private static final String ERROR_TYPE = "error_type";
@@ -34,7 +33,7 @@ public class DokCounter {
     }
 
     public static void incrementCounter(String key, List<String> tags) {
-        Counter.builder(DOK_SKANMOT + key + TOTAL)
+        Counter.builder(DOK_SKANMOTREFERANSENR + key + TOTAL)
                 .tags(tags.toArray(new String[0]))
                 .register(meterRegistry)
                 .increment();
