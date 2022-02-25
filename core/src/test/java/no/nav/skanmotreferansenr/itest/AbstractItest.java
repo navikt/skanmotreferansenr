@@ -51,48 +51,50 @@ public class AbstractItest {
 		stubFor(post(urlMatching(URL_STS))
 				.willReturn(aResponse()
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
 						.withBody(classpathToString("__files/sts/happy_sts_response.json"))));
 
 		stubFor(post(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN))
 				.willReturn(aResponse()
 						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
 						.withBodyFile("journalpost/opprett_journalpost_response_HAPPY.json")));
 
 		stubFor(post(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG))
 				.willReturn(aResponse()
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
 						.withJsonBody(Json.node(
 								"{\"logiskVedleggId\": \"" + LOGISK_VEDLEGG_ID + "\"}"
 						))));
 
 		stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND))
 				.willReturn(aResponse()
+						.withHeader("Connection", "close")
 						.withStatus(NOT_FOUND.value())));
 
 		stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1))
 				.willReturn(aResponse()
 						.withStatus(OK.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
 						.withBodyFile("foersteside/foersteside_HAPPY.json")));
-	}
-
-	@AfterEach
-	void resetMocks() {
-		WireMock.reset();
 	}
 
 	public void stubOpprettJournalpostResponseConflictWithValidResponse() {
 		stubFor(post("/rest/journalpostapi/v1/journalpost?foersoekFerdigstill=false").willReturn(aResponse()
 				.withStatus(CONFLICT.value())
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withHeader("Connection", "close")
 				.withBody(classpathToString("__files/journalpost/allerede_opprett_journalpost_response_HAPPY.json"))));
 	}
 
 	protected void stubOpprettJournalpostResponseConflictWithInvalidResponse() {
 		stubFor(post("/rest/journalpostapi/v1/journalpost?foersoekFerdigstill=false").willReturn(aResponse()
 				.withStatus(CONFLICT.value())
-				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withHeader("Connection", "close")));
 	}
 
 	@SneakyThrows
