@@ -24,8 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class OpprettJournalpostIT extends AbstractItest {
 
 	private final byte[] DUMMY_FILE = "dummyfile".getBytes();
-	private final String JOURNALPOST_ID = "467010363";
-	private final String DOKUMENT_INFO_ID = "485227498";
 
 	private OpprettJournalpostConsumer opprettJournalpostConsumer;
 	private STSConsumer stsConsumer;
@@ -38,6 +36,7 @@ public class OpprettJournalpostIT extends AbstractItest {
 
 	@BeforeEach
 	void setUpConsumer() {
+		this.setUpStubs();
 		stsConsumer = new STSConsumer(new RestTemplateBuilder(), properties);
 		opprettJournalpostConsumer = new OpprettJournalpostConsumer(new RestTemplateBuilder(), properties, objectMapper);
 	}
@@ -47,15 +46,17 @@ public class OpprettJournalpostIT extends AbstractItest {
 		OpprettJournalpostRequest request = createOpprettJournalpostRequest();
 		STSResponse stsResponse = stsConsumer.getSTSToken();
 		OpprettJournalpostResponse res = opprettJournalpostConsumer.opprettJournalpost(stsResponse.getAccess_token(), request);
+		String JOURNALPOST_ID = "467010363";
 		assertEquals(JOURNALPOST_ID, res.getJournalpostId());
 		assertEquals(1, res.getDokumenter().size());
+		String DOKUMENT_INFO_ID = "485227498";
 		assertEquals(DOKUMENT_INFO_ID, res.getDokumenter().get(0).getDokumentInfoId());
 	}
 
 
 	@Test
 	public void shouldGetJournalpostWhenResponseIs() {
-		this.StubOpprettJournalpostResponseConflictWithValidResponse();
+		this.stubOpprettJournalpostResponseConflictWithValidResponse();
 		OpprettJournalpostRequest request = OpprettJournalpostRequest.builder()
 				.eksternReferanseId("ekstern")
 				.build();
@@ -66,7 +67,7 @@ public class OpprettJournalpostIT extends AbstractItest {
 
 	@Test
 	public void shouldNotGetJournalpostWhenConflictDoesNotCorrectHaveBody() {
-		this.StubOpprettJournalpostResponseConflictWithInvalidResponse();
+		this.stubOpprettJournalpostResponseConflictWithInvalidResponse();
 
 		assertThrows(
 				OpprettJournalpostFunctionalException.class,

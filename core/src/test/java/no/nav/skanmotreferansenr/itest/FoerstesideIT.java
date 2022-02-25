@@ -7,9 +7,9 @@ import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.consumer.sts.STSConsumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 
-import javax.inject.Inject;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,11 +21,12 @@ public class FoerstesideIT extends AbstractItest {
 
 	private FoerstesidegeneratorService foerstesidegeneratorService;
 
-	@Inject
+	@Autowired
 	private SkanmotreferansenrProperties skanmotreferansenrProperties;
 
 	@BeforeEach
 	void setUpBeans() {
+		this.setUpStubs();
 		foerstesidegeneratorService = new FoerstesidegeneratorService(
 				new FoerstesidegeneratorConsumer(new RestTemplateBuilder(), skanmotreferansenrProperties),
 				new STSConsumer(new RestTemplateBuilder(), skanmotreferansenrProperties)

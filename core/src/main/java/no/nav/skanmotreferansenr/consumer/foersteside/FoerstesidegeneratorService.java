@@ -7,9 +7,9 @@ import no.nav.skanmotreferansenr.consumer.sts.data.STSResponse;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFinnesIkkeFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.AbstractSkanmotreferansenrTechnicalException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Optional;
 
 @Component
@@ -19,7 +19,7 @@ public class FoerstesidegeneratorService {
     private final FoerstesidegeneratorConsumer foerstesidegeneratorConsumer;
     private final STSConsumer stsConsumer;
 
-    @Inject
+    @Autowired
     public FoerstesidegeneratorService(FoerstesidegeneratorConsumer foerstesidegeneratorConsumer, STSConsumer stsConsumer) {
         this.foerstesidegeneratorConsumer = foerstesidegeneratorConsumer;
         this.stsConsumer = stsConsumer;

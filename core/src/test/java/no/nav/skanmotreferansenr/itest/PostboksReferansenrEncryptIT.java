@@ -1,6 +1,5 @@
 package no.nav.skanmotreferansenr.itest;
 
-import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +7,6 @@ import org.springframework.core.io.ClassPathResource;
 import wiremock.org.apache.commons.io.FileUtils;
 import wiremock.org.apache.commons.io.FilenameUtils;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -36,28 +34,18 @@ public class PostboksReferansenrEncryptIT extends AbstractItest {
 	private final String UNENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456781_2_1000";
 	private final String FAIL_ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456783_3_1000";
 
-	@Inject
-	private Path sshdPath;
-
 	@Autowired
-	SkanmotreferansenrProperties properties;
+	private Path sshdPath;
 
 	@BeforeEach
 	void beforeEach() {
+		this.setUpStubs();
 		final Path inngaaende = sshdPath.resolve(INNGAAENDE);
 		final Path processed = inngaaende.resolve("processed");
 		final Path feilmappe = sshdPath.resolve(FEILMAPPE);
 		try {
 			preparePath(inngaaende);
-		} catch (Exception e) {
-			//noop. Windows sliter med å slette filene, de blir kun satt til "unavailable"
-		}
-		try {
 			preparePath(processed);
-		} catch (Exception e) {
-			//noop. Windows sliter med å slette filene, de blir kun satt til "unavailable"
-		}
-		try {
 			preparePath(feilmappe);
 		} catch (Exception e) {
 			//noop. Windows sliter med å slette filene, de blir kun satt til "unavailable"

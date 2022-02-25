@@ -11,9 +11,8 @@ import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.AbstractSkanmotreferansenrTechnicalException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.inject.Inject;
 
 @Slf4j
 @Service
@@ -23,7 +22,7 @@ public class OpprettJournalpostService {
     private final STSConsumer stsConsumer;
     private final OpprettJournalpostRequestMapper opprettJournalpostRequestMapper;
 
-    @Inject
+    @Autowired
     public OpprettJournalpostService(OpprettJournalpostConsumer opprettJournalpostConsumer, STSConsumer stsConsumer) {
         this.opprettJournalpostConsumer = opprettJournalpostConsumer;
         this.stsConsumer = stsConsumer;

@@ -8,7 +8,6 @@ import org.springframework.core.io.ClassPathResource;
 import wiremock.org.apache.commons.io.FileUtils;
 import wiremock.org.apache.commons.io.FilenameUtils;
 
-import javax.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -34,32 +33,18 @@ public class PostboksReferansenrIT extends AbstractItest {
 	private final String ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456789_1_1000";
 	private final String ZIP_FILE_NAME_ORDERED_XML_FIRST_NO_EXTENSION = "09.06.2020_R100000000_1_1000_ordered_xml_first_big";
 
-	@Inject
+	@Autowired
 	private Path sshdPath;
 
-	@Autowired
-	SkanmotreferansenrProperties properties;
-
 	@BeforeEach
-	void beforeEach() throws IOException {
+	void beforeEach() {
+		this.setUpStubs();
 		final Path inngaaende = sshdPath.resolve(INNGAAENDE);
 		final Path processed = inngaaende.resolve("processed");
 		final Path feilmappe = sshdPath.resolve(FEILMAPPE);
-		preparePath(inngaaende);
-		preparePath(processed);
-		preparePath(feilmappe);
-
 		try {
 			preparePath(inngaaende);
-		} catch (Exception e) {
-			//noop. Windows sliter med å slette filene, de blir kun satt til "unavailable"
-		}
-		try {
 			preparePath(processed);
-		} catch (Exception e) {
-			//noop. Windows sliter med å slette filene, de blir kun satt til "unavailable"
-		}
-		try {
 			preparePath(feilmappe);
 		} catch (Exception e) {
 			//noop. Windows sliter med å slette filene, de blir kun satt til "unavailable"

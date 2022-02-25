@@ -11,7 +11,7 @@ import no.nav.skanmotreferansenr.domain.Filepair;
 import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.domain.SkanningInfo;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 import java.util.List;

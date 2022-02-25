@@ -13,9 +13,9 @@ import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
 import org.apache.camel.Body;
 import org.apache.camel.Handler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,7 +34,7 @@ public class PostboksReferansenrService {
     private final OpprettJournalpostService opprettJournalpostService;
     private final LeggTilLogiskVedleggService leggTilLogiskVedleggService;
 
-    @Inject
+    @Autowired
     public PostboksReferansenrService(FoerstesidegeneratorService foerstesidegeneratorService,
                                       OpprettJournalpostService opprettJournalpostService,
                                       LeggTilLogiskVedleggService leggTilLogiskVedleggService) {

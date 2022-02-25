@@ -8,9 +8,9 @@ import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.dataformat.zipfile.ZipSplitter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -30,7 +30,7 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 	private final PostboksReferansenrService postboksReferansenrService;
 	private final ErrorMetricsProcessor errorMetricsProcessor;
 
-	@Inject
+	@Autowired
 	public PostboksReferansenrRoute(SkanmotreferansenrProperties skanmotreferansenrProperties, PostboksReferansenrService postboksReferansenrService) {
 		this.skanmotreferansenrProperties = skanmotreferansenrProperties;
 		this.postboksReferansenrService = postboksReferansenrService;
@@ -38,7 +38,7 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 	}
 
 	@Override
-	public void configure() throws Exception {
+	public void configure() {
 		onException(Exception.class)
 				.handled(true)
 				.process(new MdcSetterProcessor())

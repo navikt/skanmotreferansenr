@@ -9,9 +9,9 @@ import no.nav.skanmotreferansenr.consumer.sts.STSConsumer;
 import no.nav.skanmotreferansenr.consumer.sts.data.STSResponse;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.AbstractSkanmotreferansenrTechnicalException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -24,7 +24,7 @@ public class LeggTilLogiskVedleggService {
     private final LeggTilLogiskVedleggConsumer leggTilLogiskVedleggConsumer;
     private final STSConsumer stsConsumer;
 
-    @Inject
+    @Autowired
     public LeggTilLogiskVedleggService(LeggTilLogiskVedleggConsumer leggTilLogiskVedleggConsumer, STSConsumer stsConsumer) {
         this.leggTilLogiskVedleggConsumer = leggTilLogiskVedleggConsumer;
         this.stsConsumer = stsConsumer;
