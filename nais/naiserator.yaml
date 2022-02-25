@@ -2,7 +2,7 @@ kind: Application
 apiVersion: nais.io/v1alpha1
 metadata:
   name: skanmotreferansenr
-  namespace: {{ NAMESPACE }}
+  namespace: teamdokumenthandtering
   labels:
     team: teamdokumenthandtering
 spec:
@@ -19,6 +19,10 @@ spec:
       value: /var/run/secrets/nais.io/keys/privatekey
     - name: SKANMOTREFERANSENR_SFTP_HOSTKEY
       value: /var/run/secrets/nais.io/keys/hostkey
+    - name: SKANMOTREFERANSENR_VAULT_BACKEND
+      value: {{ SKANMOTREFERANSENR_VAULT_BACKEND }}
+    - name: SKANMOTREFERANSENR_VAULT_KUBERNETESPATH
+      value: {{ SKANMOTREFERANSENR_VAULT_KUBERNETESPATH }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -52,7 +56,5 @@ spec:
     paths:
       - kvPath: {{ SRVSKANMOTREFERANSE }}
         mountPath: /var/run/secrets/nais.io/srvskanmotreferanse
-      - kvPath: {{ SKANMOTREFERANSENR_VAULT }}
-        mountPath: /var/run/secrets/nais.io/vault
       - kvPath: {{ SFTP_KEYS }}
         mountPath: /var/run/secrets/nais.io/keys

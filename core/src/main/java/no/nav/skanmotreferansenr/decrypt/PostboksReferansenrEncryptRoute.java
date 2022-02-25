@@ -47,7 +47,7 @@ public class PostboksReferansenrEncryptRoute extends RouteBuilder {
 
 	@Autowired
 	public PostboksReferansenrEncryptRoute(
-			@Value("${skanmotreferansenr.secret.passphrase}") String passphrase,
+			@Value("${passphrase}") String passphrase,
 			SkanmotreferansenrProperties skanmotreferansenrProperties,
 			PostboksReferansenrService postboksReferansenrService
 	) {
