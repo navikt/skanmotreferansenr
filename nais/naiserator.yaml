@@ -19,6 +19,8 @@ spec:
       value: /var/run/secrets/nais.io/keys/privatekey
     - name: SKANMOTREFERANSENR_SFTP_HOSTKEY
       value: /var/run/secrets/nais.io/keys/hostkey
+    - name: SKANMOTREFERANSENR_PGP_PRIVATEKEY
+      value: /var/run/secrets/nais.io/keys/pgpprivatekey
     - name: SKANMOTREFERANSENR_VAULT_BACKEND
       value: {{ SKANMOTREFERANSENR_VAULT_BACKEND }}
     - name: SKANMOTREFERANSENR_VAULT_KUBERNETESPATH
