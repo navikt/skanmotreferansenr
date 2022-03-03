@@ -28,7 +28,7 @@ public class LeggTilLogiskVedleggIT extends AbstractItest {
 
 	@BeforeEach
 	void setUpConsumer() {
-		this.setUpStubs();
+		super.setUpStubs();
 		stsConsumer = new STSConsumer(new RestTemplateBuilder(), properties);
 		leggTilLogiskVedleggConsumer = new LeggTilLogiskVedleggConsumer(new RestTemplateBuilder(), properties);
 	}

@@ -30,23 +30,22 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
 		classes = TestConfig.class,
-		webEnvironment = RANDOM_PORT,
-		properties = "spring.cloud.vault.token=123456"
+		webEnvironment = RANDOM_PORT
 )
 @AutoConfigureWireMock(port = 0)
 @ActiveProfiles("itest")
 public class AbstractItest {
 
-	String URL_FOERSTESIDEGENERATOR_OK_1 = "/api/foerstesidegenerator/v1/foersteside/1111111111111";
-	String URL_FOERSTESIDEGENERATOR_NOT_FOUND = "/api/foerstesidegenerator/v1/foersteside/2222222222222";
+	public static String URL_FOERSTESIDEGENERATOR_OK_1 = "/api/foerstesidegenerator/v1/foersteside/1111111111111";
+	public static String URL_FOERSTESIDEGENERATOR_NOT_FOUND = "/api/foerstesidegenerator/v1/foersteside/2222222222222";
 
-	String URL_DOKARKIV_JOURNALPOST_GEN = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
-	String URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG = "/rest/journalpostapi/v1/dokumentInfo/[0-9]+/logiskVedlegg/";
+	public static String URL_DOKARKIV_JOURNALPOST_GEN = "/rest/journalpostapi/v1/journalpost\\?foersoekFerdigstill=false";
+	public static String URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG = "/rest/journalpostapi/v1/dokumentInfo/[0-9]+/logiskVedlegg/";
 
 	String LOGISK_VEDLEGG_ID = "885522";
 	final String LOEPENR_OK = "1111111111111";
 
-	void setUpStubs() {
+	public void setUpStubs() {
 		String URL_STS = "/rest/v1/sts/token";
 		stubFor(post(urlMatching(URL_STS))
 				.willReturn(aResponse()

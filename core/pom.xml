@@ -87,6 +87,16 @@
             <artifactId>jaxb-api</artifactId>
         </dependency>
 
+        <!-- Decrypt PGP -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpg-jdk15on</artifactId>
+        </dependency>
+
         <!-- Metrikker -->
         <dependency>
             <groupId>io.micrometer</groupId>

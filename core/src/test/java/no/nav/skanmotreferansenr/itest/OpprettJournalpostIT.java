@@ -36,7 +36,7 @@ public class OpprettJournalpostIT extends AbstractItest {
 
 	@BeforeEach
 	void setUpConsumer() {
-		this.setUpStubs();
+		super.setUpStubs();
 		stsConsumer = new STSConsumer(new RestTemplateBuilder(), properties);
 		opprettJournalpostConsumer = new OpprettJournalpostConsumer(new RestTemplateBuilder(), properties, objectMapper);
 	}

@@ -26,7 +26,7 @@ public class FoerstesideIT extends AbstractItest {
 
 	@BeforeEach
 	void setUpBeans() {
-		this.setUpStubs();
+		super.setUpStubs();
 		foerstesidegeneratorService = new FoerstesidegeneratorService(
 				new FoerstesidegeneratorConsumer(new RestTemplateBuilder(), skanmotreferansenrProperties),
 				new STSConsumer(new RestTemplateBuilder(), skanmotreferansenrProperties)

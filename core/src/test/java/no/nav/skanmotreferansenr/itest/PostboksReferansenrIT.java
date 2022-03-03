@@ -38,7 +38,7 @@ public class PostboksReferansenrIT extends AbstractItest {
 
 	@BeforeEach
 	void beforeEach() {
-		this.setUpStubs();
+		super.setUpStubs();
 		final Path inngaaende = sshdPath.resolve(INNGAAENDE);
 		final Path processed = inngaaende.resolve("processed");
 		final Path feilmappe = sshdPath.resolve(FEILMAPPE);
