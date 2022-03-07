@@ -90,7 +90,7 @@ public class PGPManualTest {
 	}
 
 	private FileInputStream getEncryptedFilesFromIM() throws IOException, PGPException {
-		String filToEncrypt = "09.06.2020_R123456783_3_1000";
+		String filToEncrypt = "09.06.2020_R123456783_3_4000";
 		// På Iron Mountain sin side
 		File skannedeDokumenterZip = new File("src/test/resources/"+filToEncrypt+".zip");
 		String filnavnKryptertZip = "src/test/resources/"+filToEncrypt+".zip.pgp";

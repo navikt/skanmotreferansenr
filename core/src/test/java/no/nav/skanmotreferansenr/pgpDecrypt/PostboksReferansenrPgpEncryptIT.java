@@ -52,14 +52,14 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 
 	@Test
 	public void shouldBehandlePgpEncryptedZip() throws IOException {
-		// 09.06.2020_R123456780_1_2000.zip
-		// OK   - 09.06.2020_R123456780_0001
-		// OK   - 09.06.2020_R123456780_0002 (mangler førstesidemetadata, Oppretter journalpost med tema UKJ)
-		// FEIL - 09.06.2020_R123456780_0003 (valideringsfeil, mangler referansenr)
-		// FEIL - 09.06.2020_R123456780_0004 (mangler xml)
-		// FEIL - 09.06.2020_R123456780_0005 (mangler pdf)
+		// 09.06.2020_R123456780_1_4000.zip
+		// OK   - 09.06.2020_R123456780_0001x
+		// OK   - 09.06.2020_R123456780_0002x (mangler førstesidemetadata, Oppretter journalpost med tema UKJ)
+		// FEIL - 09.06.2020_R123456780_0003x (valideringsfeil, mangler referansenr)
+		// FEIL - 09.06.2020_R123456780_0004x (mangler xml)
+		// FEIL - 09.06.2020_R123456780_0005x (mangler pdf)
 
-		final String ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456780_1_2000";
+		final String ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456780_1_4000";
 		copyFileFromClasspathToInngaaende(ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".zip.pgp");
 
 		await().atMost(ofSeconds(15)).untilAsserted(() -> {
@@ -76,9 +76,9 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 				.map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
 				.collect(Collectors.toList());
 		assertThat(feilmappeContents).containsExactlyInAnyOrder(
-				"09.06.2020_R123456780_0003.zip",
-				"09.06.2020_R123456780_0004.zip",
-				"09.06.2020_R123456780_0005.zip");
+				"09.06.2020_R123456780_0003x.zip",
+				"09.06.2020_R123456780_0004x.zip",
+				"09.06.2020_R123456780_0005x.zip");
 		verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1)));
 		verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
 		verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
@@ -87,10 +87,10 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 
 	@Test
 	public void shouldFailWhenPrivateKeyDoesNotMatchPublicKey() throws IOException {
-		// 09.06.2020_R123456783_3_1000.zip.pgp er kryptert med publicKeyElGamal (i stedet for publicKeyRSA)
+		// 09.06.2020_R123456783_3_4000.zip.pgp er kryptert med publicKeyElGamal (i stedet for publicKeyRSA)
 		// Korresponderende RSA-private key vil da feile i forsøket på dekryptering
 
-		final String ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456783_3_1000";
+		final String ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456783_3_4000";
 		copyFileFromClasspathToInngaaende(ZIP_FILE_NAME_NO_EXTENSION + ".zip.pgp");
 
 		assertTrue(Files.exists(sshdPath.resolve(INNGAAENDE).resolve(ZIP_FILE_NAME_NO_EXTENSION + ".zip.pgp")));
