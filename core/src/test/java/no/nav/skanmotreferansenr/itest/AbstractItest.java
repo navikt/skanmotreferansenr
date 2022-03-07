@@ -1,10 +1,8 @@
 package no.nav.skanmotreferansenr.itest;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.Json;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -47,38 +45,38 @@ public class AbstractItest {
 
 	public void setUpStubs() {
 		String URL_STS = "/rest/v1/sts/token";
-		stubFor(post(urlMatching(URL_STS))
-				.willReturn(aResponse()
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withHeader("Connection", "close")
-						.withBody(classpathToString("__files/sts/happy_sts_response.json"))));
+		stubFor(post(urlMatching(URL_STS)).willReturn(aResponse()
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withHeader("Connection", "close")
+				.withBody(classpathToString("__files/sts/happy_sts_response.json")))
+		);
 
-		stubFor(post(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN))
-				.willReturn(aResponse()
-						.withStatus(OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withHeader("Connection", "close")
-						.withBodyFile("journalpost/opprett_journalpost_response_HAPPY.json")));
+		stubFor(post(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)).willReturn(aResponse()
+				.withStatus(OK.value())
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withHeader("Connection", "close")
+				.withBodyFile("journalpost/opprett_journalpost_response_HAPPY.json"))
+		);
 
-		stubFor(post(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG))
-				.willReturn(aResponse()
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withHeader("Connection", "close")
-						.withJsonBody(Json.node(
-								"{\"logiskVedleggId\": \"" + LOGISK_VEDLEGG_ID + "\"}"
-						))));
+		stubFor(post(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG)).willReturn(aResponse()
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withHeader("Connection", "close")
+				.withJsonBody(Json.node(
+						"{\"logiskVedleggId\": \"" + LOGISK_VEDLEGG_ID + "\"}"
+				)))
+		);
 
-		stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND))
-				.willReturn(aResponse()
-						.withHeader("Connection", "close")
-						.withStatus(NOT_FOUND.value())));
+		stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)).willReturn(aResponse()
+				.withHeader("Connection", "close")
+				.withStatus(NOT_FOUND.value()))
+		);
 
-		stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1))
-				.willReturn(aResponse()
-						.withStatus(OK.value())
-						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-						.withHeader("Connection", "close")
-						.withBodyFile("foersteside/foersteside_HAPPY.json")));
+		stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1)).willReturn(aResponse()
+				.withStatus(OK.value())
+				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+				.withHeader("Connection", "close")
+				.withBodyFile("foersteside/foersteside_HAPPY.json"))
+		);
 	}
 
 	public void stubOpprettJournalpostResponseConflictWithValidResponse() {
@@ -86,14 +84,16 @@ public class AbstractItest {
 				.withStatus(CONFLICT.value())
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.withHeader("Connection", "close")
-				.withBody(classpathToString("__files/journalpost/allerede_opprett_journalpost_response_HAPPY.json"))));
+				.withBody(classpathToString("__files/journalpost/allerede_opprett_journalpost_response_HAPPY.json")))
+		);
 	}
 
 	protected void stubOpprettJournalpostResponseConflictWithInvalidResponse() {
 		stubFor(post("/rest/journalpostapi/v1/journalpost?foersoekFerdigstill=false").willReturn(aResponse()
 				.withStatus(CONFLICT.value())
 				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.withHeader("Connection", "close")));
+				.withHeader("Connection", "close"))
+		);
 	}
 
 	@SneakyThrows

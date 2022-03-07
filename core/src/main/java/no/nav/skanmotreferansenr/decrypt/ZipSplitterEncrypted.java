@@ -30,17 +30,17 @@ import java.io.InputStream;
 @Slf4j
 public class ZipSplitterEncrypted extends ZipSplitter {
 
-    private final String passphrase;
+    private final String aesPassphrase;
 
     @Autowired
-    public ZipSplitterEncrypted(@Value("${passphrase}") String passphrase) {
-        this.passphrase = passphrase;
+    public ZipSplitterEncrypted(@Value("${aes.passphrase}") String aesPassphrase) {
+        this.aesPassphrase = aesPassphrase;
     }
 
     @Override
     public ZipIteratorEncrypted evaluate(Exchange exchange) {
         Message inputMessage = exchange.getIn();
-        ZipInputStream zip = new ZipInputStream(inputMessage.getBody(InputStream.class), passphrase.toCharArray());
+        ZipInputStream zip = new ZipInputStream(inputMessage.getBody(InputStream.class), aesPassphrase.toCharArray());
         return new ZipIteratorEncrypted(exchange, zip);
     }
 
