@@ -59,6 +59,8 @@ public class PostboksReferansenrEncryptRoute extends RouteBuilder {
 
 	@Override
 	public void configure() {
+
+		// @formatter:off
 		onException(Exception.class)
 				.handled(true)
 				.process(new MdcSetterProcessor())
@@ -104,17 +106,17 @@ public class PostboksReferansenrEncryptRoute extends RouteBuilder {
 				.process(exchange -> exchange.setProperty(PROPERTY_FORSENDELSE_BATCHNAVN, cleanDotEncExtension(simple("${file:name.noext.single}"), exchange)))
 				.process(new MdcSetterProcessor())
 				.split(new ZipSplitterEncrypted(aesPassphrase)).streaming()
-				.aggregate(simple("${file:name.noext.single}"), new PostboksReferansenrSkanningAggregator())
-				.completionSize(FORVENTET_ANTALL_PER_FORSENDELSE)
-				.completionTimeout(skanmotreferansenrProperties.getCompletiontimeout().toMillis())
-				.setProperty(PROPERTY_FORSENDELSE_FILEBASENAME, simple("${exchangeProperty.CamelAggregatedCorrelationKey}"))
-				.process(new MdcSetterProcessor())
-				.process(exchange -> DokCounter.incrementCounter("antall_innkommende", List.of(DOMAIN, REFERANSENR)))
-				.process(exchange -> exchange.getIn().getBody(PostboksReferansenrEnvelope.class).validate())
-				.bean(new SkanningmetadataUnmarshaller())
-				.setProperty(PROPERTY_FORSENDELSE_BATCHNAVN, simple("${body.skanningmetadata.journalpost.batchnavn}"))
-				.to("direct:encrypted_process_referansenr")
-				.end() // aggregate
+					.aggregate(simple("${file:name.noext.single}"), new PostboksReferansenrSkanningAggregator())
+						.completionSize(FORVENTET_ANTALL_PER_FORSENDELSE)
+						.completionTimeout(skanmotreferansenrProperties.getCompletiontimeout().toMillis())
+						.setProperty(PROPERTY_FORSENDELSE_FILEBASENAME, simple("${exchangeProperty.CamelAggregatedCorrelationKey}"))
+						.process(new MdcSetterProcessor())
+						.process(exchange -> DokCounter.incrementCounter("antall_innkommende", List.of(DOMAIN, REFERANSENR)))
+						.process(exchange -> exchange.getIn().getBody(PostboksReferansenrEnvelope.class).validate())
+						.bean(new SkanningmetadataUnmarshaller())
+						.setProperty(PROPERTY_FORSENDELSE_BATCHNAVN, simple("${body.skanningmetadata.journalpost.batchnavn}"))
+						.to("direct:encrypted_process_referansenr")
+					.end() // aggregate
 				.end() // split
 				.process(new MdcRemoverProcessor())
 				.log(INFO, log, "Skanmotreferansenr behandlet ferdig fil=${file:absolute.path}.");
@@ -136,6 +138,8 @@ public class PostboksReferansenrEncryptRoute extends RouteBuilder {
 				.log(ERROR, log, "Skanmotreferansenr teknisk feil der " + KEY_LOGGING_INFO + ". ikke ble flyttet til feilområde. Må analyseres.")
 				.end()
 				.process(new MdcRemoverProcessor());
+
+		// @formatter:on
 	}
 
 	private String cleanDotEncExtension(ValueBuilder value1, Exchange exchange) {
