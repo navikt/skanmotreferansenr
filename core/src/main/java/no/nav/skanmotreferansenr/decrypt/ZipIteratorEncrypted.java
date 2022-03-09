@@ -59,7 +59,7 @@ public class ZipIteratorEncrypted implements Iterator<Message>, Closeable {
             if (zipInputStream == null) {
                 return false;
             }
-            boolean availableDataInCurrentEntry = zipInputStream.getAvailableBytesInPushBackInputStream() >= 1;
+            boolean availableDataInCurrentEntry = zipInputStream.available() >= 1;
             if (!availableDataInCurrentEntry) {
                 // advance to the next entry.
                 parent = getNextElement();

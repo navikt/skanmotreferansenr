@@ -1,5 +1,6 @@
-package no.nav.skanmotreferansenr.itest;
+package no.nav.skanmotreferansenr.pgpDecrypt;
 
+import no.nav.skanmotreferansenr.itest.AbstractItest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +21,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static java.time.Duration.ofSeconds;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class PostboksReferansenrEncryptIT extends AbstractItest {
+public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 
 	public static final String INNGAAENDE = "inngaaende";
 	public static final String FEILMAPPE = "feilmappe";
-
-	private final String ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456780_1_2000";
-	private final String UNENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456781_2_1000";
-	private final String FAIL_ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456783_3_1000";
 
 	@Autowired
 	private Path sshdPath;
@@ -53,14 +51,16 @@ public class PostboksReferansenrEncryptIT extends AbstractItest {
 	}
 
 	@Test
-	public void shouldBehandleEncryptedZip() throws IOException {
-		// 09.06.2020_R123456780_1_2000.zip
-		// OK   - 09.06.2020_R123456780_0001
-		// OK   - 09.06.2020_R123456780_0002 (mangler førstesidemetadata, Oppretter journalpost med tema UKJ)
-		// FEIL - 09.06.2020_R123456780_0003 (valideringsfeil, mangler referansenr)
-		// FEIL - 09.06.2020_R123456780_0004 (mangler xml)
-		// FEIL - 09.06.2020_R123456780_0005 (mangler pdf)
-		copyFileFromClasspathToInngaaende(ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".enc.zip");
+	public void shouldBehandlePgpEncryptedZip() throws IOException {
+		// 09.06.2020_R123456780_1_4000.zip
+		// OK   - 09.06.2020_R123456780_0001x
+		// OK   - 09.06.2020_R123456780_0002x (mangler førstesidemetadata, Oppretter journalpost med tema UKJ)
+		// FEIL - 09.06.2020_R123456780_0003x (valideringsfeil, mangler referansenr)
+		// FEIL - 09.06.2020_R123456780_0004x (mangler xml)
+		// FEIL - 09.06.2020_R123456780_0005x (mangler pdf)
+
+		final String ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456780_1_4000";
+		copyFileFromClasspathToInngaaende(ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".zip.pgp");
 
 		await().atMost(ofSeconds(15)).untilAsserted(() -> {
 			try {
@@ -76,9 +76,9 @@ public class PostboksReferansenrEncryptIT extends AbstractItest {
 				.map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
 				.collect(Collectors.toList());
 		assertThat(feilmappeContents).containsExactlyInAnyOrder(
-				"09.06.2020_R123456780_0003.zip",
-				"09.06.2020_R123456780_0004.zip",
-				"09.06.2020_R123456780_0005.zip");
+				"09.06.2020_R123456780_0003x.zip",
+				"09.06.2020_R123456780_0004x.zip",
+				"09.06.2020_R123456780_0005x.zip");
 		verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1)));
 		verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
 		verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
@@ -86,39 +86,17 @@ public class PostboksReferansenrEncryptIT extends AbstractItest {
 	}
 
 	@Test
-	public void shouldFailWithUnEncryptedDotEncDotZipExtension() throws IOException {
-		//ZipException: En .enc-file kom inn men filene er ukrypterte
-		//should be sent to feilmappe
-		copyFileFromClasspathToInngaaende(UNENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".enc.zip");
+	public void shouldFailWhenPrivateKeyDoesNotMatchPublicKey() throws IOException {
+		// 09.06.2020_R123456783_3_4000.zip.pgp er kryptert med publicKeyElGamal (i stedet for publicKeyRSA)
+		// Korresponderende RSA-private key vil da feile i forsøket på dekryptering
 
-		await().atMost(ofSeconds(15)).untilAsserted(() -> {
-			try {
-				final List<String> feilmappeContents = Files.list(sshdPath.resolve(FEILMAPPE))
-						.map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
-						.collect(Collectors.toList());
-				assertTrue(feilmappeContents.contains(UNENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".enc.zip"));
-			} catch (NoSuchFileException e) {
-				fail();
-			}
-		});
+		final String ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456783_3_4000";
+		copyFileFromClasspathToInngaaende(ZIP_FILE_NAME_NO_EXTENSION + ".zip.pgp");
 
-	}
+		assertTrue(Files.exists(sshdPath.resolve(INNGAAENDE).resolve(ZIP_FILE_NAME_NO_EXTENSION + ".zip.pgp")));
 
-	@Test
-	public void shouldMoveZipToFeilomraadeWhenBadEncryption() throws IOException {
-		//ZipException: Filene er ikke kryptert med AES men en annen krypteringsmetode
-		//should be sent to feilmappe
-		copyFileFromClasspathToInngaaende(FAIL_ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".enc.zip");
-
-		await().atMost(ofSeconds(15)).untilAsserted(() -> {
-			try {
-				final List<String> feilmappeContents = Files.list(sshdPath.resolve(FEILMAPPE))
-						.map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
-						.collect(Collectors.toList());
-				assertTrue(feilmappeContents.contains(FAIL_ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".enc.zip"));
-			} catch (NoSuchFileException e) {
-				fail();
-			}
+		await().atMost(15, SECONDS).untilAsserted(() -> {
+			assertTrue(Files.exists(sshdPath.resolve(FEILMAPPE).resolve(ZIP_FILE_NAME_NO_EXTENSION + ".zip.pgp")));
 		});
 	}
 

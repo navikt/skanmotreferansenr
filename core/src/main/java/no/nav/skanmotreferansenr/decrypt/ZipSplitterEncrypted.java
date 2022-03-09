@@ -21,26 +21,26 @@ import net.lingala.zip4j.io.inputstream.ZipInputStream;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.dataformat.zipfile.ZipSplitter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import javax.inject.Inject;
 import java.io.InputStream;
 
 
 @Slf4j
 public class ZipSplitterEncrypted extends ZipSplitter {
 
-    private final String passphrase;
+    private final String aesPassphrase;
 
-    @Inject
-    public ZipSplitterEncrypted(@Value("${skanmotreferansenr.secret.passphrase}") String passphrase) {
-        this.passphrase = passphrase;
+    @Autowired
+    public ZipSplitterEncrypted(@Value("${aes.passphrase}") String aesPassphrase) {
+        this.aesPassphrase = aesPassphrase;
     }
 
     @Override
     public ZipIteratorEncrypted evaluate(Exchange exchange) {
         Message inputMessage = exchange.getIn();
-        ZipInputStream zip = new ZipInputStream(inputMessage.getBody(InputStream.class), passphrase.toCharArray());
+        ZipInputStream zip = new ZipInputStream(inputMessage.getBody(InputStream.class), aesPassphrase.toCharArray());
         return new ZipIteratorEncrypted(exchange, zip);
     }
 

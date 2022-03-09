@@ -1,12 +1,12 @@
 {
-  "NAMESPACE": "teamdokumenthandtering",
   "SRVSKANMOTREFERANSE": "/serviceuser/data/dev/srvskanmotreferanse",
-  "SKANMOTREFERANSENR_VAULT": "/kv/preprod/fss/skanmotreferansenr/teamdokumenthandtering",
   "SFTP_KEYS": "kv/preprod/fss/skanmotreferansenr/keys",
   "SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL": "https://foerstesidegenerator.dev.intern.nav.no/api/foerstesidegenerator/v1/foersteside",
   "SKANMOTREFERANSENR_DOKARKIVURL": "https://dokarkiv.dev.intern.nav.no",
   "SKANMOTREFERANSENR_STSURL": "https://security-token-service.nais.preprod.local/rest/v1/sts/token",
   "SKANMOTREFERANSENR_SCHEDULE": "0+0/5+*+*+*+*",
+  "SKANMOTREFERANSENR_VAULT_BACKEND": "kv/preprod/fss",
+  "SKANMOTREFERANSENR_VAULT_KUBERNETESPATH": "kubernetes/preprod/fss",
   "INGRESSES": [
     "https://skanmotreferansenr.dev.intern.nav.no"
   ]

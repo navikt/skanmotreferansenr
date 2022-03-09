@@ -14,11 +14,11 @@ import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansen
 import no.nav.skanmotreferansenr.metrics.DokCounter;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.builder.SimpleBuilder;
+import org.apache.camel.builder.ValueBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -43,18 +43,18 @@ public class PostboksReferansenrEncryptRoute extends RouteBuilder {
 	private final SkanmotreferansenrProperties skanmotreferansenrProperties;
 	private final PostboksReferansenrService postboksReferansenrService;
 	private final ErrorMetricsProcessor errorMetricsProcessor;
-	private final String passphrase;
+	private final String aesPassphrase;
 
-	@Inject
+	@Autowired
 	public PostboksReferansenrEncryptRoute(
-			@Value("${skanmotreferansenr.secret.passphrase}") String passphrase,
+			@Value("${aes.passphrase}") String aesPassphrase,
 			SkanmotreferansenrProperties skanmotreferansenrProperties,
 			PostboksReferansenrService postboksReferansenrService
 	) {
 		this.skanmotreferansenrProperties = skanmotreferansenrProperties;
 		this.postboksReferansenrService = postboksReferansenrService;
 		this.errorMetricsProcessor = new ErrorMetricsProcessor();
-		this.passphrase = passphrase;
+		this.aesPassphrase = aesPassphrase;
 	}
 
 	@Override
@@ -103,7 +103,7 @@ public class PostboksReferansenrEncryptRoute extends RouteBuilder {
 				.setProperty(PROPERTY_FORSENDELSE_ZIPNAME, simple("${file:name}"))
 				.process(exchange -> exchange.setProperty(PROPERTY_FORSENDELSE_BATCHNAVN, cleanDotEncExtension(simple("${file:name.noext.single}"), exchange)))
 				.process(new MdcSetterProcessor())
-				.split(new ZipSplitterEncrypted(passphrase)).streaming()
+				.split(new ZipSplitterEncrypted(aesPassphrase)).streaming()
 				.aggregate(simple("${file:name.noext.single}"), new PostboksReferansenrSkanningAggregator())
 				.completionSize(FORVENTET_ANTALL_PER_FORSENDELSE)
 				.completionTimeout(skanmotreferansenrProperties.getCompletiontimeout().toMillis())
@@ -138,7 +138,7 @@ public class PostboksReferansenrEncryptRoute extends RouteBuilder {
 				.process(new MdcRemoverProcessor());
 	}
 
-	private String cleanDotEncExtension(SimpleBuilder value1, Exchange exchange) {
+	private String cleanDotEncExtension(ValueBuilder value1, Exchange exchange) {
 		String stringRepresentation = value1.evaluate(exchange, String.class);
 		if (stringRepresentation.contains(".enc")) {
 			return stringRepresentation.replace(".enc", "");
