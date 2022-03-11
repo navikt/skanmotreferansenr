@@ -23,6 +23,14 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static no.nav.skanmotreferansenr.metrics.DokCounter.DOMAIN;
+import static no.nav.skanmotreferansenr.metrics.DokCounter.REFERANSENR;
+import static org.apache.camel.Exchange.FILE_NAME;
+import static org.apache.camel.Exchange.FILE_NAME_PRODUCED;
+import static org.apache.camel.LoggingLevel.ERROR;
+import static org.apache.camel.LoggingLevel.INFO;
+import static org.apache.camel.LoggingLevel.WARN;
+
 @Slf4j
 @Component
 public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
@@ -51,14 +59,16 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 		String PGP_AVVIK = "direct:pgp_encrypted_avvik_referansenr";
 		String PROCESS_PGP_ENCRYPTED = "direct:pgp_encrypted_process_referansenr";
 
+
+		// @formatter:off
 		onException(Exception.class)
 				.handled(true)
 				.process(new MdcSetterProcessor())
 				.process(new ErrorMetricsProcessor())
-				.log(LoggingLevel.ERROR, log, "Skanmotreferansenr feilet teknisk for " + KEY_LOGGING_INFO + ". ${exception}")
-				.setHeader(Exchange.FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}-teknisk.zip"))
+				.log(ERROR, log, "Skanmotreferansenr feilet teknisk for " + KEY_LOGGING_INFO + ". ${exception}")
+				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}-teknisk.zip"))
 				.to(PGP_AVVIK)
-				.log(LoggingLevel.ERROR, log, "Skanmotreferansenr skrev feiletzip=${header." + Exchange.FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".");
+				.log(ERROR, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".");
 
 
 		// Får ikke dekryptert .zip.pgp - mest sannsynlig mismatch mellom private key og public key
@@ -66,11 +76,11 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 				.handled(true)
 				.process(new MdcSetterProcessor())
 				.process(new ErrorMetricsProcessor())
-				.log(LoggingLevel.WARN, log, "Skanmotreferansenr feilet i dekryptering av .zip.pgp for " + KEY_LOGGING_INFO + ". ${exception}")
-				.setHeader(Exchange.FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}.zip.pgp"))
+				.log(ERROR, log, "Skanmotreferansenr feilet i dekryptering av .zip.pgp for " + KEY_LOGGING_INFO + ". ${exception}")
+				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}.zip.pgp"))
 				.to("{{skanmotreferansenr.endpointuri}}/{{skanmotreferansenr.filomraade.feilmappe}}" +
 						"?{{skanmotreferansenr.endpointconfig}}")
-				.log(LoggingLevel.WARN, log, "Skanmotreferansenr skrev feiletzip=${header." + Exchange.FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".")
+				.log(ERROR, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".")
 				.end()
 				.process(new MdcRemoverProcessor());
 
@@ -79,10 +89,10 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 				.handled(true)
 				.process(new MdcSetterProcessor())
 				.process(new ErrorMetricsProcessor())
-				.log(LoggingLevel.WARN, log, "Skanmotreferansenr feilet funksjonelt for " + KEY_LOGGING_INFO + ". ${exception}")
-				.setHeader(Exchange.FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}.zip"))
+				.log(WARN, log, "Skanmotreferansenr feilet funksjonelt for " + KEY_LOGGING_INFO + ". ${exception}")
+				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}.zip"))
 				.to(PGP_AVVIK)
-				.log(LoggingLevel.WARN, log, "Skanmotreferansenr skrev feiletzip=${header." + Exchange.FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".");
+				.log(WARN, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".");
 
 		from("{{skanmotreferansenr.endpointuri}}/{{skanmotreferansenr.filomraade.inngaaendemappe}}" +
 				"?{{skanmotreferansenr.endpointconfig}}" +
@@ -93,7 +103,7 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 				"&move=processed" +
 				"&scheduler=spring&scheduler.cron={{skanmotreferansenr.schedule}}")
 				.routeId("read_encrypted_PGP_referansenr_zip_from_sftp")
-				.log(LoggingLevel.INFO, log, "Skanmotreferansenr-pgp starter behandling av fil=${file:absolute.path}.")
+				.log(INFO, log, "Skanmotreferansenr-pgp starter behandling av fil=${file:absolute.path}.")
 				.setProperty(PROPERTY_FORSENDELSE_ZIPNAME, simple("${file:name}"))
 				.process(exchange -> exchange.setProperty(PROPERTY_FORSENDELSE_BATCHNAVN, cleanDotPgpExtension(simple("${file:name.noext.single}"), exchange)))
 				.process(new MdcSetterProcessor())
@@ -107,7 +117,7 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 
 						})
 						.process(new MdcSetterProcessor())
-						.process(exchange -> DokCounter.incrementCounter("antall_innkommende", List.of(DokCounter.DOMAIN, DokCounter.REFERANSENR)))
+						.process(exchange -> DokCounter.incrementCounter("antall_innkommende", List.of(DOMAIN, REFERANSENR)))
 						.process(exchange -> exchange.getIn().getBody(PostboksReferansenrEnvelope.class).validate())
 						.bean(new SkanningmetadataUnmarshaller())
 						.setProperty(PROPERTY_FORSENDELSE_BATCHNAVN, simple("${body.skanningmetadata.journalpost.batchnavn}"))
@@ -115,15 +125,15 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 					.end() // aggregate
 				.end() // split
 				.process(new MdcRemoverProcessor())
-				.log(LoggingLevel.INFO, log, "Skanmotreferansenr behandlet ferdig fil=${file:absolute.path}.");
+				.log(INFO, log, "Skanmotreferansenr behandlet ferdig fil=${file:absolute.path}.");
 
 		from(PROCESS_PGP_ENCRYPTED)
 				.routeId(PROCESS_PGP_ENCRYPTED)
 				.process(new MdcSetterProcessor())
-				.log(LoggingLevel.INFO, log, "Skanmotreferansenr behandler " + KEY_LOGGING_INFO + ".")
+				.log(INFO, log, "Skanmotreferansenr behandler " + KEY_LOGGING_INFO + ".")
 				.bean(postboksReferansenrService)
-				.log(LoggingLevel.INFO, log, "Skanmotreferansenr journalførte journalpostId=${body}. " + KEY_LOGGING_INFO + ".")
-				.process(exchange -> DokCounter.incrementCounter("antall_vellykkede", List.of(DokCounter.DOMAIN, DokCounter.REFERANSENR)))
+				.log(INFO, log, "Skanmotreferansenr journalførte journalpostId=${body}. " + KEY_LOGGING_INFO + ".")
+				.process(exchange -> DokCounter.incrementCounter("antall_vellykkede", List.of(DOMAIN, REFERANSENR)))
 				.process(new MdcRemoverProcessor());
 
 		from(PGP_AVVIK)
@@ -133,9 +143,11 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 				.to("{{skanmotreferansenr.endpointuri}}/{{skanmotreferansenr.filomraade.feilmappe}}" +
 						"?{{skanmotreferansenr.endpointconfig}}")
 				.otherwise()
-				.log(LoggingLevel.ERROR, log, "Skanmotreferansenr teknisk feil der " + KEY_LOGGING_INFO + ". ikke ble flyttet til feilområde. Må analyseres.")
+				.log(ERROR, log, "Skanmotreferansenr teknisk feil der " + KEY_LOGGING_INFO + ". ikke ble flyttet til feilområde. Må analyseres.")
 				.end()
 				.process(new MdcRemoverProcessor());
+
+		// @formatter:on
 	}
 
 	// Input blir .zip siden .pgp er strippet bort
