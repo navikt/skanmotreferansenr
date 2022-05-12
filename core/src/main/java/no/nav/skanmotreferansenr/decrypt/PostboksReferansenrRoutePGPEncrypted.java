@@ -130,9 +130,7 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 		from(PROCESS_PGP_ENCRYPTED)
 				.routeId(PROCESS_PGP_ENCRYPTED)
 				.process(new MdcSetterProcessor())
-				.log(INFO, log, "Skanmotreferansenr behandler " + KEY_LOGGING_INFO + ".")
 				.bean(postboksReferansenrService)
-				.log(INFO, log, "Skanmotreferansenr journalførte journalpostId=${body}. " + KEY_LOGGING_INFO + ".")
 				.process(exchange -> DokCounter.incrementCounter("antall_vellykkede", List.of(DOMAIN, REFERANSENR)))
 				.process(new MdcRemoverProcessor());
 
