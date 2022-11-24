@@ -20,9 +20,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayInputStream;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 public class SkanningmetadataUnmarshaller {
     @Handler
     PostboksReferansenrEnvelope unmarshal(@Body PostboksReferansenrEnvelope envelope) {

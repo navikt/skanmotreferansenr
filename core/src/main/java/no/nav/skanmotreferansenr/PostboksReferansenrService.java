@@ -27,9 +27,6 @@ import static no.nav.skanmotreferansenr.metrics.DokCounter.DOMAIN;
 import static no.nav.skanmotreferansenr.metrics.DokCounter.REFERANSENR;
 import static no.nav.skanmotreferansenr.metrics.DokCounter.TEMA;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Slf4j
 @Component
 public class PostboksReferansenrService {

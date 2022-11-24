@@ -10,9 +10,6 @@ import static no.nav.skanmotreferansenr.PostboksReferansenrRoute.PROPERTY_FORSEN
 import static no.nav.skanmotreferansenr.PostboksReferansenrRoute.PROPERTY_FORSENDELSE_ZIPNAME;
 
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 public class MdcSetterProcessor implements Processor {
 
     @Override

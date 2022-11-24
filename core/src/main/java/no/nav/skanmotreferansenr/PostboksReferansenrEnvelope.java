@@ -19,9 +19,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Builder
 @Data
 @RequiredArgsConstructor
