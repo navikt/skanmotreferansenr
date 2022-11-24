@@ -23,6 +23,10 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static no.nav.skanmotreferansenr.metrics.DokCounter.DOMAIN;
+import static no.nav.skanmotreferansenr.metrics.DokCounter.REFERANSENR;
+import static no.nav.skanmotreferansenr.metrics.DokCounter.TEMA;
+
 /**
  * @author Joakim Bjørnstad, Jbit AS
  */
@@ -56,9 +60,11 @@ public class PostboksReferansenrService {
                 .pdf(envelope.getPdf())
                 .build());
         List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses = leggTilLogiskVedleggService.leggTilLogiskVedlegg(opprettjournalpostResponse, foerstesideMetadata);
-        if(!leggTilLogiskVedleggResponses.isEmpty()) {
+        if (!leggTilLogiskVedleggResponses.isEmpty()) {
             logLogiskVedleggResponses(leggTilLogiskVedleggResponses);
         }
+        incrementTemaCounter(foerstesideMetadata.getTema());
+
     }
 
     private void logLogiskVedleggResponses(List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses) {
@@ -67,6 +73,10 @@ public class PostboksReferansenrService {
                 .map(LeggTilLogiskVedleggResponse::getLogiskVedleggId)
                 .collect(Collectors.toList());
         log.info("Skanmotreferansenr lagret logisk vedlegg med logiskVedleggIds: {}", logiskVedleggIds);
+    }
+
+    private void incrementTemaCounter(String tema) {
+        DokCounter.incrementCounter(TEMA, List.of(DOMAIN, REFERANSENR, TEMA, tema));
     }
 
     private void incrementMetadataMetrics(Skanningmetadata skanningmetadata) {
