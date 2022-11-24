@@ -23,9 +23,11 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
+import static net.logstash.logback.util.StringUtils.isEmpty;
+import static no.nav.skanmotreferansenr.metrics.DokCounter.DOMAIN;
+import static no.nav.skanmotreferansenr.metrics.DokCounter.REFERANSENR;
+import static no.nav.skanmotreferansenr.metrics.DokCounter.TEMA;
+
 @Slf4j
 @Component
 public class PostboksReferansenrService {
@@ -33,6 +35,7 @@ public class PostboksReferansenrService {
     private final FoerstesidegeneratorService foerstesidegeneratorService;
     private final OpprettJournalpostService opprettJournalpostService;
     private final LeggTilLogiskVedleggService leggTilLogiskVedleggService;
+    private final String EMPTY = "empty";
 
     @Autowired
     public PostboksReferansenrService(FoerstesidegeneratorService foerstesidegeneratorService,
@@ -56,9 +59,11 @@ public class PostboksReferansenrService {
                 .pdf(envelope.getPdf())
                 .build());
         List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses = leggTilLogiskVedleggService.leggTilLogiskVedlegg(opprettjournalpostResponse, foerstesideMetadata);
-        if(!leggTilLogiskVedleggResponses.isEmpty()) {
+        if (!leggTilLogiskVedleggResponses.isEmpty()) {
             logLogiskVedleggResponses(leggTilLogiskVedleggResponses);
         }
+        incrementTemaCounter(foerstesideMetadata.getTema());
+
     }
 
     private void logLogiskVedleggResponses(List<LeggTilLogiskVedleggResponse> leggTilLogiskVedleggResponses) {
@@ -69,10 +74,13 @@ public class PostboksReferansenrService {
         log.info("Skanmotreferansenr lagret logisk vedlegg med logiskVedleggIds: {}", logiskVedleggIds);
     }
 
+    private void incrementTemaCounter(String tema) {
+        DokCounter.incrementCounter(TEMA, List.of(DOMAIN, REFERANSENR, TEMA, isEmpty(tema) ? EMPTY : tema));
+    }
+
     private void incrementMetadataMetrics(Skanningmetadata skanningmetadata) {
         final String STREKKODEPOSTBOKS = "strekkodePostboks";
         final String FYSISKPOSTBOKS = "fysiskPostboks";
-        final String EMPTY = "empty";
 
         DokCounter.incrementCounter(Map.of(
                 STREKKODEPOSTBOKS, Optional.ofNullable(skanningmetadata)

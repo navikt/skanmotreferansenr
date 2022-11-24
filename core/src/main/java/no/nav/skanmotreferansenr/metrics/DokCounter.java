@@ -20,6 +20,7 @@ public class DokCounter {
     private static final String EXCEPTION_NAME = "exception_name";
     private static final String FUNCTIONAL_ERROR = "functional";
     private static final String TECHNICAL_ERROR = "technical";
+    public static final String TEMA = "tema";
     public static final String DOMAIN = "domain";
     public static final String REFERANSENR = "referansenr";
 

@@ -13,9 +13,6 @@ import static no.nav.skanmotreferansenr.PostboksReferansenrRoute.PROPERTY_FORSEN
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 @Slf4j
 public class PostboksReferansenrSkanningAggregator implements AggregationStrategy {
     public static final String XML_EXTENSION = "xml";

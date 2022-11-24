@@ -21,9 +21,6 @@ import static no.nav.skanmotreferansenr.PostboksReferansenrTestObjects.createEnv
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 class PostboksReferansenrEnvelopeTest {
 
     @Test

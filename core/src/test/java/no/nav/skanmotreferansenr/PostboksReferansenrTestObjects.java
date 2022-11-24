@@ -8,9 +8,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 public class PostboksReferansenrTestObjects {
 	public static final String FILEBASENAME = "pb1400";
 	public static final String ZIPNAME = "pb1400.zip";

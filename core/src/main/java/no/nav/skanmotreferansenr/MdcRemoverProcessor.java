@@ -9,9 +9,6 @@ import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_CALL_ID;
 import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_FILENAME;
 import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_ZIP_ID;
 
-/**
- * @author Joakim Bjørnstad, Jbit AS
- */
 public class MdcRemoverProcessor implements Processor {
 
     @Override
