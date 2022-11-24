@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static net.logstash.logback.util.StringUtils.isEmpty;
 import static no.nav.skanmotreferansenr.metrics.DokCounter.DOMAIN;
 import static no.nav.skanmotreferansenr.metrics.DokCounter.REFERANSENR;
 import static no.nav.skanmotreferansenr.metrics.DokCounter.TEMA;
@@ -34,6 +35,7 @@ public class PostboksReferansenrService {
     private final FoerstesidegeneratorService foerstesidegeneratorService;
     private final OpprettJournalpostService opprettJournalpostService;
     private final LeggTilLogiskVedleggService leggTilLogiskVedleggService;
+    private final String EMPTY = "empty";
 
     @Autowired
     public PostboksReferansenrService(FoerstesidegeneratorService foerstesidegeneratorService,
@@ -73,13 +75,12 @@ public class PostboksReferansenrService {
     }
 
     private void incrementTemaCounter(String tema) {
-        DokCounter.incrementCounter(TEMA, List.of(DOMAIN, REFERANSENR, TEMA, tema));
+        DokCounter.incrementCounter(TEMA, List.of(DOMAIN, REFERANSENR, TEMA, isEmpty(tema) ? EMPTY : tema));
     }
 
     private void incrementMetadataMetrics(Skanningmetadata skanningmetadata) {
         final String STREKKODEPOSTBOKS = "strekkodePostboks";
         final String FYSISKPOSTBOKS = "fysiskPostboks";
-        final String EMPTY = "empty";
 
         DokCounter.incrementCounter(Map.of(
                 STREKKODEPOSTBOKS, Optional.ofNullable(skanningmetadata)
