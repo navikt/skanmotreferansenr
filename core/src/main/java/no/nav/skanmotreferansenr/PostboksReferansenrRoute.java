@@ -66,7 +66,6 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 		from("{{skanmotreferansenr.endpointuri}}/{{skanmotreferansenr.filomraade.inngaaendemappe}}" +
 				"?{{skanmotreferansenr.endpointconfig}}" +
 				"&delay=" + TimeUnit.SECONDS.toMillis(60) +
-				"&antExclude=*enc.zip, *enc.ZIP" +
 				"&antExclude=*zip.pgp, *ZIP.pgp" +
 				"&antInclude=*.zip,*.ZIP" +
 				"&initialDelay=1000" +
