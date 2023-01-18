@@ -1,31 +1,6 @@
-###Maven##
-HELP.md
+# Maven
 target/
-*.mvn
-mvnw*
 
-
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
-*.idea
-*.iws
+# IntelliJ
+.idea/
 *.iml
-*.ipr
-atlassian-ide-plugin.xml
-
-#Eclipse
-.classpath
-.project
-.settings
-
-*.tm*.epoch
-*.lck
-*.log
