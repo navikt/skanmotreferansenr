@@ -29,7 +29,7 @@
 
         <logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
         <commons-compress.version>1.23.0</commons-compress.version>
-        <commons-io.version>2.11.0</commons-io.version>
+        <commons-io.version>2.13.0</commons-io.version>
         <bouncycastle.version>1.70</bouncycastle.version>
 
         <!-- Nyere versjoner av sshd-core vil gi feilmeldingen "JSchException: reject HostKey: localhost" -->
