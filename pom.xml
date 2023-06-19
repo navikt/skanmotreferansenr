@@ -24,7 +24,7 @@
         <java.version>17</java.version>
 
         <camel.version>3.20.3</camel.version>
-        <spring-cloud-starter-vault-config.version>3.1.2</spring-cloud-starter-vault-config.version>
+        <spring-cloud-starter-vault-config.version>4.0.1</spring-cloud-starter-vault-config.version>
         <spring-cloud-contract-wiremock.version>3.1.6</spring-cloud-contract-wiremock.version>
 
         <logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
