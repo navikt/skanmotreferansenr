@@ -33,7 +33,7 @@
 
         <!-- Nyere versjoner av sshd-core vil gi feilmeldingen "JSchException: reject HostKey: localhost" -->
         <sshd-core.version>2.10.0</sshd-core.version>
-        <spring-cloud-contract-wiremock.version>3.1.8</spring-cloud-contract-wiremock.version>
+        <spring-cloud-contract-wiremock.version>4.0.4</spring-cloud-contract-wiremock.version>
 
         <!-- Plugins -->
         <maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
