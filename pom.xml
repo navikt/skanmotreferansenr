@@ -23,7 +23,7 @@
     <properties>
         <java.version>17</java.version>
 
-        <camel.version>3.21.0</camel.version>
+        <camel.version>4.0.0</camel.version>
         <spring-cloud-starter-vault-config.version>3.1.3</spring-cloud-starter-vault-config.version>
 
         <logstash-logback-encoder.version>7.3</logstash-logback-encoder.version>
