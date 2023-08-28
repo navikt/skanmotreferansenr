@@ -36,6 +36,7 @@ public class OpprettJournalpostRequestMapperTest {
     private final String FILNAVN_XML = "filnavn.xml";
     private final String REFERANSENR = "12345678901234";
     private final String ENDORSERNR = "222111NAV456";
+    private final String ANTALL_SIDER = "10";
     private final String FYSISK_POSTBOKS = "1400";
     private final String STREKKODE_POSTBOKS = "1400";
     private final String JOURNALPOSTTYPE_INNGAAENDE = "INNGAAENDE";
@@ -80,6 +81,8 @@ public class OpprettJournalpostRequestMapperTest {
         assertEquals(ENDORSERNR, getTilleggsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "endorsernr"));
         assertEquals(FYSISK_POSTBOKS, getTilleggsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "fysiskPostboks"));
         assertEquals(STREKKODE_POSTBOKS, getTilleggsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "strekkodePostboks"));
+        assertEquals(ANTALL_SIDER, getTilleggsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "antallSider"));
+
 
         assertEquals(1, opprettJournalpostRequest.getDokumenter().size());
         Dokument dokument = opprettJournalpostRequest.getDokumenter().iterator().next();
@@ -144,6 +147,7 @@ public class OpprettJournalpostRequestMapperTest {
         assertEquals(ENDORSERNR, getTilleggsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "endorsernr"));
         assertEquals(FYSISK_POSTBOKS, getTilleggsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "fysiskPostboks"));
         assertEquals(STREKKODE_POSTBOKS, getTilleggsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "strekkodePostboks"));
+        assertEquals(ANTALL_SIDER, getTilleggsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "antallSider"));
 
         assertEquals(1, opprettJournalpostRequest.getDokumenter().size());
         Dokument dokument = opprettJournalpostRequest.getDokumenter().iterator().next();
@@ -246,6 +250,7 @@ public class OpprettJournalpostRequestMapperTest {
                                 .batchnavn(BATCHNAVN)
                                 .filnavn(FILNAVN_I_XML)
                                 .endorsernr(ENDORSERNR)
+                                .antallSider(ANTALL_SIDER)
                                 .build()
                 )
                 .skanningInfo(SkanningInfo.builder()

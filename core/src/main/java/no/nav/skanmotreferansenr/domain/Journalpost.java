@@ -35,6 +35,9 @@ public class Journalpost {
     @XmlElement(required = false, name = "endorsernr")
     private String endorsernr;
 
+    @XmlElement(required = false, name = "antallSider")
+    private String antallSider;
+
     public String getReferansenummerWithoutChecksum() {
         if(!isValidReferansenr(referansenummer)) {
             throw new InvalidMetadataException("Ugyldig referansenummer. Må være numerisk og 14 siffer langt. referansenummer=" + referansenummer);
