@@ -33,6 +33,7 @@ public class OpprettJournalpostRequestMapper {
     private static final String ENDORSERNR = "endorsernr";
     private static final String FYSISKPOSTBOKS = "fysiskPostboks";
     private static final String STREKKODEPOSTBOKS = "strekkodePostboks";
+    private static final String ANTALL_SIDER = "antallSider";
 
     private static final String BRUKERTYPE_PERSON = "PERSON";
     private static final String BRUKERTYPE_ORGANISASJON = "ORGANISASJON";
@@ -62,7 +63,8 @@ public class OpprettJournalpostRequestMapper {
                 new Tilleggsopplysning(REFERANSENR, journalpost.getReferansenummer()),
                 new Tilleggsopplysning(ENDORSERNR, journalpost.getEndorsernr()),
                 new Tilleggsopplysning(FYSISKPOSTBOKS, skanningInfo.getFysiskPostboks()),
-                new Tilleggsopplysning(STREKKODEPOSTBOKS, skanningInfo.getStrekkodePostboks())
+                new Tilleggsopplysning(STREKKODEPOSTBOKS, skanningInfo.getStrekkodePostboks()),
+                new Tilleggsopplysning(ANTALL_SIDER, journalpost.getAntallSider())
         ).stream().filter(tilleggsopplysning -> notNullOrEmpty(tilleggsopplysning.getVerdi())).collect(Collectors.toList());
 
         DokumentVariant pdf = DokumentVariant.builder()

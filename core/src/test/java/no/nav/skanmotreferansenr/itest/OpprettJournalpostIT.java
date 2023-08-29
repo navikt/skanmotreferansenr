@@ -79,7 +79,8 @@ public class OpprettJournalpostIT extends AbstractItest {
 		List<Tilleggsopplysning> tilleggsopplysninger = List.of(
 				new Tilleggsopplysning("fysiskPostboks", "1400"),
 				new Tilleggsopplysning("strekkodePostboks", "1400"),
-				new Tilleggsopplysning("endorsernr", "3110190003NAV743506")
+				new Tilleggsopplysning("endorsernr", "3110190003NAV743506"),
+				new Tilleggsopplysning("antallSider", "10")
 		);
 
 		DokumentVariant pdf = DokumentVariant.builder()
