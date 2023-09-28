@@ -1,14 +1,6 @@
 package no.nav.skanmotreferansenr.consumer.opprettjournalpost.data;
 
-import lombok.Builder;
-import lombok.Value;
+import jakarta.validation.constraints.NotNull;
 
-import javax.validation.constraints.NotNull;
-
-@Value
-@Builder
-public class DokumentInfo {
-
-    @NotNull
-    private String dokumentInfoId;
+public record DokumentInfo(@NotNull String dokumentInfoId) {
 }

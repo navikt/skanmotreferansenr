@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 @Getter
 @Builder
@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlElement;
 @AllArgsConstructor
 public class SkanningInfo {
 
-    @XmlElement(required = false, name = "fysiskPostboks")
+    @XmlElement(name = "fysiskPostboks")
     private String fysiskPostboks;
 
     @XmlElement(required = true, name = "strekkodePostboks")
