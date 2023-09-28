@@ -135,10 +135,7 @@ public class OpprettJournalpostRequestMapper {
         } else if (BRUKERTYPE_ORGANISASJON.equals(idType)) {
             idType = ORGNR;
         }
-        return Bruker.builder()
-                .id(id)
-                .idType(idType)
-                .build();
+        return new Bruker(id, idType);
     }
 
     private boolean isValidBruker(FoerstesideMetadata metadata) {

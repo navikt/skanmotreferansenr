@@ -67,8 +67,8 @@ public class OpprettJournalpostRequestMapperTest {
         assertEquals("FNR", opprettJournalpostRequest.getAvsenderMottaker().getIdType());
         assertEquals(AVSENDER_NAVN, opprettJournalpostRequest.getAvsenderMottaker().getNavn());
 
-        assertEquals(BRUKER_ID, opprettJournalpostRequest.getBruker().getId());
-        assertEquals(BRUKER_IDTYPE, opprettJournalpostRequest.getBruker().getIdType());
+        assertEquals(BRUKER_ID, opprettJournalpostRequest.getBruker().id());
+        assertEquals(BRUKER_IDTYPE, opprettJournalpostRequest.getBruker().idType());
 
         assertEquals(TEMA, opprettJournalpostRequest.getTema());
         assertEquals(BEHANDLINGSTEMA, opprettJournalpostRequest.getBehandlingstema());
