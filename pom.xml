@@ -28,11 +28,11 @@
 
         <logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
         <commons-compress.version>1.24.0</commons-compress.version>
-        <commons-io.version>2.13.0</commons-io.version>
-        <bouncycastle.version>1.70</bouncycastle.version>
+        <commons-io.version>2.14.0</commons-io.version>
+        <bouncycastle.version>1.76</bouncycastle.version>
 
-        <!-- Nyere versjoner av sshd-core vil gi feilmeldingen "JSchException: reject HostKey: localhost" -->
-        <sshd-core.version>2.10.0</sshd-core.version>
+        <!-- Test -->
+        <sshd-core.version>2.11.0</sshd-core.version>
         <spring-cloud-contract-wiremock.version>4.0.4</spring-cloud-contract-wiremock.version>
 
         <!-- Plugins -->
@@ -46,7 +46,6 @@
                 <artifactId>core</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.camel.springboot</groupId>
                 <artifactId>camel-spring-boot-dependencies</artifactId>
@@ -78,12 +77,12 @@
             <!-- decrypt pgp-->
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcprov-jdk15on</artifactId>
+                <artifactId>bcprov-jdk18on</artifactId>
                 <version>${bouncycastle.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.bouncycastle</groupId>
-                <artifactId>bcpg-jdk15on</artifactId>
+                <artifactId>bcpg-jdk18on</artifactId>
                 <version>${bouncycastle.version}</version>
             </dependency>
 
