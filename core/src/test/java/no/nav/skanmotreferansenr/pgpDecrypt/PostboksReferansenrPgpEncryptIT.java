@@ -38,6 +38,7 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 	@BeforeEach
 	void beforeEach() {
 		super.setUpStubs();
+		super.stubAzureToken();
 		final Path inngaaende = sshdPath.resolve(INNGAAENDE);
 		final Path processed = inngaaende.resolve("processed");
 		final Path feilmappe = sshdPath.resolve(FEILMAPPE);

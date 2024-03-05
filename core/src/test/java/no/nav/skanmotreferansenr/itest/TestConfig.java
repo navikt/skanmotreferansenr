@@ -3,6 +3,7 @@ package no.nav.skanmotreferansenr.itest;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.CoreConfig;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.consumer.azure.AzureProperties;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
 import org.apache.camel.CamelContext;
 import org.apache.camel.spring.boot.CamelContextConfiguration;
@@ -30,7 +31,7 @@ import static java.util.Collections.singletonList;
 @Slf4j
 @Configuration
 @EnableAutoConfiguration
-@EnableConfigurationProperties(SkanmotreferansenrProperties.class)
+@EnableConfigurationProperties({SkanmotreferansenrProperties.class, AzureProperties.class})
 @Import({CoreConfig.class, TestConfig.CamelTestStartupConfig.class, TestConfig.SshdSftpServerConfig.class, DokCounter.class})
 public class TestConfig {
 

@@ -1,7 +1,5 @@
 package no.nav.skanmotreferansenr.itest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.consumer.opprettjournalpost.OpprettJournalpostConsumer;
 import no.nav.skanmotreferansenr.consumer.opprettjournalpost.data.Dokument;
 import no.nav.skanmotreferansenr.consumer.opprettjournalpost.data.DokumentVariant;
@@ -14,7 +12,6 @@ import no.nav.skanmotreferansenr.exceptions.functional.OpprettJournalpostFunctio
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 
 import java.util.List;
 
@@ -25,20 +22,15 @@ public class OpprettJournalpostIT extends AbstractItest {
 
 	private final byte[] DUMMY_FILE = "dummyfile".getBytes();
 
+	@Autowired
 	private OpprettJournalpostConsumer opprettJournalpostConsumer;
+
+	@Autowired
 	private STSConsumer stsConsumer;
-
-	@Autowired
-	private SkanmotreferansenrProperties properties;
-
-	@Autowired
-	private ObjectMapper objectMapper;
 
 	@BeforeEach
 	void setUpConsumer() {
 		super.setUpStubs();
-		stsConsumer = new STSConsumer(new RestTemplateBuilder(), properties);
-		opprettJournalpostConsumer = new OpprettJournalpostConsumer(new RestTemplateBuilder(), properties, objectMapper);
 	}
 
 	@Test

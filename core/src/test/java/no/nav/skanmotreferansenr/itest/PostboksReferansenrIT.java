@@ -1,6 +1,5 @@
 package no.nav.skanmotreferansenr.itest;
 
-import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +38,7 @@ public class PostboksReferansenrIT extends AbstractItest {
 	@BeforeEach
 	void beforeEach() {
 		super.setUpStubs();
+		super.stubAzureToken();
 		final Path inngaaende = sshdPath.resolve(INNGAAENDE);
 		final Path processed = inngaaende.resolve("processed");
 		final Path feilmappe = sshdPath.resolve(FEILMAPPE);

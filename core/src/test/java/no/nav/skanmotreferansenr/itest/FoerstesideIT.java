@@ -1,14 +1,10 @@
 package no.nav.skanmotreferansenr.itest;
 
-import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
-import no.nav.skanmotreferansenr.consumer.foersteside.FoerstesidegeneratorConsumer;
 import no.nav.skanmotreferansenr.consumer.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
-import no.nav.skanmotreferansenr.consumer.sts.STSConsumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 
 import java.util.List;
 
@@ -19,18 +15,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FoerstesideIT extends AbstractItest {
 
-	private FoerstesidegeneratorService foerstesidegeneratorService;
-
 	@Autowired
-	private SkanmotreferansenrProperties skanmotreferansenrProperties;
+	private FoerstesidegeneratorService foerstesidegeneratorService;
 
 	@BeforeEach
 	void setUpBeans() {
+		super.stubAzureToken();
 		super.setUpStubs();
-		foerstesidegeneratorService = new FoerstesidegeneratorService(
-				new FoerstesidegeneratorConsumer(new RestTemplateBuilder(), skanmotreferansenrProperties),
-				new STSConsumer(new RestTemplateBuilder(), skanmotreferansenrProperties)
-		);
 	}
 
 	@Test

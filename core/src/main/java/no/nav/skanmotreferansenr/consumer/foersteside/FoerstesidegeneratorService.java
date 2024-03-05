@@ -17,18 +17,15 @@ import java.util.Optional;
 public class FoerstesidegeneratorService {
 
     private final FoerstesidegeneratorConsumer foerstesidegeneratorConsumer;
-    private final STSConsumer stsConsumer;
 
     @Autowired
-    public FoerstesidegeneratorService(FoerstesidegeneratorConsumer foerstesidegeneratorConsumer, STSConsumer stsConsumer) {
+    public FoerstesidegeneratorService(FoerstesidegeneratorConsumer foerstesidegeneratorConsumer) {
         this.foerstesidegeneratorConsumer = foerstesidegeneratorConsumer;
-        this.stsConsumer = stsConsumer;
     }
 
     public Optional<FoerstesideMetadata> hentFoersteside(String loepenr) {
-        STSResponse stsResponse = stsConsumer.getSTSToken();
         try {
-            final FoerstesideMetadata foerstesideMetadata = foerstesidegeneratorConsumer.hentFoersteside(stsResponse.getAccess_token(), loepenr);
+            final FoerstesideMetadata foerstesideMetadata = foerstesidegeneratorConsumer.hentFoersteside(loepenr);
             log.info("Skanmotreferansenr har hentet førsteside. løpenummer={}.", loepenr);
             return Optional.of(foerstesideMetadata);
         } catch (HentMetadataFoerstesideFinnesIkkeFunctionalException e) {
