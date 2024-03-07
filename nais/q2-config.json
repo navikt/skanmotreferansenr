@@ -1,6 +1,7 @@
 {
   "SRVSKANMOTREFERANSE": "/serviceuser/data/dev/srvskanmotreferanse",
   "SFTP_KEYS": "kv/preprod/fss/skanmotreferansenr/keys",
+  "AZURE_APP_TOKEN_URL": "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/oauth2/v2.0/token",
   "SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_URL": "http://foerstesidegenerator.teamdokumenthandtering.svc.nais.local",
   "SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_SCOPE": "api://dev-fss.teamdokumenthandtering.foerstesidegenerator/.default",
   "SKANMOTREFERANSENR_DOKARKIVURL": "https://dokarkiv.dev.intern.nav.no",
