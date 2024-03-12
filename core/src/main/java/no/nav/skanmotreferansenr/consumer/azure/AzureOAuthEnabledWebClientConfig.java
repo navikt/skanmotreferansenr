@@ -82,8 +82,8 @@ public class AzureOAuthEnabledWebClientConfig {
 		return List.of(
 				ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_FOERSTESIDEGENERATOR)
 						.tokenUri(azureProperties.openidConfigTokenEndpoint())
-						.clientId(azureProperties.clientId())
-						.clientSecret(azureProperties.clientSecret())
+						.clientId(azureProperties.appClientId())
+						.clientSecret(azureProperties.appClientSecret())
 						.clientAuthenticationMethod(CLIENT_SECRET_BASIC)
 						.authorizationGrantType(CLIENT_CREDENTIALS)
 						.scope(skanmotreferansenrProperties.getEndpoints().getFoerstesidegenerator().getScope())
