@@ -5,12 +5,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Konfigurert av naiserator. https://doc.nais.io/security/auth/azure-ad/#runtime-variables-credentials
+ * Konfigurert av naiserator. https://doc.nais.io/security/auth/azure-ad/usage/#variables-for-acquiring-tokens:~:text=nais.io/azure/-,Variables%20for%20Acquiring%20Tokens,-%C2%B6
  */
 @Validated
 @ConfigurationProperties(prefix = "azure.app")
 public record AzureProperties(
-		@NotEmpty String tokenUrl,
+		@NotEmpty String openidConfigTokenEndpoint,
 		@NotEmpty String clientId,
 		@NotEmpty String clientSecret
 ) {

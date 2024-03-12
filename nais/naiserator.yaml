@@ -27,8 +27,6 @@ spec:
       value: {{ SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_URL }}
     - name: SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_SCOPE
       value: {{ SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_SCOPE }}
-    - name: AZURE_APP_TOKEN_URL
-      value: {{ AZURE_APP_TOKEN_URL }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -60,6 +58,7 @@ spec:
   azure:
     application:
       enabled: true
+  webproxy: true
   vault:
     enabled: true
     paths:

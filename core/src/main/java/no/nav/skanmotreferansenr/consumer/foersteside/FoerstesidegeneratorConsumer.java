@@ -6,6 +6,7 @@ import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFi
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.HentMetadataFoerstesideTechnicalException;
+import no.nav.skanmotreferansenr.filters.NavHeadersFilter;
 import no.nav.skanmotreferansenr.metrics.Metrics;
 import org.slf4j.MDC;
 import org.springframework.retry.annotation.Retryable;
@@ -15,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import java.util.function.Consumer;
 
+import static java.lang.String.format;
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CALL_ID;
 import static no.nav.skanmotreferansenr.consumer.azure.AzureProperties.CLIENT_REGISTRATION_FOERSTESIDEGENERATOR;
 import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_CALL_ID;
@@ -33,6 +35,7 @@ public class FoerstesidegeneratorConsumer {
 	public FoerstesidegeneratorConsumer(WebClient webClient, SkanmotreferansenrProperties skanmotreferansenrProperties) {
 		this.webClient = webClient.mutate()
 				.baseUrl(skanmotreferansenrProperties.getEndpoints().getFoerstesidegenerator().getUrl())
+				.filter(new NavHeadersFilter())
 				.defaultHeaders(httpHeaders -> {
 					httpHeaders.setContentType(APPLICATION_JSON);
 				})
@@ -43,12 +46,9 @@ public class FoerstesidegeneratorConsumer {
 	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "hentFoersteside"}, percentiles = {0.5, 0.95}, histogram = true)
 	public FoerstesideMetadata hentFoersteside(String loepenr) {
 		return webClient.get()
-				.uri("/api/foerstesidegenerator/v1/foersteside/" + loepenr)
-				.headers(httpHeaders -> {
-					if (MDC.get(MDC_CALL_ID) != null) {
-						httpHeaders.add(NAV_CALL_ID, MDC.get(MDC_CALL_ID));
-					}
-				})
+				.uri(uriBuilder -> uriBuilder
+						.path("/api/foerstesidegenerator/v1/foersteside/{loepenr]")
+						.build(loepenr))
 				.attributes(clientRegistrationId(CLIENT_REGISTRATION_FOERSTESIDEGENERATOR))
 				.retrieve()
 				.bodyToMono(FoerstesideMetadata.class)
@@ -59,20 +59,22 @@ public class FoerstesidegeneratorConsumer {
 	private Consumer<Throwable> handleFoerstesideErrors(String loepenr) {
 		return error -> {
 			if (error instanceof WebClientResponseException response) {
-				if (response.getStatusCode().value() == NOT_FOUND.value()) {
-					throw new HentMetadataFoerstesideFinnesIkkeFunctionalException(String.format("Fant ikke foersteside med loepenr=%s, status=%s",
+				if (response.getStatusCode().isSameCodeAs(NOT_FOUND)) {
+					throw new HentMetadataFoerstesideFinnesIkkeFunctionalException(format("Fant ikke foersteside med loepenr=%s, status=%s",
 							loepenr, response.getStatusCode()), response);
 				} else if (response.getStatusCode().value() == CONFLICT.value()) {
-					throw new HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException(String.format("HentMetadataFoersteside feilet funksjonelt med statusKode=%s. Feilmelding=%s",
+					throw new HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException(format("HentMetadataFoersteside feilet funksjonelt med statusKode=%s. Feilmelding=%s",
 							response.getStatusCode(), response.getMessage()), response);
 				} else if (response.getStatusCode().is5xxServerError()) {
-					throw new HentMetadataFoerstesideTechnicalException(String.format("HentMetadataFoersteside feilet teknisk med statusKode=%s. Feilmelding=%s",
+					throw new HentMetadataFoerstesideTechnicalException(format("HentMetadataFoersteside feilet teknisk med statusKode=%s. Feilmelding=%s",
 							response.getStatusCode(), response.getMessage()), response);
 				} else {
-					throw new HentMetadataFoerstesideFunctionalException(String.format("HentMetadataFoersteside feilet funksjonelt med statusKode=%s. Feilmelding=%s",
+					throw new HentMetadataFoerstesideFunctionalException(format("HentMetadataFoersteside feilet funksjonelt med statusKode=%s. Feilmelding=%s",
 							response.getStatusCode(), response.getMessage()), response);
 				}
 			}
+			throw new HentMetadataFoerstesideFunctionalException(format("HentMetadataFoersteside feilet med ukjent funksjonell feil. Feilmelding=%s",
+					error.getMessage()), error);
 		};
 	}
 }

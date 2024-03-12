@@ -81,7 +81,7 @@ public class AzureOAuthEnabledWebClientConfig {
 	List<ClientRegistration> clientRegistration(AzureProperties azureProperties, SkanmotreferansenrProperties skanmotreferansenrProperties) {
 		return List.of(
 				ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_FOERSTESIDEGENERATOR)
-						.tokenUri(azureProperties.tokenUrl())
+						.tokenUri(azureProperties.openidConfigTokenEndpoint())
 						.clientId(azureProperties.clientId())
 						.clientSecret(azureProperties.clientSecret())
 						.clientAuthenticationMethod(CLIENT_SECRET_BASIC)
