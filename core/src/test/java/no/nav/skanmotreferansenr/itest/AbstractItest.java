@@ -43,6 +43,15 @@ public class AbstractItest {
 	String LOGISK_VEDLEGG_ID = "885522";
 	final String LOEPENR_OK = "1111111111111";
 
+
+	public void stubAzureToken() {
+		stubFor(post("/azure_token")
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("azure/token_response_dummy.json")));
+	}
+
 	public void setUpStubs() {
 		String URL_STS = "/rest/v1/sts/token";
 		stubFor(post(urlMatching(URL_STS)).willReturn(aResponse()

@@ -9,7 +9,6 @@ import no.nav.skanmotreferansenr.consumer.sts.data.STSResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -20,7 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LeggTilLogiskVedleggIT extends AbstractItest {
 
+	@Autowired
 	private LeggTilLogiskVedleggConsumer leggTilLogiskVedleggConsumer;
+
+	@Autowired
 	private STSConsumer stsConsumer;
 
 	@Autowired
@@ -29,8 +31,6 @@ public class LeggTilLogiskVedleggIT extends AbstractItest {
 	@BeforeEach
 	void setUpConsumer() {
 		super.setUpStubs();
-		stsConsumer = new STSConsumer(new RestTemplateBuilder(), properties);
-		leggTilLogiskVedleggConsumer = new LeggTilLogiskVedleggConsumer(new RestTemplateBuilder(), properties);
 	}
 
 	@Test

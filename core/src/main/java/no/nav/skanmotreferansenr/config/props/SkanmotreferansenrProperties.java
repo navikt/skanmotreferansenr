@@ -1,5 +1,6 @@
 package no.nav.skanmotreferansenr.config.props;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,9 +17,6 @@ import java.time.Duration;
 @ConfigurationProperties("skanmotreferansenr")
 @Validated
 public class SkanmotreferansenrProperties {
-
-    @NotNull
-    private String getmetadatafoerstesideurl;
 
     @NotNull
     private String dokarkivurl;
@@ -38,11 +36,22 @@ public class SkanmotreferansenrProperties {
     @NotNull
     private Duration completiontimeout;
 
+    private final Endpoints endpoints = new Endpoints();
+
     private final ServiceuserProperties serviceuser = new ServiceuserProperties();
 
     private final FilomraadeProperties filomraade = new FilomraadeProperties();
 
     private final SftpProperties sftp = new SftpProperties();
+
+    @Data
+    @Validated
+    public static class Endpoints {
+
+        @NotNull
+        private AzureEndpoint foerstesidegenerator;
+
+    }
 
     @Getter
     @Setter
@@ -91,5 +100,20 @@ public class SkanmotreferansenrProperties {
 
         @NotNull
         private String port;
+    }
+
+    @Data
+    @Validated
+    public static class AzureEndpoint {
+        /**
+         * Url til tjeneste som har azure autorisasjon
+         */
+        @NotEmpty
+        private String url;
+        /**
+         * Scope til azure client credential flow
+         */
+        @NotEmpty
+        private String scope;
     }
 }

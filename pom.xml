@@ -34,6 +34,7 @@
         <!-- Test -->
         <sshd-core.version>2.11.0</sshd-core.version>
         <spring-cloud-contract-wiremock.version>4.0.4</spring-cloud-contract-wiremock.version>
+        <context-propagation.version>1.1.1</context-propagation.version>
 
         <!-- Plugins -->
         <maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
@@ -72,6 +73,11 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.micrometer</groupId>
+                <artifactId>context-propagation</artifactId>
+                <version>${context-propagation.version}</version>
             </dependency>
 
             <!-- decrypt pgp-->

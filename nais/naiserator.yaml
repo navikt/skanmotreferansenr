@@ -7,8 +7,6 @@ metadata:
     team: teamdokumenthandtering
 spec:
   env:
-    - name: SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL
-      value: {{ SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL }}
     - name: SKANMOTREFERANSENR_DOKARKIVURL
       value: {{ SKANMOTREFERANSENR_DOKARKIVURL }}
     - name: SKANMOTREFERANSENR_STSURL
@@ -25,6 +23,10 @@ spec:
       value: {{ SKANMOTREFERANSENR_VAULT_BACKEND }}
     - name: SKANMOTREFERANSENR_VAULT_KUBERNETESPATH
       value: {{ SKANMOTREFERANSENR_VAULT_KUBERNETESPATH }}
+    - name: SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_URL
+      value: {{ SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_URL }}
+    - name: SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_SCOPE
+      value: {{ SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_SCOPE }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -53,6 +55,10 @@ spec:
       memory: 3584Mi
     requests:
       memory: 2560Mi
+  azure:
+    application:
+      enabled: true
+  webproxy: true
   vault:
     enabled: true
     paths:
