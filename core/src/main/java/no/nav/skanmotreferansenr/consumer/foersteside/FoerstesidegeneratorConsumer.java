@@ -47,7 +47,7 @@ public class FoerstesidegeneratorConsumer {
 	public FoerstesideMetadata hentFoersteside(String loepenr) {
 		return webClient.get()
 				.uri(uriBuilder -> uriBuilder
-						.path("/api/foerstesidegenerator/v1/foersteside/{loepenr]")
+						.path("/api/foerstesidegenerator/v1/foersteside/{loepenr}")
 						.build(loepenr))
 				.attributes(clientRegistrationId(CLIENT_REGISTRATION_FOERSTESIDEGENERATOR))
 				.retrieve()
