@@ -28,7 +28,7 @@
 
         <logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
         <commons-compress.version>1.26.1</commons-compress.version>
-        <commons-io.version>2.15.1</commons-io.version>
+        <commons-io.version>2.16.0</commons-io.version>
         <bouncycastle.version>1.77</bouncycastle.version>
 
         <!-- Test -->
