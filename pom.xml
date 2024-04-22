@@ -37,7 +37,7 @@
         <context-propagation.version>1.1.1</context-propagation.version>
 
         <!-- Plugins -->
-        <maven-toolchains-plugin.version>3.1.0</maven-toolchains-plugin.version>
+        <maven-toolchains-plugin.version>3.2.0</maven-toolchains-plugin.version>
     </properties>
 
     <dependencyManagement>
