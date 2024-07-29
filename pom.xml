@@ -26,7 +26,7 @@
         <camel.version>4.6.0</camel.version>
         <spring-cloud-starter-vault-config.version>4.1.0</spring-cloud-starter-vault-config.version>
 
-        <logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
+        <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
         <commons-compress.version>1.26.1</commons-compress.version>
         <commons-io.version>2.16.1</commons-io.version>
         <bouncycastle.version>1.78.1</bouncycastle.version>
