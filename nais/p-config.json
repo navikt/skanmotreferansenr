@@ -1,10 +1,9 @@
 {
   "SRVSKANMOTREFERANSE": "/serviceuser/data/prod/srvskanmotreferanse",
   "SFTP_KEYS": "kv/prod/fss/skanmotreferansenr/keys",
-  "SKANMOTREFERANSENR_GETMETADATAFOERSTESIDEURL": "https://foerstesidegenerator.intern.nav.no/api/foerstesidegenerator/v1/foersteside",
   "SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_URL": "http://foerstesidegenerator.teamdokumenthandtering.svc.nais.local",
   "SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_SCOPE": "api://prod-fss.teamdokumenthandtering.foerstesidegenerator/.default",
-  "SKANMOTREFERANSENR_DOKARKIVURL": "https://dokarkiv.intern.nav.no",
+  "SKANMOTREFERANSENR_DOKARKIVURL": "http://dokarkiv.teamdokumenthandtering.svc.nais.local",
   "SKANMOTREFERANSENR_STSURL": "https://security-token-service.nais.adeo.no/rest/v1/sts/token",
   "SKANMOTREFERANSENR_SCHEDULE": "0+0/15+*+*+*+*",
   "SKANMOTREFERANSENR_VAULT_BACKEND": "kv/prod/fss",
