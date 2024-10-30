@@ -42,7 +42,7 @@ public class OpprettJournalpostIT extends AbstractItest {
 		assertEquals(JOURNALPOST_ID, res.getJournalpostId());
 		assertEquals(1, res.getDokumenter().size());
 		String DOKUMENT_INFO_ID = "485227498";
-		assertEquals(DOKUMENT_INFO_ID, res.getDokumenter().get(0).dokumentInfoId());
+		assertEquals(DOKUMENT_INFO_ID, res.getDokumenter().getFirst().dokumentInfoId());
 	}
 
 

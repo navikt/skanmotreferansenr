@@ -6,6 +6,8 @@ import no.nav.skanmotreferansenr.domain.SkanningInfo;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException;
 
+import static no.nav.skanmotreferansenr.validators.SkanningInfoValidator.GYLDIGE_STREKKODE_POSTBOKS_VERDIER;
+
 @Slf4j
 public class SkanningMetadataValidator {
 
@@ -44,8 +46,9 @@ public class SkanningMetadataValidator {
             throw new InvalidMetadataException("SkanningInfo is null");
         }
         if (!SkanningInfoValidator.isValidStrekkodePostboks(skanningInfo.getStrekkodePostboks())) {
-            throw new InvalidMetadataException("Strekkodepostboks is not valid: " + skanningInfo.getStrekkodePostboks() +
-                    ". Must be one of: " + SkanningInfoValidator.strekkodePostboksVerdier);
+            throw new InvalidMetadataException("Strekkodepostboks is not valid: %s. Must be one of: %s".formatted(
+                    skanningInfo.getStrekkodePostboks(),
+                    GYLDIGE_STREKKODE_POSTBOKS_VERDIER));
         }
     }
 }

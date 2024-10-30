@@ -1,10 +1,9 @@
 package no.nav.skanmotreferansenr.consumer.logiskvedlegg.data;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-
-import jakarta.validation.constraints.NotNull;
 
 @Value
 @Builder
@@ -12,5 +11,5 @@ import jakarta.validation.constraints.NotNull;
 public class LeggTilLogiskVedleggResponse {
 
     @NotNull
-    private String logiskVedleggId;
+	String logiskVedleggId;
 }

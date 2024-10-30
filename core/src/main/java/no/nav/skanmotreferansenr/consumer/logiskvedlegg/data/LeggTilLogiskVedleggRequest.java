@@ -1,10 +1,9 @@
 package no.nav.skanmotreferansenr.consumer.logiskvedlegg.data;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-
-import jakarta.validation.constraints.NotNull;
 
 @Value
 @Builder
@@ -12,6 +11,6 @@ import jakarta.validation.constraints.NotNull;
 public class LeggTilLogiskVedleggRequest {
 
     @NotNull(message = "Tittel kan ikke være null")
-    private String tittel;
+	String tittel;
 
 }

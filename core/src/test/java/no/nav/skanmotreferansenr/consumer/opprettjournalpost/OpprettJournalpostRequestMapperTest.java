@@ -85,7 +85,7 @@ public class OpprettJournalpostRequestMapperTest {
 
 
         assertEquals(1, opprettJournalpostRequest.getDokumenter().size());
-        Dokument dokument = opprettJournalpostRequest.getDokumenter().iterator().next();
+        Dokument dokument = opprettJournalpostRequest.getDokumenter().getFirst();
         assertEquals(ARKIVTITTEL, dokument.getTittel());
         assertEquals(NAV_SKJEMA_ID, dokument.getBrevkode());
         assertEquals("IS", dokument.getDokumentKategori());
@@ -94,8 +94,7 @@ public class OpprettJournalpostRequestMapperTest {
         AtomicInteger xmlCounter = new AtomicInteger();
         List<DokumentVariant> dokumentVarianter = opprettJournalpostRequest
                 .getDokumenter()
-                .iterator()
-                .next()
+                .getFirst()
                 .getDokumentVarianter();
 
         dokumentVarianter.forEach(dokumentVariant -> {
@@ -150,7 +149,7 @@ public class OpprettJournalpostRequestMapperTest {
         assertEquals(ANTALL_SIDER, getTilleggsopplysningerVerdiFromNokkel(opprettJournalpostRequest.getTilleggsopplysninger(), "antallSider"));
 
         assertEquals(1, opprettJournalpostRequest.getDokumenter().size());
-        Dokument dokument = opprettJournalpostRequest.getDokumenter().iterator().next();
+        Dokument dokument = opprettJournalpostRequest.getDokumenter().getFirst();
         assertNull(dokument.getTittel());
         assertNull(dokument.getBrevkode());
         assertEquals("IS", dokument.getDokumentKategori());
@@ -159,8 +158,7 @@ public class OpprettJournalpostRequestMapperTest {
         AtomicInteger xmlCounter = new AtomicInteger();
         List<DokumentVariant> dokumentVarianter = opprettJournalpostRequest
                 .getDokumenter()
-                .iterator()
-                .next()
+                .getFirst()
                 .getDokumentVarianter();
 
         dokumentVarianter.forEach(dokumentVariant -> {

@@ -1,12 +1,12 @@
 package no.nav.skanmotreferansenr.metrics;
 
+import io.micrometer.common.lang.NonNullApi;
 import io.micrometer.core.annotation.Incubating;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.mdc.MDCConstants;
@@ -91,9 +91,9 @@ public class DokTimedAspect {
         String mdcRequestId = (MDC.get(MDCConstants.MDC_REQUEST_ID) == null) ? "" : (MDC.get(MDCConstants.MDC_REQUEST_ID) + " ");
 
         if (isFunctionalException(method, e)) {
-            log.warn(mdcRequestId + e.getMessage(), e);
+			log.warn("{} {}", mdcRequestId, e.getMessage(), e);
         } else {
-            log.error(mdcRequestId + e.getMessage(), e);
+			log.error("{} {}", mdcRequestId, e.getMessage(), e);
         }
     }
 

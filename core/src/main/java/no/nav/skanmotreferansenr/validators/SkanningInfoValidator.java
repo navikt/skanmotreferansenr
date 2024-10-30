@@ -4,20 +4,9 @@ import java.util.Set;
 
 public class SkanningInfoValidator {
 
-    public static Set<String> strekkodePostboksVerdier = Set.of("1400", "1402", "1405", "8888");
-
-    public static boolean isValidFysiskPostboks(String fysiskPostboks) {
-        return isNonEmptyString(fysiskPostboks);
-    }
+    public static final Set<String> GYLDIGE_STREKKODE_POSTBOKS_VERDIER = Set.of("1400", "1402", "1405", "8888");
 
     public static boolean isValidStrekkodePostboks(String strekkodePostboks) {
-        return strekkodePostboksVerdier.contains(strekkodePostboks);
-    }
-
-    private static boolean isNonEmptyString(String string) {
-        if (null != string) {
-            return string.length() > 0;
-        }
-        return false;
+        return GYLDIGE_STREKKODE_POSTBOKS_VERDIER.contains(strekkodePostboks);
     }
 }

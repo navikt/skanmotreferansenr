@@ -2,6 +2,9 @@ package no.nav.skanmotreferansenr.validators;
 
 import java.util.Date;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
+
 public class JournalpostValidator {
 
     public static boolean isValidReferansenr(String referansenr) {
@@ -17,26 +20,7 @@ public class JournalpostValidator {
     }
 
     public static boolean isValidBatchNavn(String batchnavn) {
-        return isNonEmptyString(batchnavn);
-    }
-
-    private static boolean isNumeric(String string) {
-        if (isNonEmptyString(string)) {
-            try {
-                Long.parseLong(string);
-                return true;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    private static boolean isNonEmptyString(String string) {
-        if (string != null) {
-            return string.length() > 0;
-        }
-        return false;
+        return isNotEmpty(batchnavn);
     }
 
 }

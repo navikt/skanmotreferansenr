@@ -96,9 +96,8 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 
 		assertTrue(Files.exists(sshdPath.resolve(INNGAAENDE).resolve(ZIP_FILE_NAME_NO_EXTENSION + ".zip.pgp")));
 
-		await().atMost(15, SECONDS).untilAsserted(() -> {
-			assertTrue(Files.exists(sshdPath.resolve(FEILMAPPE).resolve(ZIP_FILE_NAME_NO_EXTENSION + ".zip.pgp")));
-		});
+		await().atMost(15, SECONDS).untilAsserted(() ->
+				assertTrue(Files.exists(sshdPath.resolve(FEILMAPPE).resolve(ZIP_FILE_NAME_NO_EXTENSION + ".zip.pgp"))));
 	}
 
 	private void preparePath(Path path) throws IOException {

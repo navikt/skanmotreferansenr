@@ -13,7 +13,7 @@ import static no.nav.skanmotreferansenr.PostboksReferansenrRoute.PROPERTY_FORSEN
 public class MdcSetterProcessor implements Processor {
 
     @Override
-    public void process(Exchange exchange) throws Exception {
+    public void process(Exchange exchange) {
         final String exchangeId = exchange.getExchangeId();
         if (exchangeId != null) {
             MDC.put(MDCConstants.MDC_CALL_ID, exchangeId);

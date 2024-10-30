@@ -12,7 +12,7 @@ import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_ZIP_ID;
 public class MdcRemoverProcessor implements Processor {
 
     @Override
-    public void process(Exchange exchange) throws Exception {
+    public void process(Exchange exchange) {
         MDC.remove(MDC_CALL_ID);
         MDC.remove(MDC_BATCHNAVN);
         MDC.remove(MDC_ZIP_ID);

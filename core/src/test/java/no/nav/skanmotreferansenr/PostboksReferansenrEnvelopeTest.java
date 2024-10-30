@@ -25,18 +25,14 @@ class PostboksReferansenrEnvelopeTest {
 
     @Test
     void shouldThrowExceptionWhenValidateNoXml() {
-        assertThrows(ForsendelseNotCompleteException.class, () -> {
-            createBaseEnvelope().xml(null).build()
-                    .validate();
-        }, "Fant ikke filnavn=" + FILEBASENAME + ".xml i zip=" + ZIPNAME);
+        assertThrows(ForsendelseNotCompleteException.class, () -> createBaseEnvelope().xml(null).build()
+				.validate(), "Fant ikke filnavn=" + FILEBASENAME + ".xml i zip=" + ZIPNAME);
     }
 
     @Test
     void shouldThrowExceptionWhenValidateNoPdf() {
-        assertThrows(ForsendelseNotCompleteException.class, () -> {
-            createBaseEnvelope().pdf(null).build()
-                    .validate();
-        }, "Fant ikke filnavn=" + FILEBASENAME + ".pdf i zip=" + ZIPNAME);
+        assertThrows(ForsendelseNotCompleteException.class, () -> createBaseEnvelope().pdf(null).build()
+				.validate(), "Fant ikke filnavn=" + FILEBASENAME + ".pdf i zip=" + ZIPNAME);
     }
 
     @Test
@@ -44,7 +40,7 @@ class PostboksReferansenrEnvelopeTest {
         final PostboksReferansenrEnvelope envelope = createEnvelope();
         ByteArrayInputStream zip = (ByteArrayInputStream) envelope.createZip();
         SeekableInMemoryByteChannel inMemoryByteChannel = new SeekableInMemoryByteChannel(zip.readAllBytes());
-        ZipFile zipFile = new ZipFile(inMemoryByteChannel);
+        ZipFile zipFile = ZipFile.builder().setSeekableByteChannel(inMemoryByteChannel).get();
         assertThat(readEntry(zipFile, FILEBASENAME + ".xml")).containsExactly(XML_FIL);
         assertThat(readEntry(zipFile, FILEBASENAME + ".pdf")).containsExactly(PDF_FIL);
     }

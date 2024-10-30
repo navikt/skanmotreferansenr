@@ -12,7 +12,6 @@ import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
 import org.apache.camel.Exchange;
-import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.builder.ValueBuilder;
 import org.apache.camel.dataformat.zipfile.ZipSplitter;

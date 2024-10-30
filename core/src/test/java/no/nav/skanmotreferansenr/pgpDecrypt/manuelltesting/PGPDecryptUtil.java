@@ -57,12 +57,12 @@ public class PGPDecryptUtil {
 				throw new PGPException("PGP-kryptert melding har en ukjent datatype.");
 			}
 		} catch (PGPException e) {
-			log.error("DecryptFile feilet med melding: " + e.getMessage(), e);
+			log.error("DecryptFile feilet med melding: {}", e.getMessage(), e);
 			throw e;
 		}
 	}
 
-	private static InputStream findPrivateKeyAndDecrypt(InputStream privateKeyStream, char[] passwd, PGPEncryptedDataList encryptedDataList) throws IOException, PGPException, NoSuchProviderException {
+	private static InputStream findPrivateKeyAndDecrypt(InputStream privateKeyStream, char[] passwd, PGPEncryptedDataList encryptedDataList) throws IOException, PGPException {
 		// Find secret key (private key)
 		PGPPrivateKey pgpPrivateKey = null;
 		PGPPublicKeyEncryptedData publicKeyEncryptedData = null;
