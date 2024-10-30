@@ -6,8 +6,8 @@ import lombok.Value;
 @Value
 @Builder
 public class AvsenderMottaker {
-    private String id;
-    private String idType;
-    private String navn;
-    private String land;
+    String id;
+    String idType;
+    String navn;
+    String land;
 }

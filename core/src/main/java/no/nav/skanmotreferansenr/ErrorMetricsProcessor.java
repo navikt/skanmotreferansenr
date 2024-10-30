@@ -7,7 +7,7 @@ import org.apache.camel.Processor;
 public class ErrorMetricsProcessor implements Processor {
 
     @Override
-    public void process(Exchange exchange) throws Exception {
+    public void process(Exchange exchange) {
         Object exception = exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
         if(exception instanceof Throwable){
             DokCounter.incrementError((Throwable) exception);

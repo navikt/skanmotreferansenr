@@ -8,7 +8,6 @@ import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideTi
 import no.nav.skanmotreferansenr.exceptions.technical.HentMetadataFoerstesideTechnicalException;
 import no.nav.skanmotreferansenr.filters.NavHeadersFilter;
 import no.nav.skanmotreferansenr.metrics.Metrics;
-import org.slf4j.MDC;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,9 +16,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CALL_ID;
 import static no.nav.skanmotreferansenr.consumer.azure.AzureProperties.CLIENT_REGISTRATION_FOERSTESIDEGENERATOR;
-import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_CALL_ID;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
 import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -36,9 +33,7 @@ public class FoerstesidegeneratorConsumer {
 		this.webClient = webClient.mutate()
 				.baseUrl(skanmotreferansenrProperties.getEndpoints().getFoerstesidegenerator().getUrl())
 				.filter(new NavHeadersFilter())
-				.defaultHeaders(httpHeaders -> {
-					httpHeaders.setContentType(APPLICATION_JSON);
-				})
+				.defaultHeaders(httpHeaders -> httpHeaders.setContentType(APPLICATION_JSON))
 				.build();
 	}
 

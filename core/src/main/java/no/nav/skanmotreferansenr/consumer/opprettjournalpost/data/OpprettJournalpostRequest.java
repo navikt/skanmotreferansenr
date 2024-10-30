@@ -1,10 +1,10 @@
 package no.nav.skanmotreferansenr.consumer.opprettjournalpost.data;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 
-import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -12,29 +12,29 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class OpprettJournalpostRequest {
-    private String tittel;
+    String tittel;
 
-    private AvsenderMottaker avsenderMottaker;
+    AvsenderMottaker avsenderMottaker;
 
     @NotNull(message = "Mottakskanal kan ikke være null")
-    private String journalpostType;
+	String journalpostType;
 
-    private String tema;
+    String tema;
 
-    private String behandlingstema;
+    String behandlingstema;
 
-    private String kanal;
+    String kanal;
 
-    private Date datoMottatt;
+    Date datoMottatt;
 
-    private String journalfoerendeEnhet;
+    String journalfoerendeEnhet;
 
-    private String eksternReferanseId;
+    String eksternReferanseId;
 
-    private List<Tilleggsopplysning> tilleggsopplysninger;
+    List<Tilleggsopplysning> tilleggsopplysninger;
 
-    private Bruker bruker;
+    Bruker bruker;
 
     @NotNull(message = "dokumenter kan ikke være null")
-    private List<Dokument> dokumenter;
+	List<Dokument> dokumenter;
 }

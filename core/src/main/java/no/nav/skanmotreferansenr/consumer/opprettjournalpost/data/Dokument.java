@@ -8,10 +8,10 @@ import java.util.List;
 @Value
 @Builder
 public class Dokument {
-    private String tittel;
-    private String brevkode;
-    private String dokumentKategori;
-    private List<DokumentVariant> dokumentVarianter;
+    String tittel;
+    String brevkode;
+    String dokumentKategori;
+    List<DokumentVariant> dokumentVarianter;
 }
 
 

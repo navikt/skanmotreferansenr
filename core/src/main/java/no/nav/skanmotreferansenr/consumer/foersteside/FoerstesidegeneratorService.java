@@ -2,8 +2,6 @@ package no.nav.skanmotreferansenr.consumer.foersteside;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
-import no.nav.skanmotreferansenr.consumer.sts.STSConsumer;
-import no.nav.skanmotreferansenr.consumer.sts.data.STSResponse;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFinnesIkkeFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.AbstractSkanmotreferansenrTechnicalException;

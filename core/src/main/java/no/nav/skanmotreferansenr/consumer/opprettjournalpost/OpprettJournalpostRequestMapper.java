@@ -16,7 +16,7 @@ import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 public class OpprettJournalpostRequestMapper {
@@ -59,13 +59,14 @@ public class OpprettJournalpostRequestMapper {
         AvsenderMottaker avsenderMottaker = extractAvsenderMottaker(foerstesideMetadata);
         Bruker bruker = extractBruker(foerstesideMetadata);
 
-        List<Tilleggsopplysning> tilleggsopplysninger = List.of(
-                new Tilleggsopplysning(REFERANSENR, journalpost.getReferansenummer()),
-                new Tilleggsopplysning(ENDORSERNR, journalpost.getEndorsernr()),
-                new Tilleggsopplysning(FYSISKPOSTBOKS, skanningInfo.getFysiskPostboks()),
-                new Tilleggsopplysning(STREKKODEPOSTBOKS, skanningInfo.getStrekkodePostboks()),
-                new Tilleggsopplysning(ANTALL_SIDER, journalpost.getAntallSider())
-        ).stream().filter(tilleggsopplysning -> notNullOrEmpty(tilleggsopplysning.getVerdi())).collect(Collectors.toList());
+        List<Tilleggsopplysning> tilleggsopplysninger = Stream.of(
+                        new Tilleggsopplysning(REFERANSENR, journalpost.getReferansenummer()),
+                        new Tilleggsopplysning(ENDORSERNR, journalpost.getEndorsernr()),
+                        new Tilleggsopplysning(FYSISKPOSTBOKS, skanningInfo.getFysiskPostboks()),
+                        new Tilleggsopplysning(STREKKODEPOSTBOKS, skanningInfo.getStrekkodePostboks()),
+                        new Tilleggsopplysning(ANTALL_SIDER, journalpost.getAntallSider()))
+                .filter(tilleggsopplysning -> notNullOrEmpty(tilleggsopplysning.getVerdi()))
+                .toList();
 
         DokumentVariant pdf = DokumentVariant.builder()
                 .filtype(FILTYPE_PDFA)

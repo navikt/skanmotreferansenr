@@ -9,7 +9,7 @@ public class MDCConstants {
     public static final String MDC_CALL_ID = "callId";
     public static final String MDC_BATCHNAVN = "batchnavn";
 
-    public static Set<String> ALL_KEYS = Set.of(MDC_CALL_ID);
+    public static final Set<String> ALL_KEYS = Set.of(MDC_CALL_ID);
 
     private MDCConstants() {
         //no-op
