@@ -29,7 +29,7 @@
         <logstash-logback-encoder.version>8.0</logstash-logback-encoder.version>
         <commons-compress.version>1.27.1</commons-compress.version>
         <commons-io.version>2.18.0</commons-io.version>
-        <bouncycastle.version>1.79</bouncycastle.version>
+        <bouncycastle.version>1.80</bouncycastle.version>
 
         <!-- Test -->
         <sshd-core.version>2.14.0</sshd-core.version>
