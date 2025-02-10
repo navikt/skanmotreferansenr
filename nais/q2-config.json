@@ -4,7 +4,7 @@
   "SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_URL": "http://foerstesidegenerator.teamdokumenthandtering.svc.nais.local",
   "SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_SCOPE": "api://dev-fss.teamdokumenthandtering.foerstesidegenerator/.default",
   "SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_URL": "http://dokarkiv.teamdokumenthandtering.svc.nais.local/rest/journalpostapi/v1",
-  "SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_SCOPE": "api://dev-fss.teamdokumenthandtering.dokarkiv/.default",
+  "SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_SCOPE": "api://dev-fss.teamdokumenthandtering.dokarkiv/.default",
   "SKANMOTREFERANSENR_SCHEDULE": "0+0/5+*+*+*+*",
   "SKANMOTREFERANSENR_VAULT_BACKEND": "kv/preprod/fss",
   "SKANMOTREFERANSENR_VAULT_KUBERNETESPATH": "kubernetes/preprod/fss",
