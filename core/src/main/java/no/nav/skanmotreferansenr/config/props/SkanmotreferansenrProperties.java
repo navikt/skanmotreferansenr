@@ -18,12 +18,6 @@ import java.time.Duration;
 @Validated
 public class SkanmotreferansenrProperties {
 
-    @NotNull
-    private String dokarkivurl;
-
-    @NotNull
-    private String stsurl;
-
     @NotEmpty
     private String endpointuri;
 
@@ -50,6 +44,9 @@ public class SkanmotreferansenrProperties {
 
         @NotNull
         private AzureEndpoint foerstesidegenerator;
+
+        @NotNull
+        private AzureEndpoint dokarkiv;
 
     }
 

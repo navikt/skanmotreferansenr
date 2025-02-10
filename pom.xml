@@ -18,6 +18,7 @@
     <modules>
         <module>app</module>
         <module>core</module>
+		<module>referansenr</module>
     </modules>
 
     <properties>
@@ -45,6 +46,11 @@
             <dependency>
                 <groupId>no.nav.skanmotreferansenr</groupId>
                 <artifactId>core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.skanmotreferansenr</groupId>
+                <artifactId>referansenr</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

@@ -21,12 +21,14 @@ import java.time.Duration;
 import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static no.nav.skanmotreferansenr.consumer.azure.AzureProperties.CLIENT_REGISTRATION_FOERSTESIDEGENERATOR;
 import static org.springframework.security.oauth2.core.AuthorizationGrantType.CLIENT_CREDENTIALS;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
 
 @Configuration
 public class AzureOAuthEnabledWebClientConfig {
+
+	public static final String CLIENT_REGISTRATION_DOKARKIV = "azure-dokarkiv";
+	public static final String CLIENT_REGISTRATION_FOERSTESIDEGENERATOR = "azure-foerstesidegenerator";
 
 	@Bean
 	WebClient webClient(ReactiveOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager) {
@@ -81,6 +83,14 @@ public class AzureOAuthEnabledWebClientConfig {
 	List<ClientRegistration> clientRegistration(AzureProperties azureProperties, SkanmotreferansenrProperties skanmotreferansenrProperties) {
 		return List.of(
 				ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_FOERSTESIDEGENERATOR)
+						.tokenUri(azureProperties.openidConfigTokenEndpoint())
+						.clientId(azureProperties.appClientId())
+						.clientSecret(azureProperties.appClientSecret())
+						.clientAuthenticationMethod(CLIENT_SECRET_BASIC)
+						.authorizationGrantType(CLIENT_CREDENTIALS)
+						.scope(skanmotreferansenrProperties.getEndpoints().getFoerstesidegenerator().getScope())
+						.build(),
+				ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_DOKARKIV)
 						.tokenUri(azureProperties.openidConfigTokenEndpoint())
 						.clientId(azureProperties.appClientId())
 						.clientSecret(azureProperties.appClientSecret())
