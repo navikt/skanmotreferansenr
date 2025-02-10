@@ -96,7 +96,7 @@ public class AzureOAuthEnabledWebClientConfig {
 						.clientSecret(azureProperties.appClientSecret())
 						.clientAuthenticationMethod(CLIENT_SECRET_BASIC)
 						.authorizationGrantType(CLIENT_CREDENTIALS)
-						.scope(skanmotreferansenrProperties.getEndpoints().getFoerstesidegenerator().getScope())
+						.scope(skanmotreferansenrProperties.getEndpoints().getDokarkiv().getScope())
 						.build()
 		);
 	}

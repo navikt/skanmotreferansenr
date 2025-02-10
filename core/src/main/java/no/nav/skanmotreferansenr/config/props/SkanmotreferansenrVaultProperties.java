@@ -1,5 +1,6 @@
 package no.nav.skanmotreferansenr.config.props;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -8,9 +9,7 @@ import org.springframework.validation.annotation.Validated;
 
 import jakarta.validation.constraints.NotBlank;
 
-@Getter
-@Setter
-@ToString
+@Data
 @ConfigurationProperties("skanmotreferansenr.vault")
 @Validated
 public class SkanmotreferansenrVaultProperties {
