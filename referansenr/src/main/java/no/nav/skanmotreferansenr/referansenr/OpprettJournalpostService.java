@@ -5,12 +5,12 @@ import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.JournalpostConsumer;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.OpprettJournalpostRequest;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.OpprettJournalpostResponse;
-import no.nav.skanmotreferansenr.referansenr.domain.Filepair;
-import no.nav.skanmotreferansenr.referansenr.domain.Journalpost;
-import no.nav.skanmotreferansenr.referansenr.domain.Skanningmetadata;
+import no.nav.skanmotreferansenr.domain.Filepair;
+import no.nav.skanmotreferansenr.domain.Journalpost;
+import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.AbstractSkanmotreferansenrTechnicalException;
-import no.nav.skanmotreferansenr.referansenr.mapper.OpprettJournalpostRequestMapper;
+import no.nav.skanmotreferansenr.mapper.OpprettJournalpostRequestMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

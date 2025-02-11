@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.referansenr.domain;
+package no.nav.skanmotreferansenr.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 import no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException;
 
 import jakarta.xml.bind.annotation.XmlElement;
-import java.util.Date;
+import no.nav.skanmotreferansenr.validators.JournalpostValidator;
 
-import static no.nav.skanmotreferansenr.referansenr.validators.JournalpostValidator.isValidReferansenr;
+import java.util.Date;
 
 @Getter
 @Builder
@@ -39,7 +39,7 @@ public class Journalpost {
     private String antallSider;
 
     public String getReferansenummerWithoutChecksum() {
-        if(!isValidReferansenr(referansenummer)) {
+        if(!JournalpostValidator.isValidReferansenr(referansenummer)) {
             throw new InvalidMetadataException("Ugyldig referansenummer. Må være numerisk og 14 siffer langt. referansenummer=" + referansenummer);
         }
         return referansenummer.substring(0, 13);

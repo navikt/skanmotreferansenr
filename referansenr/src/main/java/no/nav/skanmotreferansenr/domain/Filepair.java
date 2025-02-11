@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.referansenr.domain;
+package no.nav.skanmotreferansenr.domain;
 
 import lombok.Builder;
 import lombok.Data;

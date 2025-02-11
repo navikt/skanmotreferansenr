@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.referansenr.validators;
+package no.nav.skanmotreferansenr.validators;
 
 import java.util.Set;
 

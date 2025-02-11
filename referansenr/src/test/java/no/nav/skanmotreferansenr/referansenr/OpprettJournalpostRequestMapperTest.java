@@ -7,11 +7,11 @@ import no.nav.skanmotreferansenr.consumer.journalpostapi.data.Dokument;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.DokumentVariant;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.OpprettJournalpostRequest;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.Tilleggsopplysning;
-import no.nav.skanmotreferansenr.referansenr.domain.Filepair;
-import no.nav.skanmotreferansenr.referansenr.domain.Journalpost;
-import no.nav.skanmotreferansenr.referansenr.domain.SkanningInfo;
-import no.nav.skanmotreferansenr.referansenr.domain.Skanningmetadata;
-import no.nav.skanmotreferansenr.referansenr.mapper.OpprettJournalpostRequestMapper;
+import no.nav.skanmotreferansenr.domain.Filepair;
+import no.nav.skanmotreferansenr.domain.Journalpost;
+import no.nav.skanmotreferansenr.domain.SkanningInfo;
+import no.nav.skanmotreferansenr.domain.Skanningmetadata;
+import no.nav.skanmotreferansenr.mapper.OpprettJournalpostRequestMapper;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;

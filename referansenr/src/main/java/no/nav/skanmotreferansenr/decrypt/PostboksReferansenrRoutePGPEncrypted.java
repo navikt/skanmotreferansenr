@@ -1,13 +1,13 @@
-package no.nav.skanmotreferansenr.referansenr.decrypt;
+package no.nav.skanmotreferansenr.decrypt;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.skanmotreferansenr.referansenr.ErrorMetricsProcessor;
-import no.nav.skanmotreferansenr.referansenr.MdcRemoverProcessor;
-import no.nav.skanmotreferansenr.referansenr.MdcSetterProcessor;
+import no.nav.skanmotreferansenr.ErrorMetricsProcessor;
+import no.nav.skanmotreferansenr.MdcRemoverProcessor;
+import no.nav.skanmotreferansenr.MdcSetterProcessor;
 import no.nav.skanmotreferansenr.referansenr.PostboksReferansenrEnvelope;
 import no.nav.skanmotreferansenr.referansenr.PostboksReferansenrService;
 import no.nav.skanmotreferansenr.referansenr.PostboksReferansenrSkanningAggregator;
-import no.nav.skanmotreferansenr.referansenr.SkanningmetadataUnmarshaller;
+import no.nav.skanmotreferansenr.SkanningmetadataUnmarshaller;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.metrics.DokCounter;

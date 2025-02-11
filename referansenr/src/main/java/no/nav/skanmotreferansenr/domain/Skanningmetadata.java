@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.referansenr.domain;
+package no.nav.skanmotreferansenr.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import no.nav.skanmotreferansenr.referansenr.validators.SkanningMetadataValidator;
+import no.nav.skanmotreferansenr.validators.SkanningMetadataValidator;
 
 @Getter
 @NoArgsConstructor

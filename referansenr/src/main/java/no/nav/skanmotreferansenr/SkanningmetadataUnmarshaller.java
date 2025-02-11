@@ -1,8 +1,9 @@
-package no.nav.skanmotreferansenr.referansenr;
+package no.nav.skanmotreferansenr;
 
-import no.nav.skanmotreferansenr.referansenr.domain.Skanningmetadata;
+import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException;
 import no.nav.skanmotreferansenr.exceptions.technical.SkanmotreferansenrTechnicalException;
+import no.nav.skanmotreferansenr.referansenr.PostboksReferansenrEnvelope;
 import org.apache.camel.Body;
 import org.apache.camel.Handler;
 import org.apache.commons.lang3.exception.ExceptionUtils;

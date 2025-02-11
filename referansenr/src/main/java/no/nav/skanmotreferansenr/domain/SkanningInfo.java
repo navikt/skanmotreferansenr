@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.referansenr.domain;
+package no.nav.skanmotreferansenr.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

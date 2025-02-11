@@ -1,12 +1,12 @@
-package no.nav.skanmotreferansenr.referansenr.validators;
+package no.nav.skanmotreferansenr.validators;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.skanmotreferansenr.referansenr.domain.Journalpost;
-import no.nav.skanmotreferansenr.referansenr.domain.SkanningInfo;
-import no.nav.skanmotreferansenr.referansenr.domain.Skanningmetadata;
+import no.nav.skanmotreferansenr.domain.SkanningInfo;
+import no.nav.skanmotreferansenr.domain.Journalpost;
+import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException;
 
-import static no.nav.skanmotreferansenr.referansenr.validators.SkanningInfoValidator.GYLDIGE_STREKKODE_POSTBOKS_VERDIER;
+import static no.nav.skanmotreferansenr.validators.SkanningInfoValidator.GYLDIGE_STREKKODE_POSTBOKS_VERDIER;
 
 @Slf4j
 public class SkanningMetadataValidator {

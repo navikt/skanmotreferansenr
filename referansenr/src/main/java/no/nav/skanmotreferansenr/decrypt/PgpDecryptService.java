@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.referansenr.decrypt;
+package no.nav.skanmotreferansenr.decrypt;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;

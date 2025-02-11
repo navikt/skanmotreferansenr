@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.referansenr;
+package no.nav.skanmotreferansenr;
 
 import no.nav.skanmotreferansenr.metrics.DokCounter;
 import org.apache.camel.Exchange;

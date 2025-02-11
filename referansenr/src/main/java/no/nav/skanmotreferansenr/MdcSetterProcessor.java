@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.referansenr;
+package no.nav.skanmotreferansenr;
 
 import no.nav.skanmotreferansenr.mdc.MDCConstants;
 import org.apache.camel.Exchange;

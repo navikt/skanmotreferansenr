@@ -1,5 +1,6 @@
-package no.nav.skanmotreferansenr.referansenr.domain;
+package no.nav.skanmotreferansenr.domain;
 
+import no.nav.skanmotreferansenr.domain.Journalpost;
 import no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException;
 import org.junit.jupiter.api.Test;
 

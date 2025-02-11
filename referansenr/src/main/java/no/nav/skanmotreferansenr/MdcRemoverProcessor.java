@@ -1,4 +1,4 @@
-package no.nav.skanmotreferansenr.referansenr;
+package no.nav.skanmotreferansenr;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;

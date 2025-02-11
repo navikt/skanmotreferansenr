@@ -1,9 +1,8 @@
 package no.nav.skanmotreferansenr.referansenr;
 
-import no.nav.skanmotreferansenr.referansenr.PostboksReferansenrEnvelope;
-import no.nav.skanmotreferansenr.referansenr.domain.Journalpost;
-import no.nav.skanmotreferansenr.referansenr.domain.SkanningInfo;
-import no.nav.skanmotreferansenr.referansenr.domain.Skanningmetadata;
+import no.nav.skanmotreferansenr.domain.Journalpost;
+import no.nav.skanmotreferansenr.domain.SkanningInfo;
+import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
