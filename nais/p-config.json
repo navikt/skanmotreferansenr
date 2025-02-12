@@ -1,5 +1,6 @@
 {
   "SRVSKANMOTREFERANSE": "/serviceuser/data/prod/srvskanmotreferanse",
+  "SRVJIRADOKDISTAVSTEMMING": "/serviceuser/data/prod/srvjiradokdistavstemming",
   "SFTP_KEYS": "kv/prod/fss/skanmotreferansenr/keys",
   "SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_URL": "http://foerstesidegenerator.teamdokumenthandtering.svc.nais.local",
   "SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_SCOPE": "api://prod-fss.teamdokumenthandtering.foerstesidegenerator/.default",

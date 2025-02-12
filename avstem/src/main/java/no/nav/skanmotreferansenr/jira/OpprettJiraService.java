@@ -88,7 +88,7 @@ public class OpprettJiraService {
 	}
 
 	public static String prettifySummary(String melding, int antallAvstemt, int antallFeilet) {
-		StringBuilder builder = new StringBuilder();
+		var builder = new StringBuilder();
 		return builder.append(melding)
 				.append("\nAntall filer avstemt: ").append(antallAvstemt)
 				.append("\nAntall filer funnet: ").append(antallAvstemt - antallFeilet)
