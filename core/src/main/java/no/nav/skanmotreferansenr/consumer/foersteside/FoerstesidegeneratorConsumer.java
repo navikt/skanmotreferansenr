@@ -1,12 +1,12 @@
 package no.nav.skanmotreferansenr.consumer.foersteside;
 
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.consumer.NavHeaders;
 import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFinnesIkkeFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.HentMetadataFoerstesideTechnicalException;
-import no.nav.skanmotreferansenr.filters.NavHeadersFilter;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -29,7 +29,6 @@ public class FoerstesidegeneratorConsumer {
 	public FoerstesidegeneratorConsumer(WebClient webClient, SkanmotreferansenrProperties skanmotreferansenrProperties) {
 		this.webClient = webClient.mutate()
 				.baseUrl(skanmotreferansenrProperties.getEndpoints().getFoerstesidegenerator().getUrl())
-				.filter(new NavHeadersFilter())
 				.defaultHeaders(httpHeaders -> httpHeaders.setContentType(APPLICATION_JSON))
 				.build();
 	}
@@ -40,6 +39,7 @@ public class FoerstesidegeneratorConsumer {
 				.uri(uriBuilder -> uriBuilder
 						.path("/api/foerstesidegenerator/v1/foersteside/{loepenr}")
 						.build(loepenr))
+				.headers(NavHeaders::setCustomNavHeaders)
 				.attributes(clientRegistrationId(CLIENT_REGISTRATION_FOERSTESIDEGENERATOR))
 				.retrieve()
 				.bodyToMono(FoerstesideMetadata.class)

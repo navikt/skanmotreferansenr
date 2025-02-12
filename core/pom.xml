@@ -79,6 +79,11 @@
 			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>no.nav.dok-common</groupId>
+			<artifactId>jiraapi</artifactId>
+		</dependency>
+
 		<!-- Decrypt PGP -->
 		<dependency>
 			<groupId>org.bouncycastle</groupId>

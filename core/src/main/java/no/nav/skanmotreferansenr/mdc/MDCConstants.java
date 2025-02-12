@@ -7,6 +7,8 @@ public class MDCConstants {
     public static final String MDC_FILENAME = "filename";
     public static final String MDC_CALL_ID = "callId";
     public static final String MDC_BATCHNAVN = "batchnavn";
+    public static final String MDC_AVSTEMT_DATO = "avstemtdato";
+    public static final String MDC_AVSTEMMINGSFIL_NAVN = "avstemmingsfilnavn";
 
     public static final Set<String> ALL_KEYS = Set.of(MDC_CALL_ID);
 
