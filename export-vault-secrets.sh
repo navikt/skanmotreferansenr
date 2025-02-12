@@ -13,12 +13,12 @@ fi
 
 if test -f /var/run/secrets/nais.io/srvjiradokdistavstemming/username;
 then
-    echo "Setting skanmotovrig_jira_username"
-    export skanmotovrig_jira_username=$(cat /var/run/secrets/nais.io/srvjiradokdistavstemming/username)
+    echo "Setting SKANMOTREFERANSENR_JIRA_USERNAME"
+    export SKANMOTREFERANSENR_JIRA_USERNAME=$(cat /var/run/secrets/nais.io/srvjiradokdistavstemming/username)
 fi
 
 if test -f /var/run/secrets/nais.io/srvjiradokdistavstemming/password;
 then
-    echo "Setting skanmotovrig_jira_password"
-    export skanmotovrig_jira_password=$(cat /var/run/secrets/nais.io/srvjiradokdistavstemming/password)
+    echo "Setting SKANMOTREFERANSENR_JIRA_PASSWORD"
+    export SKANMOTREFERANSENR_JIRA_PASSWORD=$(cat /var/run/secrets/nais.io/srvjiradokdistavstemming/password)
 fi
