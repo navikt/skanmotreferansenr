@@ -3,7 +3,6 @@ package no.nav.skanmotreferansenr.referansenr;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.consumer.foersteside.FoerstesidegeneratorService;
 import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
-import no.nav.skanmotreferansenr.consumer.journalpostapi.LeggTilLogiskVedleggService;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.LeggTilLogiskVedleggResponse;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.OpprettJournalpostResponse;
 import no.nav.skanmotreferansenr.domain.Filepair;
