@@ -81,7 +81,7 @@ public class PostboksReferansenrIT extends AbstractItest {
 		verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1)));
 		verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
 		verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
-		verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG)));
+		verify(exactly(1), postRequestedFor(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG)));
 
 	}
 
@@ -118,7 +118,7 @@ public class PostboksReferansenrIT extends AbstractItest {
 		verify(exactly(55), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1)));
 		verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
 		verify(exactly(56), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
-		verify(exactly(110), postRequestedFor(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG)));
+		verify(exactly(55), postRequestedFor(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG)));
 	}
 
 	private void preparePath(Path path) throws IOException {

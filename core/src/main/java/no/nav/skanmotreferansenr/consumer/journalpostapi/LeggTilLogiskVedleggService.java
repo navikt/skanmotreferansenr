@@ -5,6 +5,7 @@ import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.DokumentInfo;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.LeggTilLogiskVedleggRequest;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.LeggTilLogiskVedleggResponse;
+import no.nav.skanmotreferansenr.consumer.journalpostapi.data.LogiskVedleggRequest;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.OpprettJournalpostResponse;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.AbstractSkanmotreferansenrTechnicalException;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -34,10 +36,16 @@ public class LeggTilLogiskVedleggService {
 		if (opprettJournalpostResponse.getDokumenter().isEmpty() || foerstesideMetadata.getVedleggsliste() == null) {
 			return new ArrayList<>();
 		}
-		final String dokumentInfoId = opprettJournalpostResponse.getDokumenter().stream().map(DokumentInfo::dokumentInfoId)
-				.findFirst().get();
-		return foerstesideMetadata.getVedleggsliste().stream()
-				.map(tittel -> leggTilLogiskVedlegg(dokumentInfoId, tittel))
+		final List<String> dokumentInfoIds = opprettJournalpostResponse.getDokumenter().stream().map(DokumentInfo::dokumentInfoId)
+				.toList();
+		List<LogiskVedleggRequest> logiskVedleggRequests = IntStream.range(0, dokumentInfoIds.size())
+				.mapToObj(i -> new LogiskVedleggRequest(
+						dokumentInfoIds.get(i),
+						foerstesideMetadata.getVedleggsliste().get(i)))
+				.toList();
+
+		return logiskVedleggRequests.stream()
+				.map(request -> leggTilLogiskVedlegg(request.dokumentInfoId(), request.tittel()))
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
 	}
