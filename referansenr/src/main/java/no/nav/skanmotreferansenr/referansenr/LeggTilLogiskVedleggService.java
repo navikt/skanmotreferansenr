@@ -1,7 +1,8 @@
-package no.nav.skanmotreferansenr.consumer.journalpostapi;
+package no.nav.skanmotreferansenr.referansenr;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
+import no.nav.skanmotreferansenr.consumer.journalpostapi.JournalpostConsumer;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.DokumentInfo;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.LeggTilLogiskVedleggRequest;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.LeggTilLogiskVedleggResponse;
