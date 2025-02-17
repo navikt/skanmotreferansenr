@@ -6,7 +6,6 @@ import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFi
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.HentMetadataFoerstesideTechnicalException;
-import no.nav.skanmotreferansenr.filters.NavHeadersFilter;
 import org.slf4j.MDC;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -32,7 +31,6 @@ public class FoerstesidegeneratorConsumer {
 	public FoerstesidegeneratorConsumer(WebClient webClient, SkanmotreferansenrProperties skanmotreferansenrProperties) {
 		this.webClient = webClient.mutate()
 				.baseUrl(skanmotreferansenrProperties.getEndpoints().getFoerstesidegenerator().getUrl())
-				.filter(new NavHeadersFilter())
 				.defaultHeaders(httpHeaders -> httpHeaders.setContentType(APPLICATION_JSON))
 				.build();
 	}
