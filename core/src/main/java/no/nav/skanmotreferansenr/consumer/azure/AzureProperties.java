@@ -14,5 +14,4 @@ public record AzureProperties(
 		@NotEmpty String appClientId,
 		@NotEmpty String appClientSecret
 ) {
-	public static final String CLIENT_REGISTRATION_FOERSTESIDEGENERATOR = "azure-foerstesidegenerator";
 }

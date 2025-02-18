@@ -1,119 +1,109 @@
 package no.nav.skanmotreferansenr.config.props;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import java.time.Duration;
 
-@Getter
-@Setter
-@ToString
+@Data
 @ConfigurationProperties("skanmotreferansenr")
 @Validated
 public class SkanmotreferansenrProperties {
 
-    @NotNull
-    private String dokarkivurl;
+	@NotEmpty
+	private String endpointuri;
 
-    @NotNull
-    private String stsurl;
+	@NotEmpty
+	private String endpointconfig;
 
-    @NotEmpty
-    private String endpointuri;
+	@NotNull
+	private String schedule;
 
-    @NotEmpty
-    private String endpointconfig;
+	@NotNull
+	private Duration completiontimeout;
 
-    @NotNull
-    private String schedule;
+	private final Endpoints endpoints = new Endpoints();
 
-    @NotNull
-    private Duration completiontimeout;
+	private final ServiceuserProperties serviceuser = new ServiceuserProperties();
 
-    private final Endpoints endpoints = new Endpoints();
+	private final FilomraadeProperties filomraade = new FilomraadeProperties();
 
-    private final ServiceuserProperties serviceuser = new ServiceuserProperties();
+	private final SftpProperties sftp = new SftpProperties();
 
-    private final FilomraadeProperties filomraade = new FilomraadeProperties();
+	@Data
+	@Validated
+	public static class Endpoints {
 
-    private final SftpProperties sftp = new SftpProperties();
+		@NotNull
+		private AzureEndpoint foerstesidegenerator;
 
-    @Data
-    @Validated
-    public static class Endpoints {
+		@NotNull
+		private AzureEndpoint dokarkiv;
 
-        @NotNull
-        private AzureEndpoint foerstesidegenerator;
+	}
 
-    }
+	@Data
+	@Validated
+	public static class FilomraadeProperties {
 
-    @Getter
-    @Setter
-    @Validated
-    public static class FilomraadeProperties {
+		@NotEmpty
+		private String inngaaendemappe;
 
-        @NotEmpty
-        private String inngaaendemappe;
+		@NotEmpty
+		private String feilmappe;
+	}
 
-        @NotEmpty
-        private String feilmappe;
-    }
+	@Data
+	@Validated
+	public static class ServiceuserProperties {
 
-    @Getter
-    @Setter
-    @Validated
-    public static class ServiceuserProperties {
+		@NotEmpty
+		private String username;
 
-        @NotEmpty
-        private String username;
+		@NotEmpty
+		@ToString.Exclude
+		private String password;
 
-        @NotEmpty
-        @ToString.Exclude
-        private String password;
+	}
 
-    }
+	@Data
+	@Validated
+	public static class SftpProperties {
 
-    @Getter
-    @Setter
-    @Validated
-    public static class SftpProperties {
+		@NotNull
+		private String host;
 
-        @NotNull
-        private String host;
+		@NotNull
+		@ToString.Exclude
+		private String privateKey;
 
-        @NotNull
-        @ToString.Exclude
-        private String privateKey;
+		@NotNull
+		@ToString.Exclude
+		private String hostKey;
 
-        @NotNull
-        @ToString.Exclude
-        private String hostKey;
+		@NotNull
+		private String username;
 
-        @NotNull
-        private String username;
+		@NotNull
+		private String port;
+	}
 
-        @NotNull
-        private String port;
-    }
-
-    @Data
-    @Validated
-    public static class AzureEndpoint {
-        /**
-         * Url til tjeneste som har azure autorisasjon
-         */
-        @NotEmpty
-        private String url;
-        /**
-         * Scope til azure client credential flow
-         */
-        @NotEmpty
-        private String scope;
-    }
+	@Data
+	@Validated
+	public static class AzureEndpoint {
+		/**
+		 * Url til tjeneste som har azure autorisasjon
+		 */
+		@NotEmpty
+		private String url;
+		/**
+		 * Scope til azure client credential flow
+		 */
+		@NotEmpty
+		private String scope;
+	}
 }

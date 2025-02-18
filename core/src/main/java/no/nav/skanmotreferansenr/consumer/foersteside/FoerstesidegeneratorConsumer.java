@@ -7,7 +7,7 @@ import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideFu
 import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.HentMetadataFoerstesideTechnicalException;
 import no.nav.skanmotreferansenr.filters.NavHeadersFilter;
-import no.nav.skanmotreferansenr.metrics.Metrics;
+import org.slf4j.MDC;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,9 +16,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
-import static no.nav.skanmotreferansenr.consumer.azure.AzureProperties.CLIENT_REGISTRATION_FOERSTESIDEGENERATOR;
-import static no.nav.skanmotreferansenr.metrics.MetricLabels.DOK_METRIC;
-import static no.nav.skanmotreferansenr.metrics.MetricLabels.PROCESS_NAME;
+import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CALL_ID;
+import static no.nav.skanmotreferansenr.consumer.azure.AzureOAuthEnabledWebClientConfig.CLIENT_REGISTRATION_FOERSTESIDEGENERATOR;
+import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_CALL_ID;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -38,12 +38,12 @@ public class FoerstesidegeneratorConsumer {
 	}
 
 	@Retryable(retryFor = HentMetadataFoerstesideTechnicalException.class)
-	@Metrics(value = DOK_METRIC, extraTags = {PROCESS_NAME, "hentFoersteside"}, percentiles = {0.5, 0.95}, histogram = true)
 	public FoerstesideMetadata hentFoersteside(String loepenr) {
 		return webClient.get()
 				.uri(uriBuilder -> uriBuilder
 						.path("/api/foerstesidegenerator/v1/foersteside/{loepenr}")
 						.build(loepenr))
+				.header(NAV_CALL_ID, MDC.get(MDC_CALL_ID))
 				.attributes(clientRegistrationId(CLIENT_REGISTRATION_FOERSTESIDEGENERATOR))
 				.retrieve()
 				.bodyToMono(FoerstesideMetadata.class)

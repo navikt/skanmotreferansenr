@@ -17,6 +17,10 @@
 			<groupId>no.nav.skanmotreferansenr</groupId>
 			<artifactId>core</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.skanmotreferansenr</groupId>
+			<artifactId>referansenr</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
