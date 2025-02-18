@@ -10,3 +10,15 @@ then
     echo "Setting SKANMOTREFERANSENR_SERVICEUSER_PASSWORD"
     export SKANMOTREFERANSENR_SERVICEUSER_PASSWORD=$(cat /var/run/secrets/nais.io/srvskanmotreferanse/password)
 fi
+
+if test -f /var/run/secrets/nais.io/srvjiradokdistavstemming/username;
+then
+    echo "Setting SKANMOTREFERANSENR_JIRA_USERNAME"
+    export SKANMOTREFERANSENR_JIRA_USERNAME=$(cat /var/run/secrets/nais.io/srvjiradokdistavstemming/username)
+fi
+
+if test -f /var/run/secrets/nais.io/srvjiradokdistavstemming/password;
+then
+    echo "Setting SKANMOTREFERANSENR_JIRA_PASSWORD"
+    export SKANMOTREFERANSENR_JIRA_PASSWORD=$(cat /var/run/secrets/nais.io/srvjiradokdistavstemming/password)
+fi

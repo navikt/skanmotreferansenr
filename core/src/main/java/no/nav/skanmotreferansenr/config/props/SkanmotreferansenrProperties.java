@@ -10,8 +10,8 @@ import org.springframework.validation.annotation.Validated;
 import java.time.Duration;
 
 @Data
-@ConfigurationProperties("skanmotreferansenr")
 @Validated
+@ConfigurationProperties("skanmotreferansenr")
 public class SkanmotreferansenrProperties {
 
 	@NotEmpty
@@ -21,18 +21,15 @@ public class SkanmotreferansenrProperties {
 	private String endpointconfig;
 
 	@NotNull
-	private String schedule;
-
-	@NotNull
 	private Duration completiontimeout;
 
 	private final Endpoints endpoints = new Endpoints();
-
+	private final Avstem avstem = new Avstem();
 	private final ServiceuserProperties serviceuser = new ServiceuserProperties();
-
 	private final FilomraadeProperties filomraade = new FilomraadeProperties();
-
 	private final SftpProperties sftp = new SftpProperties();
+	private final JiraProperties jira = new JiraProperties();
+	private final Referansenr referansenr = new Referansenr();
 
 	@Data
 	@Validated
@@ -48,6 +45,23 @@ public class SkanmotreferansenrProperties {
 
 	@Data
 	@Validated
+	public static class Referansenr {
+		@NotEmpty
+		private String schedule;
+	}
+
+	@Data
+	@Validated
+	public static class Avstem {
+		@NotEmpty
+		private String schedule;
+
+		private boolean startup;
+
+	}
+
+	@Data
+	@Validated
 	public static class FilomraadeProperties {
 
 		@NotEmpty
@@ -55,6 +69,9 @@ public class SkanmotreferansenrProperties {
 
 		@NotEmpty
 		private String feilmappe;
+
+		@NotEmpty
+		private String avstemmappe;
 	}
 
 	@Data
@@ -105,5 +122,18 @@ public class SkanmotreferansenrProperties {
 		 */
 		@NotEmpty
 		private String scope;
+	}
+
+	@Data
+	@Validated
+	public static class JiraProperties {
+		@NotEmpty
+		private String username;
+
+		@NotEmpty
+		private String password;
+
+		@NotEmpty
+		private String url;
 	}
 }
