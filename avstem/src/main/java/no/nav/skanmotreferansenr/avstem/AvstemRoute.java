@@ -13,10 +13,10 @@ import java.util.Set;
 
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.ANTALL_FILER_AVSTEMT;
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.ANTALL_FILER_FEILET;
-import static no.nav.skanmotreferansenr.jira.OpprettJiraService.avstemmingsfilDato;
+import static no.nav.skanmotreferansenr.jira.OpprettJiraService.genererAvstemmingsfilDato;
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.parseDatoFraFilnavn;
-import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_AVSTEMMINGSFIL_NAVN;
-import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_AVSTEMT_DATO;
+import static no.nav.skanmotreferansenr.mdc.MDCConstants.EXCHANGE_AVSTEMMINGSFIL_NAVN;
+import static no.nav.skanmotreferansenr.mdc.MDCConstants.EXCHANGE_AVSTEMT_DATO;
 import static org.apache.camel.Exchange.FILE_NAME;
 import static org.apache.camel.LoggingLevel.ERROR;
 import static org.apache.camel.LoggingLevel.INFO;
@@ -52,7 +52,7 @@ public class AvstemRoute extends RouteBuilder {
 		onException(GenericFileOperationFailedException.class)
 				.handled(true)
 				.process(new MdcSetterProcessor())
-				.log(ERROR, log, "Skanmotreferansenr fant ikke avstemmingsfil for ${exchangeProperty." + MDC_AVSTEMT_DATO + "}. Undersøk tilfellet og evt. kontakt Iron Mountain. Exception:${exception}");
+				.log(ERROR, log, "Skanmotreferansenr fant ikke avstemmingsfil for ${exchangeProperty." + EXCHANGE_AVSTEMT_DATO + "}. Undersøk tilfellet og evt. kontakt Iron Mountain. Exception:${exception}");
 
 
 		from("cron:tab?schedule={{skanmotreferansenr.avstem.schedule}}")
@@ -66,15 +66,15 @@ public class AvstemRoute extends RouteBuilder {
 				.process(new MdcSetterProcessor())
 				.choice()
 					.when(header(FILE_NAME).isNull())
-						.process(exchange -> exchange.setProperty(MDC_AVSTEMT_DATO, avstemmingsfilDato()))
-						.log(ERROR, log, "Skanmotreferansenr fant ikke avstemmingsfil for ${exchangeProperty." + MDC_AVSTEMT_DATO + "}. Undersøk tilfellet og evt. ser opprettet Jira-sak.")
+						.process(exchange -> exchange.setProperty(EXCHANGE_AVSTEMT_DATO, genererAvstemmingsfilDato()))
+						.log(ERROR, log, "Skanmotreferansenr fant ikke avstemmingsfil for ${exchangeProperty." + EXCHANGE_AVSTEMT_DATO + "}. Undersøk tilfellet og evt. ser opprettet Jira-sak.")
 						.bean(opprettJiraService)
 						.log(INFO, log, "Skanmotreferansenr opprettet jira-sak med key=${body.jiraIssueKey} for manglende avstemmingsfil.")
 				.otherwise()
 					.log(INFO, log, "Skanmotreferansenr starter behandling av avstemmingsfil=${file:name}.")
 					.process(exchange -> {
-						exchange.setProperty(MDC_AVSTEMMINGSFIL_NAVN, simple("${file:name}"));
-						exchange.setProperty(MDC_AVSTEMT_DATO,  parseDatoFraFilnavn(exchange));
+						exchange.setProperty(EXCHANGE_AVSTEMMINGSFIL_NAVN, simple("${file:name}"));
+						exchange.setProperty(EXCHANGE_AVSTEMT_DATO,  parseDatoFraFilnavn(exchange));
 					})
 					.split(body().tokenize())
 					.streaming()

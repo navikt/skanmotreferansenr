@@ -1,5 +1,6 @@
 package no.nav.skanmotreferansenr.itest;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.CoreConfig;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrVaultProperties;
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static java.lang.Integer.parseInt;
 import static java.util.Collections.singletonList;
 
+@Slf4j
 @EnableAutoConfiguration
 @EnableConfigurationProperties({
 		SkanmotreferansenrProperties.class,
@@ -59,6 +61,7 @@ public class AvstemTestConfig {
 						try {
 							// Busy wait
 							Thread.sleep(1000);
+							log.info("Forsøkt å starte sshserver. retry={}", sshServerStartupCounter.getAndIncrement());
 						} catch (InterruptedException e) {
 							// noop
 						}

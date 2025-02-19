@@ -14,8 +14,4 @@
     <logger name="com.github.tomakehurst.wiremock" level="WARN" additivity="false"/>
     <logger name="wiremock.org" level="WARN" additivity="false"/>
     <logger name="WireMock" level="WARN" additivity="false"/>
-<!--    <logger name="org.apache.sshd" level="DEBUG" additivity="false">-->
-<!--        <appender-ref ref="CONSOLE"/>-->
-<!--    </logger>-->
-
 </configuration>

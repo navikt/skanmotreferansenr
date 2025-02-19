@@ -20,10 +20,14 @@ public class CoreConfig {
 
 	@Bean
 	public JiraClient jiraClient(SkanmotreferansenrProperties properties) {
-		SkanmotreferansenrProperties.JiraProperties jira = properties.getJira();
-		return new JiraClient(JiraProperties.builder()
+		return new JiraClient(jiraProperties(properties));
+	}
+
+	public JiraProperties jiraProperties(SkanmotreferansenrProperties properties) {
+		SkanmotreferansenrProperties.JiraConfigProperties jira = properties.getJira();
+		return JiraProperties.builder()
 				.jiraServiceUser(new JiraProperties.JiraServiceUser(jira.getUsername(), jira.getPassword()))
-				.url(properties.getJira().getUrl())
-				.build());
+				.url(jira.getUrl())
+				.build();
 	}
 }

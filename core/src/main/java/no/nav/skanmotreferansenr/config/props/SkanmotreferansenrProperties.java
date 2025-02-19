@@ -28,7 +28,7 @@ public class SkanmotreferansenrProperties {
 	private final ServiceuserProperties serviceuser = new ServiceuserProperties();
 	private final FilomraadeProperties filomraade = new FilomraadeProperties();
 	private final SftpProperties sftp = new SftpProperties();
-	private final JiraProperties jira = new JiraProperties();
+	private final JiraConfigProperties jira = new JiraConfigProperties();
 	private final Referansenr referansenr = new Referansenr();
 
 	@Data
@@ -126,7 +126,7 @@ public class SkanmotreferansenrProperties {
 
 	@Data
 	@Validated
-	public static class JiraProperties {
+	public static class JiraConfigProperties {
 		@NotEmpty
 		private String username;
 
@@ -136,4 +136,6 @@ public class SkanmotreferansenrProperties {
 		@NotEmpty
 		private String url;
 	}
+
+
 }

@@ -89,7 +89,7 @@ public class JournalpostConsumer {
 				.uri("/avstemReferanser")
 				.header(NAV_CALL_ID, MDC.get(MDC_CALL_ID))
 				.attributes(clientRegistrationId(CLIENT_REGISTRATION_DOKARKIV))
-				.body(just(avstemmingReferanser), AvstemmingReferanser.class)
+				.bodyValue(avstemmingReferanser)
 				.retrieve()
 				.bodyToMono(FeilendeAvstemmingReferanser.class)
 				.onErrorMap(WebClientResponseException.class, err -> handleError(err, "avstemReferanser"))
