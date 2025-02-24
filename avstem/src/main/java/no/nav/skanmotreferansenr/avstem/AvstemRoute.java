@@ -13,7 +13,7 @@ import java.util.Set;
 
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.ANTALL_FILER_AVSTEMT;
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.ANTALL_FILER_FEILET;
-import static no.nav.skanmotreferansenr.jira.OpprettJiraService.genererAvstemmingsfilDato;
+import static no.nav.skanmotreferansenr.jira.OpprettJiraService.finnForrigeVirkedag;
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.parseDatoFraFilnavn;
 import static no.nav.skanmotreferansenr.mdc.MDCConstants.EXCHANGE_AVSTEMMINGSFIL_NAVN;
 import static no.nav.skanmotreferansenr.mdc.MDCConstants.EXCHANGE_AVSTEMT_DATO;
@@ -25,7 +25,7 @@ import static org.apache.camel.LoggingLevel.WARN;
 @Component
 public class AvstemRoute extends RouteBuilder {
 
-	private static final int CONNECTION_TIMEOUT = 1500;
+	private static final int CONNECTION_TIMEOUT = 15000;
 	private final AvstemService avstemService;
 	private final OpprettJiraService opprettJiraService;
 
@@ -66,7 +66,7 @@ public class AvstemRoute extends RouteBuilder {
 				.process(new MdcSetterProcessor())
 				.choice()
 					.when(header(FILE_NAME).isNull())
-						.process(exchange -> exchange.setProperty(EXCHANGE_AVSTEMT_DATO, genererAvstemmingsfilDato()))
+						.process(exchange -> exchange.setProperty(EXCHANGE_AVSTEMT_DATO, finnForrigeVirkedag()))
 						.log(ERROR, log, "Skanmotreferansenr fant ikke avstemmingsfil for ${exchangeProperty." + EXCHANGE_AVSTEMT_DATO + "}. Undersøk tilfellet og evt. ser opprettet Jira-sak.")
 						.bean(opprettJiraService)
 						.log(INFO, log, "Skanmotreferansenr opprettet jira-sak med key=${body.jiraIssueKey} for manglende avstemmingsfil.")

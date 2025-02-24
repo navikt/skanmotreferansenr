@@ -82,7 +82,10 @@ public class OpprettJiraService {
 
 	}
 
-	public static LocalDate genererAvstemmingsfilDato() {
+	/**
+	 * finnForrigeVirkedag genererer datoen for forrige virkedag, som kan brukes i loggen og til å opprette Jira-saken.
+	 */
+	public static LocalDate finnForrigeVirkedag() {
 		LocalDate todaysDate = LocalDate.now(ZoneId.of("Europe/Oslo"));
 		return MONDAY.equals(todaysDate.getDayOfWeek()) ? todaysDate.minusDays(3) :
 				todaysDate.minusDays(1);
