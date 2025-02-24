@@ -117,9 +117,10 @@ public class AvstemRouteIT extends AbstractItest {
 		assertAntallProsesserteFiler(0);
 
 		await()
-				.atMost(ofSeconds(15))
+				.atMost(ofSeconds(20))
 				.untilAsserted(() -> {
 					assertAntallProsesserteFiler(0);
+					verify(1, getRequestedFor(urlMatching(JIRA_PROJECT_URL)));
 					verify(1, postRequestedFor(urlMatching(JIRA_OPPRETTE_URL)));
 				});
 	}
