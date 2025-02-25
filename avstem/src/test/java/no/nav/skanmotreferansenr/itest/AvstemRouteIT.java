@@ -46,7 +46,6 @@ public class AvstemRouteIT extends AbstractItest {
 		stubJiraOpprettOppgave();
 		stubPostAvstemJournalpost("journalpostapi/avstem.json");
 
-
 		copyFileFromClasspathToAvstem(AVSTEMMINGSFIL);
 
 		Path filePath = sshdPath.resolve(AVSTEMMINGSFILMAPPE).resolve(AVSTEMMINGSFIL);
@@ -60,9 +59,9 @@ public class AvstemRouteIT extends AbstractItest {
 					verifyRequest();
 				});
 
-		try (Stream<Path> files =Files.list(sshdPath.resolve(AVSTEMMINGSFILMAPPE).resolve(PROCESSED))) {
+		try (Stream<Path> files = Files.list(sshdPath.resolve(AVSTEMMINGSFILMAPPE).resolve(PROCESSED))) {
 			List<String> processedMappe = files.map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
-					.collect(Collectors.toList());
+					.toList();
 			assertThat(processedMappe).containsExactly(AVSTEMMINGSFIL);
 		}
 
@@ -104,7 +103,7 @@ public class AvstemRouteIT extends AbstractItest {
 				.atMost(ofSeconds(15))
 				.untilAsserted(() -> {
 					assertAntallProsesserteFiler(0);
-					assertAntallubehandletFiler(2);
+					assertAntallUbehandletFiler(2);
 				});
 	}
 
@@ -155,7 +154,7 @@ public class AvstemRouteIT extends AbstractItest {
 	}
 
 	@SneakyThrows
-	private void assertAntallubehandletFiler(int forventetAntallFiler) {
+	private void assertAntallUbehandletFiler(int forventetAntallFiler) {
 		try (Stream<Path> files = Files.list(sshdPath.resolve(AVSTEMMINGSFILMAPPE))) {
 			assertThat(files.collect(Collectors.toSet())).hasSize(forventetAntallFiler);
 		}
