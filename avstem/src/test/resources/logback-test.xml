@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <logger name="no.nav.skanmotreferansenr" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <logger name="com.github.tomakehurst.wiremock" level="WARN" additivity="false"/>
+    <logger name="wiremock.org" level="WARN" additivity="false"/>
+    <logger name="WireMock" level="WARN" additivity="false"/>
+</configuration>

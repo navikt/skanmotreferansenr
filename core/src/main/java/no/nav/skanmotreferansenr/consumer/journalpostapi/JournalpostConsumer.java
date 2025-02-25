@@ -2,6 +2,8 @@ package no.nav.skanmotreferansenr.consumer.journalpostapi;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.consumer.journalpostapi.data.AvstemmingReferanser;
+import no.nav.skanmotreferansenr.consumer.journalpostapi.data.FeilendeAvstemmingReferanser;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.LeggTilLogiskVedleggRequest;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.LeggTilLogiskVedleggResponse;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.OpprettJournalpostRequest;
@@ -27,6 +29,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
+import static reactor.core.publisher.Mono.just;
 
 @Slf4j
 @Component
@@ -76,6 +79,20 @@ public class JournalpostConsumer {
 				.retrieve()
 				.bodyToMono(LeggTilLogiskVedleggResponse.class)
 				.onErrorMap(WebClientResponseException.class, err -> handleError(err, "leggTilLogiskVedlegg"))
+				.block();
+	}
+
+	@Retryable(retryFor = SkanmotreferansenrTechnicalException.class, backoff = @Backoff(delay = RETRY_DELAY))
+	public FeilendeAvstemmingReferanser avstemReferanser(AvstemmingReferanser avstemmingReferanser) {
+
+		return webClient.post()
+				.uri("/avstemReferanser")
+				.header(NAV_CALL_ID, MDC.get(MDC_CALL_ID))
+				.attributes(clientRegistrationId(CLIENT_REGISTRATION_DOKARKIV))
+				.bodyValue(avstemmingReferanser)
+				.retrieve()
+				.bodyToMono(FeilendeAvstemmingReferanser.class)
+				.onErrorMap(WebClientResponseException.class, err -> handleError(err, "avstemReferanser"))
 				.block();
 	}
 

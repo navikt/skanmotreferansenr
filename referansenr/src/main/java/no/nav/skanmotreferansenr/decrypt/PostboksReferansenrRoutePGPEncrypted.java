@@ -100,7 +100,7 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 				"&initialDelay=1000" +
 				"&maxMessagesPerPoll=10" +
 				"&move=processed" +
-				"&scheduler=spring&scheduler.cron={{skanmotreferansenr.schedule}}")
+				"&scheduler=spring&scheduler.cron={{skanmotreferansenr.referansenr.schedule}}")
 				.routeId("read_encrypted_PGP_referansenr_zip_from_sftp")
 				.log(INFO, log, "Skanmotreferansenr-pgp starter behandling av fil=${file:absolute.path}.")
 				.setProperty(PROPERTY_FORSENDELSE_ZIPNAME, simple("${file:name}"))

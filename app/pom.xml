@@ -21,6 +21,10 @@
 			<groupId>no.nav.skanmotreferansenr</groupId>
 			<artifactId>referansenr</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>no.nav.skanmotreferansenr</groupId>
+			<artifactId>avstem</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

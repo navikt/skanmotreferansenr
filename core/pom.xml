@@ -13,7 +13,6 @@
 	<artifactId>core</artifactId>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -79,6 +78,11 @@
 			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>no.nav.dok-common</groupId>
+			<artifactId>jiraapi</artifactId>
+		</dependency>
+
 		<!-- Decrypt PGP -->
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
@@ -89,5 +93,4 @@
 			<artifactId>bcpg-jdk18on</artifactId>
 		</dependency>
 	</dependencies>
-
 </project>

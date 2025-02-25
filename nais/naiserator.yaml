@@ -7,8 +7,6 @@ metadata:
     team: teamdokumenthandtering
 spec:
   env:
-    - name: SKANMOTREFERANSENR_SCHEDULE
-      value: {{ SKANMOTREFERANSENR_SCHEDULE }}
     - name: SKANMOTREFERANSENR_SFTP_PRIVATEKEY
       value: /var/run/secrets/nais.io/keys/privatekey
     - name: SKANMOTREFERANSENR_SFTP_HOSTKEY
@@ -27,6 +25,8 @@ spec:
       value: {{ SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_URL }}
     - name: SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_SCOPE
       value: {{ SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_SCOPE }}
+    - name: SKANMOTREFERANSENR_JIRA_URL
+      value: {{ SKANMOTREFERANSENR_JIRA_URL }}
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}
@@ -66,3 +66,5 @@ spec:
         mountPath: /var/run/secrets/nais.io/srvskanmotreferanse
       - kvPath: {{ SFTP_KEYS }}
         mountPath: /var/run/secrets/nais.io/keys
+      - kvPath: {{ SRVJIRADOKDISTAVSTEMMING }}
+        mountPath: /var/run/secrets/nais.io/srvjiradokdistavstemming

@@ -18,7 +18,8 @@
     <modules>
         <module>app</module>
         <module>core</module>
-		<module>referansenr</module>
+        <module>referansenr</module>
+        <module>avstem</module>
     </modules>
 
     <properties>
@@ -31,6 +32,7 @@
         <commons-compress.version>1.27.1</commons-compress.version>
         <commons-io.version>2.18.0</commons-io.version>
         <bouncycastle.version>1.79</bouncycastle.version>
+        <jiraapi.version>1.1.3</jiraapi.version>
 
         <!-- Test -->
         <sshd-core.version>2.14.0</sshd-core.version>
@@ -53,6 +55,17 @@
                 <artifactId>referansenr</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>no.nav.skanmotreferansenr</groupId>
+                <artifactId>avstem</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.nav.dok-common</groupId>
+                <artifactId>jiraapi</artifactId>
+                <version>${jiraapi.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.apache.camel.springboot</groupId>
                 <artifactId>camel-spring-boot-dependencies</artifactId>
