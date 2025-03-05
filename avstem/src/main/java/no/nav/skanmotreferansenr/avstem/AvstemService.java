@@ -15,6 +15,8 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Slf4j
 @Component
 public class AvstemService {
+
+	public static final String AVSTEMMINGSRAPPORT = "Skanmotreferansenr avstemmingsrapport:";
 	private final JournalpostConsumer journalpostConsumer;
 
 	public AvstemService(JournalpostConsumer journalpostConsumer) {
@@ -29,10 +31,11 @@ public class AvstemService {
 
 		FeilendeAvstemmingReferanser feilendeAvstemmingReferanser = journalpostConsumer.avstemReferanser(new AvstemmingReferanser(avstemReferenser));
 		if (feilendeAvstemmingReferanser == null || isEmpty(feilendeAvstemmingReferanser.referanserIkkeFunnet())) {
-			log.info(prettifySummary("Skanmotreferansenr avstemmingsrapport:", avstemReferenser.size(), 0));
+			log.info(prettifySummary(AVSTEMMINGSRAPPORT, avstemReferenser.size(), 0));
 			return null;
 		}
-		log.info("fant {} feilende avstemReferenser", feilendeAvstemmingReferanser.referanserIkkeFunnet());
-		return feilendeAvstemmingReferanser.referanserIkkeFunnet();
+		Set<String> referanserIkkeFunnet = feilendeAvstemmingReferanser.referanserIkkeFunnet();
+		log.info(prettifySummary(AVSTEMMINGSRAPPORT, avstemReferenser.size(), referanserIkkeFunnet.size()));
+		return referanserIkkeFunnet;
 	}
 }
