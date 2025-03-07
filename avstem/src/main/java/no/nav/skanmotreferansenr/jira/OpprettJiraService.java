@@ -70,6 +70,7 @@ public class OpprettJiraService {
 				.reporterName(JIRA_BRUKER_NAVN)
 				.labels(LABEL)
 				.vedlegg(csvByte)
+				.avstemmingsfilDato(avstemmingsfilDato)
 				.build();
 	}
 
