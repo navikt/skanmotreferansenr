@@ -13,8 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.util.function.Consumer;
-
 import static java.lang.String.format;
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CALL_ID;
 import static no.nav.skanmotreferansenr.consumer.azure.AzureOAuthEnabledWebClientConfig.CLIENT_REGISTRATION_FOERSTESIDEGENERATOR;
@@ -47,29 +45,27 @@ public class FoerstesidegeneratorConsumer {
 				.attributes(clientRegistrationId(CLIENT_REGISTRATION_FOERSTESIDEGENERATOR))
 				.retrieve()
 				.bodyToMono(FoerstesideMetadata.class)
-				.doOnError(handleFoerstesideErrors(loepenr))
+				.onErrorMap(error -> mapError(error, loepenr))
 				.block();
 	}
 
-	private Consumer<Throwable> handleFoerstesideErrors(String loepenr) {
-		return error -> {
+	private Throwable mapError(Throwable error, String loepenr) {
 			if (error instanceof WebClientResponseException response) {
 				if (response.getStatusCode().isSameCodeAs(NOT_FOUND)) {
-					throw new HentMetadataFoerstesideFinnesIkkeFunctionalException(format("Fant ikke foersteside med loepenr=%s, status=%s",
+					return new HentMetadataFoerstesideFinnesIkkeFunctionalException(format("Fant ikke foersteside med loepenr=%s, status=%s",
 							loepenr, response.getStatusCode()), response);
-				} else if (response.getStatusCode().value() == CONFLICT.value()) {
-					throw new HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException(format("HentMetadataFoersteside feilet funksjonelt med statusKode=%s. Feilmelding=%s",
+				} else if (response.getStatusCode().isSameCodeAs(CONFLICT)) {
+					return new HentMetadataFoerstesideTillaterIkkeTilknyttingFunctionalException(format("HentMetadataFoersteside feilet funksjonelt med statusKode=%s. Feilmelding=%s",
 							response.getStatusCode(), response.getMessage()), response);
 				} else if (response.getStatusCode().is5xxServerError()) {
-					throw new HentMetadataFoerstesideTechnicalException(format("HentMetadataFoersteside feilet teknisk med statusKode=%s. Feilmelding=%s",
+					return new HentMetadataFoerstesideTechnicalException(format("HentMetadataFoersteside feilet teknisk med statusKode=%s. Feilmelding=%s",
 							response.getStatusCode(), response.getMessage()), response);
 				} else {
-					throw new HentMetadataFoerstesideFunctionalException(format("HentMetadataFoersteside feilet funksjonelt med statusKode=%s. Feilmelding=%s",
+					return new HentMetadataFoerstesideFunctionalException(format("HentMetadataFoersteside feilet funksjonelt med statusKode=%s. Feilmelding=%s",
 							response.getStatusCode(), response.getMessage()), response);
 				}
 			}
-			throw new HentMetadataFoerstesideFunctionalException(format("HentMetadataFoersteside feilet med ukjent funksjonell feil. Feilmelding=%s",
+			return new HentMetadataFoerstesideFunctionalException(format("HentMetadataFoersteside feilet med ukjent funksjonell feil. Feilmelding=%s",
 					error.getMessage()), error);
-		};
-	}
+		}
 }
