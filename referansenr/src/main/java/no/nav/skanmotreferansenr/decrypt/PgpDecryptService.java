@@ -1,5 +1,6 @@
 package no.nav.skanmotreferansenr.decrypt;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Handler;
@@ -23,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import jakarta.validation.constraints.NotNull;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -95,7 +95,7 @@ public class PgpDecryptService {
 		while (pgpPrivateKey == null && it.hasNext()) {
 			publicKeyEncryptedData = (PGPPublicKeyEncryptedData) it.next();
 
-			pgpPrivateKey = findSecretKey(pgpKeyRing, publicKeyEncryptedData.getKeyID(), privateKeyPassword);
+			pgpPrivateKey = findSecretKey(pgpKeyRing, publicKeyEncryptedData.getKeyIdentifier().getKeyId(), privateKeyPassword);
 		}
 
 		if (pgpPrivateKey == null) {
