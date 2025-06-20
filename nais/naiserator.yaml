@@ -68,3 +68,5 @@ spec:
         mountPath: /var/run/secrets/nais.io/keys
       - kvPath: {{ SRVJIRADOKDISTAVSTEMMING }}
         mountPath: /var/run/secrets/nais.io/srvjiradokdistavstemming
+  envFrom:
+    - secret: slack-alerts

@@ -1,5 +1,7 @@
 package no.nav.skanmotreferansenr;
 
+import com.slack.api.Slack;
+import com.slack.api.methods.MethodsClient;
 import no.nav.dok.jiraapi.JiraProperties;
 import no.nav.dok.jiraapi.JiraService;
 import no.nav.dok.jiraapi.client.JiraClient;
@@ -11,6 +13,11 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan
 @Configuration
 public class CoreConfig {
+
+	@Bean
+	MethodsClient slackClient(SkanmotreferansenrProperties skanmotreferansenrProperties) {
+		return Slack.getInstance().methods(skanmotreferansenrProperties.getSlack().getToken());
+	}
 
 	@Bean
 	public JiraService jiraService(JiraClient jiraClient) {

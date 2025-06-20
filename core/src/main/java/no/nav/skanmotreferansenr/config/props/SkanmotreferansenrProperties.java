@@ -30,6 +30,7 @@ public class SkanmotreferansenrProperties {
 	private final SftpProperties sftp = new SftpProperties();
 	private final JiraConfigProperties jira = new JiraConfigProperties();
 	private final Referansenr referansenr = new Referansenr();
+	private final SlackProperties slack = new SlackProperties();
 
 	@Data
 	@Validated
@@ -137,5 +138,15 @@ public class SkanmotreferansenrProperties {
 		private String url;
 	}
 
+	@Data
+	@Validated
+	public static class SlackProperties {
+		@NotEmpty
+		@ToString.Exclude
+		private String token;
+		@NotEmpty
+		private String channel;
+		private boolean enabled;
+	}
 
 }
