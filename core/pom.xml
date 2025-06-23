@@ -77,6 +77,10 @@
 			<groupId>io.micrometer</groupId>
 			<artifactId>micrometer-registry-prometheus</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.slack.api</groupId>
+			<artifactId>slack-api-client</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>no.nav.dok-common</groupId>
