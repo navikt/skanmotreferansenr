@@ -11,7 +11,7 @@ import no.nav.skanmotreferansenr.consumer.journalpostapi.data.OpprettJournalpost
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.SkanmotreferansenrTechnicalException;
 import org.slf4j.MDC;
-import org.springframework.boot.autoconfigure.codec.CodecProperties;
+import org.springframework.boot.autoconfigure.http.codec.HttpCodecsProperties;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
@@ -38,14 +38,14 @@ public class JournalpostConsumer {
 
 	public JournalpostConsumer(WebClient webClient,
 							   SkanmotreferansenrProperties skanmotreferansenrProperties,
-							   CodecProperties codecProperties
+							   HttpCodecsProperties httpCodecsProperties
 	) {
 		this.webClient = webClient.mutate()
 				.defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.baseUrl(skanmotreferansenrProperties.getEndpoints().getDokarkiv().getUrl())
 				.exchangeStrategies(ExchangeStrategies.builder()
 						.codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-								.maxInMemorySize((int) codecProperties.getMaxInMemorySize().toBytes()))
+								.maxInMemorySize((int) httpCodecsProperties.getMaxInMemorySize().toBytes()))
 						.build())
 				.build();
 	}
