@@ -1,7 +1,7 @@
 package no.nav.skanmotreferansenr.decrypt;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
 import org.apache.camel.Exchange;
 import org.apache.camel.Handler;
 import org.apache.camel.RuntimeCamelException;
@@ -21,7 +21,6 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaKeyFingerprintCalculator;
 import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyDecryptorBuilder;
 import org.bouncycastle.openpgp.operator.jcajce.JcePublicKeyDataDecryptorFactoryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedInputStream;
@@ -37,18 +36,14 @@ import static org.bouncycastle.openpgp.PGPUtil.getDecoderStream;
 @Slf4j
 public class PgpDecryptService {
 
-	@NotNull
-	private final char[] privateKeyPassword;
-
+	private final SkanmotreferansenrProperties.Pgp pgp;
 	private final PGPSecretKeyRingCollection pgpKeyRing;
 
 	@Autowired
-	public PgpDecryptService(@Value("${pgp.passphrase}") char[] privateKeyPassword,
-							 @Value("${skanmotreferansenr.pgp.privateKey}") String pathToPgpPrivateKey) throws IOException, PGPException {
-		this.privateKeyPassword = privateKeyPassword;
-
+	public PgpDecryptService(SkanmotreferansenrProperties skanmotreferansenrProperties) throws IOException, PGPException {
+		this.pgp = skanmotreferansenrProperties.getPgp();
 		pgpKeyRing = new PGPSecretKeyRingCollection(
-				getDecoderStream(new BufferedInputStream(new FileInputStream(pathToPgpPrivateKey))),
+				getDecoderStream(new BufferedInputStream(new FileInputStream(pgp.getPrivateKey()))),
 				new JcaKeyFingerprintCalculator()
 		);
 
@@ -65,7 +60,7 @@ public class PgpDecryptService {
 			InputStream in = getDecoderStream(encryptedDataStream);
 
 			PGPEncryptedDataList enc = getPgpEncryptedData(in);
-			InputStream clear = findPrivateKeyAndDecrypt(privateKeyPassword, enc);
+			InputStream clear = findPrivateKeyAndDecrypt(pgp.getPassphrase().toCharArray(), enc);
 
 			JcaPGPObjectFactory plainFact = new JcaPGPObjectFactory(clear);
 			PGPCompressedData cData = (PGPCompressedData) plainFact.nextObject();

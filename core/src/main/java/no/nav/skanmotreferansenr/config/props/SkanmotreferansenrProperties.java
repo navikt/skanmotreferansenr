@@ -1,5 +1,6 @@
 package no.nav.skanmotreferansenr.config.props;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -23,17 +24,24 @@ public class SkanmotreferansenrProperties {
 	@NotNull
 	private Duration completiontimeout;
 
+	@Valid
 	private final Endpoints endpoints = new Endpoints();
+	@Valid
 	private final Avstem avstem = new Avstem();
-	private final ServiceuserProperties serviceuser = new ServiceuserProperties();
+	@Valid
 	private final FilomraadeProperties filomraade = new FilomraadeProperties();
+	@Valid
 	private final SftpProperties sftp = new SftpProperties();
+	@Valid
 	private final JiraConfigProperties jira = new JiraConfigProperties();
+	@Valid
 	private final Referansenr referansenr = new Referansenr();
+	@Valid
 	private final SlackProperties slack = new SlackProperties();
+	@Valid
+	private final Pgp pgp = new Pgp();
 
 	@Data
-	@Validated
 	public static class Endpoints {
 
 		@NotNull
@@ -45,14 +53,12 @@ public class SkanmotreferansenrProperties {
 	}
 
 	@Data
-	@Validated
 	public static class Referansenr {
 		@NotEmpty
 		private String schedule;
 	}
 
 	@Data
-	@Validated
 	public static class Avstem {
 		@NotEmpty
 		private String schedule;
@@ -62,7 +68,6 @@ public class SkanmotreferansenrProperties {
 	}
 
 	@Data
-	@Validated
 	public static class FilomraadeProperties {
 
 		@NotEmpty
@@ -76,20 +81,6 @@ public class SkanmotreferansenrProperties {
 	}
 
 	@Data
-	@Validated
-	public static class ServiceuserProperties {
-
-		@NotEmpty
-		private String username;
-
-		@NotEmpty
-		@ToString.Exclude
-		private String password;
-
-	}
-
-	@Data
-	@Validated
 	public static class SftpProperties {
 
 		@NotNull
@@ -111,7 +102,6 @@ public class SkanmotreferansenrProperties {
 	}
 
 	@Data
-	@Validated
 	public static class AzureEndpoint {
 		/**
 		 * Url til tjeneste som har azure autorisasjon
@@ -126,7 +116,6 @@ public class SkanmotreferansenrProperties {
 	}
 
 	@Data
-	@Validated
 	public static class JiraConfigProperties {
 		@NotEmpty
 		private String username;
@@ -139,7 +128,6 @@ public class SkanmotreferansenrProperties {
 	}
 
 	@Data
-	@Validated
 	public static class SlackProperties {
 		@NotEmpty
 		@ToString.Exclude
@@ -147,6 +135,22 @@ public class SkanmotreferansenrProperties {
 		@NotEmpty
 		private String channel;
 		private boolean enabled;
+	}
+
+	@Data
+	public static class Pgp {
+		/**
+		 * passphrase for PGP-tjeneste
+		 */
+		@NotEmpty
+		@ToString.Exclude
+		private String passphrase;
+
+		/**
+		 * privateKey for PGP-tjeneste
+		 */
+		@NotEmpty
+		private String privateKey;
 	}
 
 }

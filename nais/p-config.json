@@ -1,14 +1,10 @@
 {
-  "SRVSKANMOTREFERANSE": "/serviceuser/data/prod/srvskanmotreferanse",
-  "SRVJIRADOKDISTAVSTEMMING": "/serviceuser/data/prod/srvjiradokdistavstemming",
-  "SFTP_KEYS": "kv/prod/fss/skanmotreferansenr/keys",
+  "SKANMOTREFERANSE_SECRET": "skanmotreferanse-q2",
   "SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_URL": "http://foerstesidegenerator.teamdokumenthandtering.svc.nais.local",
   "SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_SCOPE": "api://prod-fss.teamdokumenthandtering.foerstesidegenerator/.default",
   "SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_URL": "http://dokarkiv.teamdokumenthandtering.svc.nais.local/rest/journalpostapi/v1",
   "SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_SCOPE": "api://prod-fss.teamdokumenthandtering.dokarkiv/.default",
   "SKANMOTREFERANSENR_JIRA_URL": "https://jira.adeo.no",
-  "SKANMOTREFERANSENR_VAULT_BACKEND": "kv/prod/fss",
-  "SKANMOTREFERANSENR_VAULT_KUBERNETESPATH": "kubernetes/prod/fss",
   "INGRESSES": [
     "https://skanmotreferansenr.intern.nav.no"
   ]

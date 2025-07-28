@@ -3,7 +3,6 @@ package no.nav.skanmotreferansenr.itest;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.CoreConfig;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
-import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrVaultProperties;
 import no.nav.skanmotreferansenr.consumer.azure.AzureOAuthEnabledWebClientConfig;
 import no.nav.skanmotreferansenr.consumer.azure.AzureProperties;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
@@ -34,8 +33,7 @@ import static java.util.Collections.singletonList;
 @EnableAutoConfiguration
 @EnableConfigurationProperties({
 		SkanmotreferansenrProperties.class,
-		AzureProperties.class,
-		SkanmotreferansenrVaultProperties.class
+		AzureProperties.class
 })
 @Import({
 		CoreConfig.class,
