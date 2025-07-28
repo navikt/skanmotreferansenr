@@ -121,6 +121,7 @@ public class SkanmotreferansenrProperties {
 		private String username;
 
 		@NotEmpty
+		@ToString.Exclude
 		private String password;
 
 		@NotEmpty
