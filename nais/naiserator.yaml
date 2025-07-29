@@ -8,15 +8,11 @@ metadata:
 spec:
   env:
     - name: SKANMOTREFERANSENR_SFTP_PRIVATEKEY
-      value: /var/run/secrets/nais.io/keys/privatekey
+      value: /var/run/secrets/nais.io/skanmotreferansenr/sftp/privatekey
     - name: SKANMOTREFERANSENR_SFTP_HOSTKEY
-      value: /var/run/secrets/nais.io/keys/hostkey
+      value: /var/run/secrets/nais.io/skanmotreferansenr/sftp/hostkey
     - name: SKANMOTREFERANSENR_PGP_PRIVATEKEY
-      value: /var/run/secrets/nais.io/keys/pgpprivatekey
-    - name: SKANMOTREFERANSENR_VAULT_BACKEND
-      value: {{ SKANMOTREFERANSENR_VAULT_BACKEND }}
-    - name: SKANMOTREFERANSENR_VAULT_KUBERNETESPATH
-      value: {{ SKANMOTREFERANSENR_VAULT_KUBERNETESPATH }}
+      value: /var/run/secrets/nais.io/skanmotreferansenr/pgp/pgpprivatekey
     - name: SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_URL
       value: {{ SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_URL }}
     - name: SKANMOTREFERANSENR_ENDPOINTS_FOERSTESIDEGENERATOR_SCOPE
@@ -59,14 +55,17 @@ spec:
     application:
       enabled: true
   webproxy: true
-  vault:
-    enabled: true
-    paths:
-      - kvPath: {{ SRVSKANMOTREFERANSE }}
-        mountPath: /var/run/secrets/nais.io/srvskanmotreferanse
-      - kvPath: {{ SFTP_KEYS }}
-        mountPath: /var/run/secrets/nais.io/keys
-      - kvPath: {{ SRVJIRADOKDISTAVSTEMMING }}
-        mountPath: /var/run/secrets/nais.io/srvjiradokdistavstemming
+  filesFrom:
+    - mountPath: /var/run/secrets/nais.io/skanmotreferansenr/pgp
+      secret: skanmot-pgp-keys
+    - mountPath: /var/run/secrets/nais.io/skanmotreferansenr/sftp
+      secret: skanmot-sftp-keys
   envFrom:
+    - secret: {{ SKANMOTREFERANSE_SECRET }}
     - secret: slack-alerts
+    - secret: jira-service-user
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki

@@ -16,7 +16,7 @@ To måtar som er nyttige, der dette er måte nr. 1:
 
 Måte nr. 2: 
 * Få tilgang til mappa /inbound/skanmotreferansenr på sftpserveren sftp-irmo-q.nav.no (devmiljøet).
-* Legg inn noverande dev-public key for appen i pgp-mappa i /resources som du finn i skanmotreferansenr/keys i vault. Denne har namnet pgppublickey.
+* Legg inn noverande dev-public key for appen i pgp-mappa i /resources som du finn i skanmotreferansenr/keys i nais secrets. Denne har namnet pgppublickey.
 * I getPublicKey()-metoda i PGPManualTest-testklassa kan du vise til fila over.
 * Krypter ei .zip-mappe i skanmotreferansenr-prosjektet frå /resources-mappa ved å bruke generateEncryptedFile() i PGPManualTest-testklassa.
 * Legg inn ei .zip.pgp-fil på /inbound/skanmotreferansenr og vent til appen hentar fila (skjer kvart 5. minutt). Det kan vere praktisk å maile denne til seg sjølv dersom ein arbeider lokalt og skal hente den ut på utviklarimage.
