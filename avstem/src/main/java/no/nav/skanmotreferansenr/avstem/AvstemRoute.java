@@ -42,11 +42,13 @@ public class AvstemRoute extends RouteBuilder {
 		onException(Exception.class)
 				.handled(true)
 				.process(new MdcSetterProcessor())
+				.logStackTrace(true)
 				.log(WARN, log, "Skanmotreferansenr feilet teknisk, Exception:${exception}");
 
 		onException(AbstractSkanmotreferansenrFunctionalException.class, JiraClientException.class)
 				.handled(true)
 				.useOriginalMessage()
+				.logStackTrace(true)
 				.log(WARN, log, "Skanmotreferansenr feilet å prossessere avstemmingsfil. Exception:${exception};" );
 
 		onException(GenericFileOperationFailedException.class)
