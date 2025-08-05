@@ -8,7 +8,7 @@ metadata:
 spec:
   env:
     - name: SKANMOTREFERANSENR_SFTP_PRIVATEKEY
-      value: /var/run/secrets/nais.io/skanmotreferansenr/sftp/privatekey
+      value: /var/run/secrets/nais.io/skanmotreferansenr/sftp/sftpprivatekey
     - name: SKANMOTREFERANSENR_SFTP_HOSTKEY
       value: /var/run/secrets/nais.io/skanmotreferansenr/sftp/hostkey
     - name: SKANMOTREFERANSENR_PGP_PRIVATEKEY
