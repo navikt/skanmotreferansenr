@@ -1,6 +1,5 @@
  package no.nav.skanmotreferansenr.slack;
 
-import com.slack.api.Slack;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
 import com.slack.api.model.block.HeaderBlock;
@@ -8,8 +7,7 @@ import com.slack.api.model.block.SectionBlock;
 import com.slack.api.model.block.composition.MarkdownTextObject;
 import com.slack.api.model.block.composition.PlainTextObject;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
-import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties.SlackProperties;
+import no.nav.skanmotreferansenr.config.props.SlackProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -21,14 +19,14 @@ public class SlackService {
 	private final MethodsClient slackClient;
 	private final SlackProperties slackProperties;
 
-	SlackService(SkanmotreferansenrProperties skanmotreferansenrProperties,
+	SlackService(SlackProperties slackProperties,
 				 MethodsClient slackClient) {
-		slackProperties = skanmotreferansenrProperties.getSlack();
+		this.slackProperties = slackProperties;
 		this.slackClient = slackClient;
 	}
 
 	public void sendMelding(String melding) {
-		if (slackProperties.isEnabled()) {
+		if (slackProperties.enabled()) {
 			try {
 				log.info("Sender melding til Slack med melding={}", melding);
 
@@ -51,7 +49,7 @@ public class SlackService {
                  """.formatted(feilmelding).stripIndent();
 
 		return ChatPostMessageRequest.builder()
-				.channel(slackProperties.getChannel())
+				.channel(slackProperties.channel())
 				.text(bodyText) //ved bruk av blocks fungerer dette som fallback-tekst for varsel
 				.blocks(Arrays.asList(
 						HeaderBlock.builder()
