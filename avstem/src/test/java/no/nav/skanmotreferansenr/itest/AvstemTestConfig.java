@@ -20,10 +20,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Integer.parseInt;
@@ -72,6 +75,13 @@ public class AvstemTestConfig {
 				}
 			};
 		}
+
+		@Bean
+		@Primary
+		Clock clock() {
+			Instant fixedInstant = Instant.parse("2023-10-26T10:00:00Z");
+			return Clock.fixed(fixedInstant, CoreConfig.DEFAULT_ZONE_ID);
+		}
 	}
 
 	@Configuration
@@ -97,3 +107,6 @@ public class AvstemTestConfig {
 		}
 	}
 }
+
+
+
