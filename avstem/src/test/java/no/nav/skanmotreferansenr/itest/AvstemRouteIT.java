@@ -5,19 +5,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -60,11 +53,11 @@ public class AvstemRouteIT extends AbstractItest {
 		assertAntallProsesserteFiler(0);
 
 		await()
-			.atMost(ofSeconds(15))
-			.untilAsserted(() -> {
-				assertAntallProsesserteFiler(1);
-				verifyRequest();
-			});
+				.atMost(ofSeconds(15))
+				.untilAsserted(() -> {
+					assertAntallProsesserteFiler(1);
+					verifyRequest();
+				});
 
 		try (Stream<Path> files = Files.list(sshdPath.resolve(AVSTEMMINGSFILMAPPE).resolve(PROCESSED))) {
 			List<String> processedMappe = files.map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
@@ -122,13 +115,13 @@ public class AvstemRouteIT extends AbstractItest {
 		assertThat(Files.exists(filePath)).isFalse();
 		assertAntallProsesserteFiler(0);
 
-			await()
-					.atMost(ofSeconds(20))
-					.untilAsserted(() -> {
-						assertAntallProsesserteFiler(0);
-						verify(1, getRequestedFor(urlMatching(JIRA_PROJECT_URL)));
-						verify(1, postRequestedFor(urlMatching(JIRA_OPPRETTE_URL)));
-					});
+		await()
+				.atMost(ofSeconds(20))
+				.untilAsserted(() -> {
+					assertAntallProsesserteFiler(0);
+					verify(1, getRequestedFor(urlMatching(JIRA_PROJECT_URL)));
+					verify(1, postRequestedFor(urlMatching(JIRA_OPPRETTE_URL)));
+				});
 	}
 
 	private void verifyRequest() {
