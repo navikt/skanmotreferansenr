@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Collections.singletonList;
+import static no.nav.skanmotreferansenr.CoreConfig.DEFAULT_ZONE_ID;
 
 @Slf4j
 @EnableAutoConfiguration
@@ -40,12 +42,32 @@ import static java.util.Collections.singletonList;
 })
 @Import({
 		CoreConfig.class,
+		AvstemTestConfig.Config.class,
 		AvstemTestConfig.CamelTestStartupConfig.class,
 		AvstemTestConfig.SshdSftpServerConfig.class,
 		DokCounter.class,
 		AzureOAuthEnabledWebClientConfig.class
 })
 public class AvstemTestConfig {
+
+	@Configuration
+	static class Config {
+		@Bean
+		@Primary
+		@Profile("virkedag")
+		Clock forrigeDagVirkedagClock() {
+			Instant fixedInstant = Instant.parse("2025-08-01T10:00:00Z");
+			return Clock.fixed(fixedInstant, DEFAULT_ZONE_ID);
+		}
+
+		@Bean
+		@Primary
+		@Profile("fridag")
+		Clock forrigeDagFridagClock() {
+			Instant fixedInstant = Instant.parse("2025-05-18T10:00:00Z");
+			return Clock.fixed(fixedInstant, DEFAULT_ZONE_ID);
+		}
+	}
 
 	@Configuration
 	static class CamelTestStartupConfig {
@@ -74,13 +96,6 @@ public class AvstemTestConfig {
 
 				}
 			};
-		}
-
-		@Bean
-		@Primary
-		Clock clock() {
-			Instant fixedInstant = Instant.parse("2023-10-26T10:00:00Z");
-			return Clock.fixed(fixedInstant, CoreConfig.DEFAULT_ZONE_ID);
 		}
 	}
 

@@ -24,7 +24,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 		webEnvironment = RANDOM_PORT
 )
 @AutoConfigureWireMock(port = 0)
-@ActiveProfiles("itest")
 public abstract class AbstractItest {
 
 	public static final String URL_DOKARKIV_AVSTEMREFERANSER = "/rest/journalpostapi/v1/avstemReferanser";

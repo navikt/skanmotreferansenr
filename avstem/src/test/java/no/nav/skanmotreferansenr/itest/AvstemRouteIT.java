@@ -9,6 +9,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,6 +31,7 @@ import static java.time.Duration.ofSeconds;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
+@ActiveProfiles({"itest", "virkedag"})
 public class AvstemRouteIT extends AbstractItest {
 
 	private static final String AVSTEMMINGSFILMAPPE = "avstemmappe";
