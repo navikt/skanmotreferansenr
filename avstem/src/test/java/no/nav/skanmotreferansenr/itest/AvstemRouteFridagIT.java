@@ -2,6 +2,8 @@ package no.nav.skanmotreferansenr.itest;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,11 @@ public class AvstemRouteFridagIT extends AbstractItest {
 
 	@Autowired
 	private Path sshdPath;
+
+	@BeforeAll
+	public static void beforeTestClass() {
+		System.setProperty("skanmotreferansenr.sftp.port", String.valueOf(RandomUtils.secure().randomInt(2000, 65000)));
+	}
 
 	@BeforeEach
 	void beforeEach() {

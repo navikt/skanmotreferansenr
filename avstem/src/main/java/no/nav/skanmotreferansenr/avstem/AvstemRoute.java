@@ -6,7 +6,6 @@ import no.nav.skanmotreferansenr.MdcSetterProcessor;
 import no.nav.skanmotreferansenr.RemoveMdcProcessor;
 import no.nav.skanmotreferansenr.exceptions.functional.AbstractSkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.jira.OpprettJiraService;
-import no.nav.skanmotreferansenr.util.Helligdager;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.file.GenericFileOperationFailedException;
 import org.springframework.stereotype.Component;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.time.Clock;
 import java.util.Set;
 
+import static no.nav.dok.validators.OffentligFridag.erOffentligFridag;
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.ANTALL_FILER_AVSTEMT;
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.ANTALL_FILER_FEILET;
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.finnForrigeVirkedag;
@@ -76,20 +76,16 @@ public class AvstemRoute extends RouteBuilder {
 				.choice()
 					.when(header(FILE_NAME).isNull())
 						.process(exchange -> exchange.setProperty(EXCHANGE_AVSTEMT_DATO, finnForrigeVirkedag(clock)))
-						.log(ERROR, log, "Skanmotreferansenr fant ikke avstemmingsfil for ${exchangeProperty." + EXCHANGE_AVSTEMT_DATO + "}. Undersøk tilfellet og evt. ser opprettet Jira-sak.")
+						.log(ERROR, log, "Skanmotreferansenr fant ikke avstemmingsfil for ${exchangeProperty." + EXCHANGE_AVSTEMT_DATO + "}. Undersøk tilfellet og evt. se opprettet Jira-sak.")
 						.process(exchange -> {
-							if (Helligdager.erHelligdag(finnForrigeVirkedag(clock))) {
-								log.warn("I går var det helligdag, Da kommer det normalt sett ikke avstemmingsfiler");
+							if (erOffentligFridag(finnForrigeVirkedag(clock))) {
+								log.warn("Forrige virkedag var det offentlig fridag, Da kommer det normalt sett ikke avstemmingsfiler");
 							}
 							else {
 								JiraResponse jiraResponse = opprettJiraService.opprettAvstemJiraOppgave(exchange.getIn().getBody(byte[].class), exchange);
 								log.info("Skanmotreferansenr opprettet jira-sak med key={} for manglende avstemmingsfil.", jiraResponse.jiraIssueKey());
 							}
 						})
-
-				//TODO: rydd opp her. Sørg for at testene tar høyde for at det kan ha vært helligdag i går (mock localDate.now() til faste datoer.
-				//TODO: skriv tester som mocker helligdager
-//						.choice()
 				.otherwise()
 					.log(INFO, log, "Skanmotreferansenr starter behandling av avstemmingsfil=${file:name}.")
 					.process(exchange -> {

@@ -3,10 +3,10 @@ package no.nav.skanmotreferansenr.itest;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.RandomUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ActiveProfiles;
@@ -14,11 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,6 +35,11 @@ public class AvstemRouteIT extends AbstractItest {
 
 	@Autowired
 	private Path sshdPath;
+
+	@BeforeAll
+	public static void beforeTestClass() {
+		System.setProperty("skanmotreferansenr.sftp.port", String.valueOf(RandomUtils.secure().randomInt(2000, 65000)));
+	}
 
 	@BeforeEach
 	void beforeEach() {
