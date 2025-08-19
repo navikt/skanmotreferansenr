@@ -1,5 +1,6 @@
 package no.nav.skanmotreferansenr.avstem;
 
+import no.nav.dok.jiraapi.JiraResponse;
 import no.nav.dok.jiracore.exception.JiraClientException;
 import no.nav.skanmotreferansenr.MdcSetterProcessor;
 import no.nav.skanmotreferansenr.RemoveMdcProcessor;
@@ -16,6 +17,7 @@ import static no.nav.dok.validators.OffentligFridag.erOffentligFridag;
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.ANTALL_FILER_AVSTEMT;
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.ANTALL_FILER_FEILET;
 import static no.nav.skanmotreferansenr.jira.OpprettJiraService.finnForrigeVirkedag;
+import static no.nav.skanmotreferansenr.jira.OpprettJiraService.parseDatoFraFilnavn;
 import static no.nav.skanmotreferansenr.mdc.MDCConstants.EXCHANGE_AVSTEMMINGSFIL_NAVN;
 import static no.nav.skanmotreferansenr.mdc.MDCConstants.EXCHANGE_AVSTEMT_DATO;
 import static org.apache.camel.Exchange.FILE_NAME;
