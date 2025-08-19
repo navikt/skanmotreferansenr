@@ -4,7 +4,9 @@ import com.slack.api.Slack;
 import com.slack.api.methods.MethodsClient;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.CoreConfig;
+import no.nav.skanmotreferansenr.config.props.JiraAuthProperties;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.props.SlackProperties;
 import no.nav.skanmotreferansenr.consumer.azure.AzureProperties;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
 import org.apache.camel.CamelContext;
@@ -35,7 +37,7 @@ import static java.util.Collections.singletonList;
 @Slf4j
 @Configuration
 @EnableAutoConfiguration
-@EnableConfigurationProperties({SkanmotreferansenrProperties.class, AzureProperties.class})
+@EnableConfigurationProperties({JiraAuthProperties.class, SlackProperties.class, SkanmotreferansenrProperties.class, AzureProperties.class})
 @Import({CoreConfig.class, TestConfig.CamelTestStartupConfig.class, TestConfig.SshdSftpServerConfig.class, DokCounter.class})
 public class TestConfig {
 
@@ -44,8 +46,8 @@ public class TestConfig {
 
 	@Bean
 	@Primary
-	MethodsClient slackClient(SkanmotreferansenrProperties skanmotreferansenrProperties) {
-		var slackClient = Slack.getInstance().methods(skanmotreferansenrProperties.getSlack().getToken());
+	MethodsClient slackClient(SlackProperties slackProperties) {
+		var slackClient = Slack.getInstance().methods(slackProperties.token());
 		slackClient.setEndpointUrlPrefix(slackUrl);
 		return slackClient;
 	}

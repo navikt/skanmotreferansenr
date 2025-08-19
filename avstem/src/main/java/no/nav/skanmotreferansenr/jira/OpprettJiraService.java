@@ -48,14 +48,14 @@ public class OpprettJiraService {
 			Integer antallFeilet = exchange.getProperty(ANTALL_FILER_FEILET, Integer.class);
 			JiraRequest jiraRequest = mapJiraRequest(csvByte, antallAvstemt, antallFeilet, avstemmingsfilDato);
 
-			return jiraService.opprettJiraOppgaveMedVedlegg(jiraRequest);
+			return jiraService.opprettJiraMMAOppgaveMedVedlegg(jiraRequest);
 		} catch (JiraClientException e) {
 			throw new SkanmotreferansenrFunctionalException("kunne ikke opprette jira oppgave", e);
 		}
 	}
 
 	private JiraResponse opprettJiraForManglendeAvstemmingsfil(LocalDate avstemmingsfilDato) {
-		return jiraService.opprettJiraOppgave(JiraRequest.builder()
+		return jiraService.opprettJiraMMAOppgave(JiraRequest.builder()
 				.summary("Skanmotreferansenr: Avstemmingfil mangler for " + avstemmingsfilDato)
 				.description("Skanmotreferansenr fant ikke avstemmingsfil for " + avstemmingsfilDato + ". Undersøk tilfellet og evt. kontakt Iron Mountain.")
 				.reporterName(JIRA_BRUKER_NAVN)
