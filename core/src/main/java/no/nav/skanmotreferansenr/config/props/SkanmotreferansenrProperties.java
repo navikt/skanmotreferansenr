@@ -38,8 +38,6 @@ public class SkanmotreferansenrProperties {
 	@Valid
 	private final Referansenr referansenr = new Referansenr();
 	@Valid
-	private final SlackProperties slack = new SlackProperties();
-	@Valid
 	private final Pgp pgp = new Pgp();
 
 	@Data
@@ -119,24 +117,7 @@ public class SkanmotreferansenrProperties {
 	@Data
 	public static class JiraConfigProperties {
 		@NotEmpty
-		private String username;
-
-		@NotEmpty
-		@ToString.Exclude
-		private String password;
-
-		@NotEmpty
 		private String url;
-	}
-
-	@Data
-	public static class SlackProperties {
-		@NotEmpty
-		@ToString.Exclude
-		private String token;
-		@NotEmpty
-		private String channel;
-		private boolean enabled;
 	}
 
 	@Data

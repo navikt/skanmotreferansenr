@@ -2,7 +2,9 @@ package no.nav.skanmotreferansenr.itest;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.CoreConfig;
+import no.nav.skanmotreferansenr.config.props.JiraAuthProperties;
 import no.nav.skanmotreferansenr.config.props.SkanmotreferansenrProperties;
+import no.nav.skanmotreferansenr.config.props.SlackProperties;
 import no.nav.skanmotreferansenr.consumer.azure.AzureOAuthEnabledWebClientConfig;
 import no.nav.skanmotreferansenr.consumer.azure.AzureProperties;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
@@ -35,6 +37,8 @@ import static no.nav.skanmotreferansenr.CoreConfig.DEFAULT_ZONE_ID;
 @EnableAutoConfiguration
 @EnableConfigurationProperties({
 		SkanmotreferansenrProperties.class,
+		SlackProperties.class,
+		JiraAuthProperties.class,
 		AzureProperties.class
 })
 @Import({
@@ -89,6 +93,3 @@ public class AvstemTestConfig {
 		}
 	}
 }
-
-
-

@@ -62,11 +62,11 @@ public class AvstemRouteIT extends AbstractItest {
 		assertAntallProsesserteFiler(0);
 
 		await()
-			.atMost(ofSeconds(15))
-			.untilAsserted(() -> {
-				assertAntallProsesserteFiler(1);
-				verifyRequest();
-			});
+				.atMost(ofSeconds(15))
+				.untilAsserted(() -> {
+					assertAntallProsesserteFiler(1);
+					verifyRequest();
+				});
 
 		try (Stream<Path> files = Files.list(sshdPath.resolve(AVSTEMMINGSFILMAPPE).resolve(PROCESSED))) {
 			List<String> processedMappe = files.map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
@@ -124,13 +124,13 @@ public class AvstemRouteIT extends AbstractItest {
 		assertThat(Files.exists(filePath)).isFalse();
 		assertAntallProsesserteFiler(0);
 
-			await()
-					.atMost(ofSeconds(20))
-					.untilAsserted(() -> {
-						assertAntallProsesserteFiler(0);
-						verify(1, getRequestedFor(urlMatching(JIRA_PROJECT_URL)));
-						verify(1, postRequestedFor(urlMatching(JIRA_OPPRETTE_URL)));
-					});
+		await()
+				.atMost(ofSeconds(20))
+				.untilAsserted(() -> {
+					assertAntallProsesserteFiler(0);
+					verify(1, getRequestedFor(urlMatching(JIRA_PROJECT_URL)));
+					verify(1, postRequestedFor(urlMatching(JIRA_OPPRETTE_URL)));
+				});
 	}
 
 	private void verifyRequest() {
