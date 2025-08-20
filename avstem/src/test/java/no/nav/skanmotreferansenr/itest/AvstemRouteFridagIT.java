@@ -48,7 +48,7 @@ public class AvstemRouteFridagIT extends AbstractItest {
 	}
 
 	@Test
-	public void shouldNotOpprettJiraOppgaveWhenAvstemmingsfilIsMissing() {
+	public void shouldNotOpprettJiraOppgaveWhenAvstemmingsfilIsMissingAndForrigevirkedagIsOffentligFridag() {
 		stubBadRequestJiraOpprettOppgave();
 
 		Path filePath = sshdPath.resolve(AVSTEMMINGSFILMAPPE).resolve(AVSTEMMINGSFIL);
