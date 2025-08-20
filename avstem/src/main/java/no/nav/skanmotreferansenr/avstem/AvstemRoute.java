@@ -11,6 +11,7 @@ import org.apache.camel.component.file.GenericFileOperationFailedException;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
+import java.time.LocalDate;
 import java.util.Set;
 
 import static no.nav.dok.validators.OffentligFridag.erOffentligFridag;
@@ -75,13 +76,14 @@ public class AvstemRoute extends RouteBuilder {
 				.process(new MdcSetterProcessor())
 				.choice()
 					.when(header(FILE_NAME).isNull())
-						.process(exchange -> exchange.setProperty(EXCHANGE_AVSTEMT_DATO, finnForrigeVirkedag(clock)))
-						.log(ERROR, log, "Skanmotreferansenr fant ikke avstemmingsfil for ${exchangeProperty." + EXCHANGE_AVSTEMT_DATO + "}. Undersøk tilfellet og evt. se opprettet Jira-sak.")
 						.process(exchange -> {
-							if (erOffentligFridag(finnForrigeVirkedag(clock))) {
+							LocalDate forrigeVirkedag = finnForrigeVirkedag(clock);
+							exchange.setProperty(EXCHANGE_AVSTEMT_DATO, forrigeVirkedag);
+							if (erOffentligFridag(forrigeVirkedag)) {
 								log.warn("Forrige virkedag var det offentlig fridag, Da kommer det normalt sett ikke avstemmingsfiler");
 							}
 							else {
+								log.error("Skanmotreferansenr fant ikke avstemmingsfil for {}. Undersøk tilfellet og se opprettet Jira-sak.", forrigeVirkedag);
 								JiraResponse jiraResponse = opprettJiraService.opprettAvstemJiraOppgave(exchange.getIn().getBody(byte[].class), exchange);
 								log.info("Skanmotreferansenr opprettet jira-sak med key={} for manglende avstemmingsfil.", jiraResponse.jiraIssueKey());
 							}
