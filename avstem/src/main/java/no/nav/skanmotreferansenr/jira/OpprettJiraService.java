@@ -10,8 +10,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Handler;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -86,8 +86,8 @@ public class OpprettJiraService {
 	/**
 	 * finnForrigeVirkedag genererer datoen for forrige virkedag, som kan brukes i loggen og til å opprette Jira-saken.
 	 */
-	public static LocalDate finnForrigeVirkedag() {
-		LocalDate todaysDate = LocalDate.now(ZoneId.of("Europe/Oslo"));
+	public static LocalDate finnForrigeVirkedag(Clock clock) {
+		LocalDate todaysDate = LocalDate.now(clock);
 		return MONDAY.equals(todaysDate.getDayOfWeek()) ? todaysDate.minusDays(3) :
 				todaysDate.minusDays(1);
 	}

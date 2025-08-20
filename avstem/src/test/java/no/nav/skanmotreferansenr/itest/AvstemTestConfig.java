@@ -8,8 +8,6 @@ import no.nav.skanmotreferansenr.config.props.SlackProperties;
 import no.nav.skanmotreferansenr.consumer.azure.AzureOAuthEnabledWebClientConfig;
 import no.nav.skanmotreferansenr.consumer.azure.AzureProperties;
 import no.nav.skanmotreferansenr.metrics.DokCounter;
-import org.apache.camel.CamelContext;
-import org.apache.camel.spring.boot.CamelContextConfiguration;
 import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.common.keyprovider.ClassLoadableResourceKeyPairProvider;
 import org.apache.sshd.scp.server.ScpCommandFactory;
@@ -22,14 +20,18 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.time.Clock;
+import java.time.Instant;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Collections.singletonList;
+import static no.nav.skanmotreferansenr.CoreConfig.DEFAULT_ZONE_ID;
 
 @Slf4j
 @EnableAutoConfiguration
@@ -41,7 +43,7 @@ import static java.util.Collections.singletonList;
 })
 @Import({
 		CoreConfig.class,
-		AvstemTestConfig.CamelTestStartupConfig.class,
+		AvstemTestConfig.Config.class,
 		AvstemTestConfig.SshdSftpServerConfig.class,
 		DokCounter.class,
 		AzureOAuthEnabledWebClientConfig.class
@@ -49,32 +51,21 @@ import static java.util.Collections.singletonList;
 public class AvstemTestConfig {
 
 	@Configuration
-	static class CamelTestStartupConfig {
-
-		private final AtomicInteger sshServerStartupCounter = new AtomicInteger(0);
+	static class Config {
+		@Bean
+		@Primary
+		@Profile("virkedag")
+		Clock forrigeDagVirkedagClock() {
+			Instant fixedInstant = Instant.parse("2025-08-01T10:00:00Z");
+			return Clock.fixed(fixedInstant, DEFAULT_ZONE_ID);
+		}
 
 		@Bean
-		CamelContextConfiguration contextConfiguration(SshServer sshServer) {
-			return new CamelContextConfiguration() {
-
-				@Override
-				public void beforeApplicationStart(CamelContext camelContext) {
-					while (!sshServer.isStarted() && sshServerStartupCounter.get() <= 5) {
-						try {
-							// Busy wait
-							Thread.sleep(1000);
-							log.info("Forsøkt å starte sshserver. retry={}", sshServerStartupCounter.getAndIncrement());
-						} catch (InterruptedException e) {
-							// noop
-						}
-					}
-				}
-
-				@Override
-				public void afterApplicationStart(CamelContext camelContext) {
-
-				}
-			};
+		@Primary
+		@Profile("fridag")
+		Clock forrigeDagFridagClock() {
+			Instant fixedInstant = Instant.parse("2025-05-18T10:00:00Z");
+			return Clock.fixed(fixedInstant, DEFAULT_ZONE_ID);
 		}
 	}
 
@@ -88,6 +79,7 @@ public class AvstemTestConfig {
 		@Bean(initMethod = "start", destroyMethod = "stop")
 		public SshServer sshServer(Path sshdPath,
 								   SkanmotreferansenrProperties skanmotreferansenrProperties) {
+			log.info("skanmotreferansenr.sftp.port={}", skanmotreferansenrProperties.getSftp().getPort());
 			SshServer sshd = SshServer.setUpDefaultServer();
 			sshd.setPort(parseInt(skanmotreferansenrProperties.getSftp().getPort()));
 			sshd.setKeyPairProvider(new ClassLoadableResourceKeyPairProvider("sftp/server_id_rsa"));
