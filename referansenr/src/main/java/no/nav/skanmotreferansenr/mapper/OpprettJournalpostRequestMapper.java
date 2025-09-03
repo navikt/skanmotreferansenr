@@ -137,7 +137,7 @@ public class OpprettJournalpostRequestMapper {
 	}
 
 	private static String mapAvsenderId(String avsenderId) {
-		if (avsenderId.startsWith(DOUBLE_ZERO_PADDING)
+		if (isDoubleZeroPrefixed(avsenderId)
 			&& isNumeric(avsenderId)
 			&& avsenderId.length() == FOLKEREGISTER_IDENT_LENGTH) {
 			return avsenderId.substring(DOUBLE_ZERO_PADDING.length());
@@ -151,7 +151,7 @@ public class OpprettJournalpostRequestMapper {
 		}
 		return switch (avsenderId.length()) {
 			case FOLKEREGISTER_IDENT_LENGTH:
-				if (avsenderId.startsWith(DOUBLE_ZERO_PADDING)) {
+				if (isDoubleZeroPrefixed(avsenderId)) {
 					yield AVSENDER_IDTYPE_ORGANISASJON;
 				}
 				yield AVSENDER_IDTYPE_PERSON;
@@ -160,6 +160,10 @@ public class OpprettJournalpostRequestMapper {
 			default:
 				yield null;
 		};
+	}
+
+	private static boolean isDoubleZeroPrefixed(String avsenderId) {
+		return avsenderId.startsWith(DOUBLE_ZERO_PADDING);
 	}
 
 	private Bruker extractBruker(FoerstesideMetadata foerstesideMetadata) {
@@ -189,7 +193,7 @@ public class OpprettJournalpostRequestMapper {
 			}
 			log.warn("Brukerid av type {} var ugyldig, setter bruker til null", FOERSTESIDE_BRUKERTYPE_ORGANISASJON);
 		} else {
-			log.warn("Brukertype {} er ikke en gyldig verdi: [{}, {}]. Setter bruker til null", bruker.getBrukerType(), FOERSTESIDE_BRUKERTYPE_PERSON, FOERSTESIDE_BRUKERTYPE_ORGANISASJON);
+			log.warn("Brukertype {} er ikke er en av følgende gyldige verdier: [{}, {}]. Setter bruker til null", bruker.getBrukerType(), FOERSTESIDE_BRUKERTYPE_PERSON, FOERSTESIDE_BRUKERTYPE_ORGANISASJON);
 		}
 		return false;
 	}

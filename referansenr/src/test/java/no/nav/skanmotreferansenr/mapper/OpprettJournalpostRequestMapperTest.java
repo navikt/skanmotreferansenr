@@ -245,7 +245,7 @@ public class OpprettJournalpostRequestMapperTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {"00abcdefghj", "01234567890a"})
-	void shouldMapAvsenderMottakerIdTypeNull(String avsenderId) {
+	void shouldMapAvsenderMottakerIdTypeNullWhenAvsenderIdNotNumeric(String avsenderId) {
 		OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
 				generateSkanningMetadata(),
 				baseFoerstesideMetadataBuilder()
