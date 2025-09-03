@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import static org.apache.commons.lang3.StringUtils.isNumeric;
+
 @Slf4j
 public class OpprettJournalpostRequestMapper {
 	private static final String REFERANSENR = "referansenr";
@@ -135,13 +137,18 @@ public class OpprettJournalpostRequestMapper {
 	}
 
 	private static String mapAvsenderId(String avsenderId) {
-		if (avsenderId.startsWith(DOUBLE_ZERO_PADDING) && avsenderId.length() == FOLKEREGISTER_IDENT_LENGTH) {
-			return avsenderId.substring(2);
+		if (avsenderId.startsWith(DOUBLE_ZERO_PADDING)
+			&& isNumeric(avsenderId)
+			&& avsenderId.length() == FOLKEREGISTER_IDENT_LENGTH) {
+			return avsenderId.substring(DOUBLE_ZERO_PADDING.length());
 		}
 		return avsenderId;
 	}
 
 	private static String mapAvsenderMottakerIdType(String avsenderId) {
+		if (!isNumeric(avsenderId)) {
+			return null;
+		}
 		return switch (avsenderId.length()) {
 			case FOLKEREGISTER_IDENT_LENGTH:
 				if (avsenderId.startsWith(DOUBLE_ZERO_PADDING)) {

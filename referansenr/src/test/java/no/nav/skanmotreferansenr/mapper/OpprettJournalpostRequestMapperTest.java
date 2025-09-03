@@ -243,6 +243,25 @@ public class OpprettJournalpostRequestMapperTest {
 		assertThat(avsenderMottaker.getNavn()).isEqualTo(AVSENDER_NAVN_ORGANISASJON);
 	}
 
+	@ParameterizedTest
+	@ValueSource(strings = {"00abcdefghj", "01234567890a"})
+	void shouldMapAvsenderMottakerIdTypeNull(String avsenderId) {
+		OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
+				generateSkanningMetadata(),
+				baseFoerstesideMetadataBuilder()
+						.avsender(Avsender.builder()
+								.avsenderId(avsenderId)
+								.avsenderNavn("Noe annet").build())
+						.build(),
+				generateFilepair()
+		);
+
+		AvsenderMottaker avsenderMottaker = opprettJournalpostRequest.getAvsenderMottaker();
+		assertThat(avsenderMottaker.getId()).isEqualTo(avsenderId);
+		assertThat(avsenderMottaker.getIdType()).isNull();
+		assertThat(avsenderMottaker.getNavn()).isEqualTo("Noe annet");
+	}
+
 	private String getTilleggsopplysningerVerdiFromNokkel(List<Tilleggsopplysning> tilleggsopplysninger, String nokkel) {
 		return tilleggsopplysninger.stream().filter(pair -> nokkel.equals(pair.getNokkel())).findFirst().get().getVerdi();
 	}
