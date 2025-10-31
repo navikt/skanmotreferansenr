@@ -7,6 +7,12 @@ metadata:
     team: teamdokumenthandtering
 spec:
   env:
+    - name: JAVA_TRUSTSTORE_OPTIONS
+      value: "-Djavax.net.ssl.trustStore=$(NAV_TRUSTSTORE_PATH)
+              -Djavax.net.ssl.trustStorePassword=$(NAV_TRUSTSTORE_PASSWORD)"
+    - name: JDK_JAVA_OPTIONS
+      value: "-XX:MaxRAMPercentage=75
+              $(JAVA_PROXY_OPTIONS) $(JAVA_TRUSTSTORE_OPTIONS)"
     - name: SKANMOTREFERANSENR_SFTP_PRIVATEKEY
       value: /var/run/secrets/nais.io/skanmotreferansenr/sftp/sftpprivatekey
     - name: SKANMOTREFERANSENR_SFTP_HOSTKEY
