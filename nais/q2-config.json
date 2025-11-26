@@ -6,6 +6,6 @@
   "SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_SCOPE": "api://dev-fss.teamdokumenthandtering.dokarkiv/.default",
   "SKANMOTREFERANSENR_JIRA_URL": "https://jira-q1.adeo.no",
   "INGRESSES": [
-    "https://skanmotreferansenr.dev.intern.nav.no"
+    "https://skanmotreferansenr.intern.dev.nav.no"
   ]
 }
