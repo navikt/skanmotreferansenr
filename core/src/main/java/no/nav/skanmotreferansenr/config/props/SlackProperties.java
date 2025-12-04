@@ -9,10 +9,10 @@ import org.springframework.validation.annotation.Validated;
 public record SlackProperties(
 		@NotEmpty String token,
 		@NotEmpty String channel,
-		boolean enabled
+		boolean alertsEnabled
 ) {
 	@Override
 	public String toString() {
-		return "SlackProperties{channel='" + channel + "', enabled='" + enabled + "', token=***}}";
+		return "SlackProperties{channel='" + channel + "', alertsEnabled='" + alertsEnabled + "', token=***}}";
 	}
 }
