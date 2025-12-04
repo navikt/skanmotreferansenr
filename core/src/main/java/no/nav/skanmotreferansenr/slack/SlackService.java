@@ -26,7 +26,7 @@ public class SlackService {
 	}
 
 	public void sendMelding(String melding) {
-		if (slackProperties.enabled()) {
+		if (slackProperties.alertsEnabled()) {
 			try {
 				log.info("Sender melding til Slack med melding={}", melding);
 
