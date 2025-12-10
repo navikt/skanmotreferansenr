@@ -53,10 +53,10 @@ spec:
     max: 1
   resources:
     limits:
-      memory: 3584Mi
+      memory: 5000Mi
     requests:
-      cpu: 10m
-      memory: 2560Mi
+      cpu: 20m
+      memory: 3315Mi
   azure:
     application:
       enabled: true
@@ -75,3 +75,8 @@ spec:
       destinations:
         - id: elastic
         - id: loki
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+      destinations:
+        - id: "elastic-apm"
