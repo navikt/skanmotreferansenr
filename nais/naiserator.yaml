@@ -53,10 +53,10 @@ spec:
     max: 1
   resources:
     limits:
-      memory: 3584Mi
+      memory: 4670Mi
     requests:
-      cpu: 10m
-      memory: 2560Mi
+      cpu: 20m
+      memory: 3315Mi
   azure:
     application:
       enabled: true
