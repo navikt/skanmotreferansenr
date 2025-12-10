@@ -125,9 +125,6 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 						.completionSize(FORVENTET_ANTALL_PER_FORSENDELSE)
 						.completionTimeout(skanmotreferansenrProperties.getCompletiontimeout().toMillis())
 						.setProperty(PROPERTY_FORSENDELSE_FILEBASENAME, simple("${exchangeProperty.CamelAggregatedCorrelationKey}"))
-						.process(exchange -> {
-
-						})
 						.process(new MdcSetterProcessor())
 						.process(exchange -> DokCounter.incrementCounter("antall_innkommende", List.of(DOMAIN, REFERANSENR)))
 						.process(exchange -> exchange.getIn().getBody(PostboksReferansenrEnvelope.class).validate())
