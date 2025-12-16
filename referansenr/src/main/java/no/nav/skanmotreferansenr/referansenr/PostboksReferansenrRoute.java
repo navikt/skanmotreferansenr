@@ -71,7 +71,7 @@ public class PostboksReferansenrRoute extends RouteBuilder {
 				"&antExclude=*zip.pgp, *ZIP.pgp" +
 				"&antInclude=*.zip,*.ZIP" +
 				"&initialDelay=1000" +
-				"&maxMessagesPerPoll=10" +
+				"&maxMessagesPerPoll=5" +
 				"&move=processed" +
 				"&scheduler=spring&scheduler.cron={{skanmotreferansenr.referansenr.schedule}}")
 				.routeId("read_zip_from_sftp")
