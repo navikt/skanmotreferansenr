@@ -8,6 +8,7 @@ import no.nav.skanmotreferansenr.consumer.journalpostapi.data.LeggTilLogiskVedle
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.LeggTilLogiskVedleggResponse;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.OpprettJournalpostRequest;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.OpprettJournalpostResponse;
+import no.nav.skanmotreferansenr.exceptions.functional.DuplikatEksternReferanseIdException;
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.SkanmotreferansenrTechnicalException;
 import org.slf4j.MDC;
@@ -99,9 +100,9 @@ public class JournalpostConsumer {
 		if (webException.getStatusCode().is4xxClientError()) {
 			if (CONFLICT.equals(webException.getStatusCode())) {
 				OpprettJournalpostResponse opprettJournalpostResponse = webException.getResponseBodyAs(OpprettJournalpostResponse.class);
-				log.info("Det eksisterer allerede en journalpost i dokarkiv med journalpostId={}, eksternReferanseId={} og kan ikke opprette ny journalpost.",
+				log.info("Det eksisterer allerede en journalpost i dokarkiv med journalpostId={}, eksternReferanseId={}. Kan ikke opprette ny journalpost.",
 						opprettJournalpostResponse.getJournalpostId(), eksternReferanseId);
-				throw new SkanmotreferansenrFunctionalException(format("Det eksisterer allerede en journalpost i dokarkiv med journalpostId=%s. Feilmelding=%s",
+				throw new DuplikatEksternReferanseIdException(format("Det eksisterer allerede en journalpost i dokarkiv med journalpostId=%s. Feilmelding=%s",
 						opprettJournalpostResponse.getJournalpostId(), webException.getMessage()), webException);
 			}
 			throw new SkanmotreferansenrFunctionalException(format("opprettJournalpost feilet funksjonelt med statusKode=%s. Feilmelding=%s",
