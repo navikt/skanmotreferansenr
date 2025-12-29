@@ -6,6 +6,7 @@ import no.nav.skanmotreferansenr.consumer.journalpostapi.data.DokumentVariant;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.OpprettJournalpostRequest;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.OpprettJournalpostResponse;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.Tilleggsopplysning;
+import no.nav.skanmotreferansenr.exceptions.functional.DuplikatEksternReferanseIdException;
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrFunctionalException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +42,6 @@ public class OpprettJournalpostIT extends AbstractItest {
 		assertEquals(DOKUMENT_INFO_ID, res.getDokumenter().getFirst().dokumentInfoId());
 	}
 
-
 	@Test
 	public void shouldGetJournalpostWhenResponseIs() {
 		this.stubOpprettJournalpostResponseConflictWithValidResponse();
@@ -49,7 +49,7 @@ public class OpprettJournalpostIT extends AbstractItest {
 				.eksternReferanseId("ekstern")
 				.build();
 
-		SkanmotreferansenrFunctionalException exception = assertThrows(SkanmotreferansenrFunctionalException.class, () -> journalpostConsumer.opprettJournalpost(request));
+		DuplikatEksternReferanseIdException exception = assertThrows(DuplikatEksternReferanseIdException.class, () -> journalpostConsumer.opprettJournalpost(request));
 		Assertions.assertThat(exception.getMessage()).contains("Det eksisterer allerede en journalpost i dokarkiv med journalpostId=567010363.");
 	}
 
