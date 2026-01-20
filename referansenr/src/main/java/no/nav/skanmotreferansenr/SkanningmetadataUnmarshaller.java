@@ -40,6 +40,7 @@ public class SkanningmetadataUnmarshaller {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	@Handler
 	PostboksReferansenrEnvelope unmarshal(@Body PostboksReferansenrEnvelope envelope) {
 		try {

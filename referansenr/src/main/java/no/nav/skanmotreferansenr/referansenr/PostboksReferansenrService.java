@@ -41,6 +41,7 @@ public class PostboksReferansenrService {
         this.leggTilLogiskVedleggService = leggTilLogiskVedleggService;
     }
 
+	@SuppressWarnings("unused")
     @Handler
     public void behandleForsendelse(@Body PostboksReferansenrEnvelope envelope) {
         final Skanningmetadata skanningmetadata = envelope.getSkanningmetadata();
