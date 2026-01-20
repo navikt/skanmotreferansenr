@@ -32,11 +32,14 @@ public class LeggTilLogiskVedleggService {
 		if (opprettJournalpostResponse == null || foerstesideMetadata == null) {
 			return new ArrayList<>();
 		}
-		if (opprettJournalpostResponse.getDokumenter().isEmpty() || foerstesideMetadata.getVedleggsliste() == null) {
+		List<DokumentInfo> dokumenter = opprettJournalpostResponse.getDokumenter();
+		if (dokumenter.isEmpty() || foerstesideMetadata.getVedleggsliste() == null) {
 			return new ArrayList<>();
 		}
-		final String dokumentInfoId = opprettJournalpostResponse.getDokumenter().stream().map(DokumentInfo::dokumentInfoId)
+		final String dokumentInfoId = dokumenter.stream()
+				.map(DokumentInfo::dokumentInfoId)
 				.findFirst().get();
+		log.info("Skanmotreferansenr legger til {} logiske vedlegg på dokumentInfoId={}", dokumenter.size(), dokumentInfoId);
 		return foerstesideMetadata.getVedleggsliste().stream()
 				.map(tittel -> leggTilLogiskVedlegg(dokumentInfoId, tittel))
 				.filter(Objects::nonNull)
@@ -44,20 +47,19 @@ public class LeggTilLogiskVedleggService {
 	}
 
 	private LeggTilLogiskVedleggResponse leggTilLogiskVedlegg(String dokumentInfoId, String tittel) {
-		log.info("Skanmotreferansenr legger til logisk vedlegg, dokumentInfoId={}, dokumentTittel={}", dokumentInfoId, tittel);
 		LeggTilLogiskVedleggRequest request = LeggTilLogiskVedleggRequest.builder()
 				.tittel(tittel)
 				.build();
 		try {
 			return journalpostConsumer.leggTilLogiskVedlegg(request, dokumentInfoId);
 		} catch (AbstractSkanmotreferansenrFunctionalException e) {
-			log.warn("Skanmotreferansenr feilet funksjonelt med lagring av logisk vedlegg dokumentInfoId={}, dokumentTittel={}", dokumentInfoId, tittel, e);
+			log.warn("Skanmotreferansenr feilet funksjonelt med lagring av logisk vedlegg dokumentInfoId={}", dokumentInfoId, e);
 			return null;
 		} catch (AbstractSkanmotreferansenrTechnicalException e) {
-			log.warn("Skanmotreferansenr feilet teknisk med lagring av logisk vedlegg dokumentInfoId={}, dokumentTittel={}", dokumentInfoId, tittel, e);
+			log.error("Skanmotreferansenr feilet teknisk med lagring av logisk vedlegg dokumentInfoId={}", dokumentInfoId, e);
 			return null;
 		} catch (Exception e) {
-			log.warn("Skanmotreferansenr feilet med ukjent feil ved lagring av logisk vedlegg dokumentInfoId={}, dokumentTittel={}", dokumentInfoId, tittel, e);
+			log.error("Skanmotreferansenr feilet med ukjent feil ved lagring av logisk vedlegg dokumentInfoId={}", dokumentInfoId, e);
 			return null;
 		}
 	}
