@@ -32,7 +32,7 @@
         <commons-compress.version>1.28.0</commons-compress.version>
         <commons-io.version>2.21.0</commons-io.version>
         <bouncycastle.version>1.83</bouncycastle.version>
-        <context-propagation.version>1.2.0</context-propagation.version>
+        <context-propagation.version>1.2.1</context-propagation.version>
         <slack-api-client.version>1.47.0</slack-api-client.version>
 
         <!-- Test -->
