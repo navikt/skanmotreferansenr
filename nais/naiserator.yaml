@@ -53,10 +53,10 @@ spec:
     max: 1
   resources:
     limits:
-      memory: 5000Mi
+      memory: 8Gi
     requests:
       cpu: 20m
-      memory: 3315Mi
+      memory: 3Gi
   azure:
     application:
       enabled: true
@@ -78,5 +78,3 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
-      destinations:
-        - id: "elastic-apm"
