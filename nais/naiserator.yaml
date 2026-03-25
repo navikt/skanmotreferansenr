@@ -29,6 +29,8 @@ spec:
       value: {{ SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_SCOPE }}
     - name: SKANMOTREFERANSENR_JIRA_URL
       value: {{ SKANMOTREFERANSENR_JIRA_URL }}
+    - name: SKANMOTREFERANSENR_SLACK_VARSEL_CRON
+      value: "{{ SKANMOTREFERANSENR_SLACK_VARSEL_CRON }}"
   image: {{ image }}
   ingresses:
     {{#each INGRESSES}}

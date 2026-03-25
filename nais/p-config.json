@@ -5,6 +5,7 @@
   "SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_URL": "http://dokarkiv.teamdokumenthandtering.svc.nais.local/rest/journalpostapi/v1",
   "SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_SCOPE": "api://prod-fss.teamdokumenthandtering.dokarkiv/.default",
   "SKANMOTREFERANSENR_JIRA_URL": "https://jira.adeo.no",
+  "SKANMOTREFERANSENR_SLACK_VARSEL_CRON": "0 45 10 * * MON-FRI",
   "INGRESSES": [
     "https://skanmotreferansenr.intern.nav.no"
   ]

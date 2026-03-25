@@ -1,6 +1,7 @@
 package no.nav.skanmotreferansenr.config.props;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -24,6 +25,9 @@ public class SkanmotreferansenrProperties {
 
 	@NotNull
 	private Duration completiontimeout;
+
+	@NotBlank
+	String slackVarselCron;
 
 	@Valid
 	private final Endpoints endpoints = new Endpoints();
