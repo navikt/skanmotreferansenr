@@ -1,6 +1,7 @@
- package no.nav.skanmotreferansenr.slack;
+package no.nav.skanmotreferansenr.slack;
 
 import com.slack.api.methods.MethodsClient;
+import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
 import com.slack.api.model.block.HeaderBlock;
 import com.slack.api.model.block.SectionBlock;
@@ -10,7 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.config.props.SlackProperties;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,9 +28,8 @@ public class SlackService {
 		this.slackClient = slackClient;
 	}
 
-	public void sendMelding(String melding) {
+	public void sendMelding(List<String> melding) throws SlackApiException, IOException {
 		if (slackProperties.alertsEnabled()) {
-			try {
 				log.info("Sender melding til Slack med melding={}", melding);
 
 				var response = slackClient.chatPostMessage(jobbFeiletMelding(melding));
@@ -35,30 +37,28 @@ public class SlackService {
 				var result = response.isOk() ? "OK" : response.getError();
 				log.info("Sendte melding med ts={} til Slack med resultat={}", response.getTs(), result);
 
-			} catch (Exception e) {
-				log.error("Sending av melding til Slack feilet med feilmelding={}", e.getMessage(), e);
-			}
 		}
 	}
 
-	private ChatPostMessageRequest jobbFeiletMelding(String feilmelding) {
+	private ChatPostMessageRequest jobbFeiletMelding(List<String> feilmelding) {
 		String headerText = ":rotating_light: Skedulert jobb feilet!";
+		String feilmeldingerSomListe = feilmelding.stream().map(s -> "\n  - " + s).collect(Collectors.joining());
 		String bodyText = """
-                 *Applikasjon:* skanmotreferansenr
-                 *Feilmelding:* %s
-                 """.formatted(feilmelding).stripIndent();
+			*Applikasjon:* skanmotreferansenr
+			*Feilmelding:* %s
+			""".formatted(feilmeldingerSomListe);
 
 		return ChatPostMessageRequest.builder()
-				.channel(slackProperties.channel())
-				.text(bodyText) //ved bruk av blocks fungerer dette som fallback-tekst for varsel
-				.blocks(Arrays.asList(
-						HeaderBlock.builder()
-								.text(PlainTextObject.builder().text(headerText).build())
-								.build(),
-						SectionBlock.builder()
-								.text(MarkdownTextObject.builder().text(bodyText).build())
-								.build()
-				))
-				.build();
+			.channel(slackProperties.channel())
+			.text(bodyText) //ved bruk av blocks fungerer dette som fallback-tekst for varsel
+			.blocks(List.of(
+				HeaderBlock.builder()
+					.text(PlainTextObject.builder().text(headerText).build())
+					.build(),
+				SectionBlock.builder()
+					.text(MarkdownTextObject.builder().text(bodyText).build())
+					.build()
+			))
+			.build();
 	}
 }

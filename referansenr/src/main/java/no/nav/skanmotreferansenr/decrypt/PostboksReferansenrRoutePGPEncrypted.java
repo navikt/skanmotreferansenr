@@ -11,7 +11,7 @@ import no.nav.skanmotreferansenr.metrics.DokCounter;
 import no.nav.skanmotreferansenr.referansenr.PostboksReferansenrEnvelope;
 import no.nav.skanmotreferansenr.referansenr.PostboksReferansenrService;
 import no.nav.skanmotreferansenr.referansenr.PostboksReferansenrSkanningAggregator;
-import no.nav.skanmotreferansenr.slack.SlackService;
+import no.nav.skanmotreferansenr.slack.ExceptionMessageBatchingService;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.builder.ValueBuilder;
@@ -48,17 +48,17 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 	private final SkanmotreferansenrProperties skanmotreferansenrProperties;
 	private final PostboksReferansenrService postboksReferansenrService;
 	private final PgpDecryptService pgpDecryptService;
-	private final SlackService slackService;
+	private final ExceptionMessageBatchingService exceptionMessageBatchingService;
 
 	public PostboksReferansenrRoutePGPEncrypted(
 			SkanmotreferansenrProperties skanmotreferansenrProperties,
 			PostboksReferansenrService postboksReferansenrService,
 			PgpDecryptService pgpDecryptService,
-			SlackService slackService) {
+			ExceptionMessageBatchingService exceptionMessageBatchingService) {
 		this.skanmotreferansenrProperties = skanmotreferansenrProperties;
 		this.postboksReferansenrService = postboksReferansenrService;
 		this.pgpDecryptService = pgpDecryptService;
-		this.slackService = slackService;
+		this.exceptionMessageBatchingService = exceptionMessageBatchingService;
 	}
 
 	@Override
@@ -104,7 +104,7 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 				.to(SEND_SLACKMELDING_RUTE);
 
 		from(SEND_SLACKMELDING_RUTE)
-				.bean(slackService, "sendMelding(${body})");
+				.bean(exceptionMessageBatchingService, "saveMeldingForBatchedSend(${body})");
 
 		from("{{skanmotreferansenr.endpointuri}}/{{skanmotreferansenr.filomraade.inngaaendemappe}}" +
 				"?{{skanmotreferansenr.endpointconfig}}" +
