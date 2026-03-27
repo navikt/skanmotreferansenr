@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -62,13 +63,18 @@ public class ExceptionMessageBatchingService {
 			return;
 		}
 		var melding = getSavedFeilmeldinger();
-		if (slackProperties.alertsEnabled()) {
-			slackService.sendMelding(melding);
-			log.info("Sender melding til Slack med melding={}", melding);
-		} else {
-			log.info("Varsling til Slack er deaktivert. Sender ikke melding={}", melding);
+		try {
+			if (slackProperties.alertsEnabled()) {
+				slackService.sendMelding(melding);
+				log.info("Sender melding til Slack med melding={}", melding);
+			} else {
+				log.info("Varsling til Slack er deaktivert. Sender ikke melding={}", melding);
+			}
+		} catch (SlackApiException | IOException | RuntimeException e) {
+			// Legg meldingene tilbake i køen slik at de kan sendes ved neste forsøk
+			feilmeldingerIkkePostet.addAll(melding);
+			throw e;
 		}
-		feilmeldingerIkkePostet.clear();
 	}
 
 	public void saveMeldingForBatchedSend(String feilmelding) {
@@ -76,6 +82,11 @@ public class ExceptionMessageBatchingService {
 	}
 
 	private List<String> getSavedFeilmeldinger() {
-		return List.of(feilmeldingerIkkePostet.toArray(String[]::new));
+		var meldinger = new ArrayList<String>();
+		String melding;
+		while ((melding = feilmeldingerIkkePostet.poll()) != null) {
+			meldinger.add(melding);
+		}
+		return meldinger;
 	}
 }
