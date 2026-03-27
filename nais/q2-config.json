@@ -5,7 +5,7 @@
   "SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_URL": "http://dokarkiv.teamdokumenthandtering.svc.nais.local/rest/journalpostapi/v1",
   "SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_SCOPE": "api://dev-fss.teamdokumenthandtering.dokarkiv/.default",
   "SKANMOTREFERANSENR_JIRA_URL": "https://jira-q1.adeo.no",
-  "SKANMOTREFERANSENR_SLACK_VARSEL_CRON": "* 0 * * * *",
+  "SKANMOTREFERANSENR_SLACK_VARSEL_CRON": "0 0 * * * *",
   "INGRESSES": [
     "https://skanmotreferansenr.intern.dev.nav.no"
   ]
