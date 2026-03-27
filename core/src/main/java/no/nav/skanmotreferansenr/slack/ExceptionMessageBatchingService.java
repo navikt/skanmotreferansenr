@@ -42,19 +42,15 @@ public class ExceptionMessageBatchingService {
 		sendMeldingInternal();
 	}
 
-	public void sendMeldingImmediately() {
-		try {
-			sendMeldingInternal();
-		} catch (Exception e) {
-			log.error("Sending av melding til Slack feilet med feilmelding={}", e.getMessage(), e);
-		}
-	}
-
 	@PreDestroy
 	void destroy() {
 		if (!feilmeldingerIkkePostet.isEmpty()) {
 			log.info("Applikasjonen stenges — sender {} usendte feilmeldinger til Slack", feilmeldingerIkkePostet.size());
-			sendMeldingImmediately();
+			try {
+				sendMeldingInternal();
+			} catch (Exception e) {
+				log.error("Sending av melding til Slack feilet med feilmelding={}", e.getMessage(), e);
+			}
 		}
 	}
 
