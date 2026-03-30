@@ -9,6 +9,7 @@ import com.slack.api.model.block.composition.MarkdownTextObject;
 import com.slack.api.model.block.composition.PlainTextObject;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.config.props.SlackProperties;
+import no.nav.skanmotreferansenr.exceptions.technical.SlackServiceException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -23,20 +24,21 @@ public class SlackService {
 	private final SlackProperties slackProperties;
 
 	SlackService(SlackProperties slackProperties,
-				 MethodsClient slackClient) {
+	             MethodsClient slackClient) {
 		this.slackProperties = slackProperties;
 		this.slackClient = slackClient;
 	}
 
 	public void sendMelding(List<String> melding) throws SlackApiException, IOException {
 		if (slackProperties.alertsEnabled()) {
-				log.info("Sender melding til Slack med melding={}", melding);
+			log.info("Sender melding til Slack med melding={}", melding);
 
-				var response = slackClient.chatPostMessage(jobbFeiletMelding(melding));
-
-				var result = response.isOk() ? "OK" : response.getError();
-				log.info("Sendte melding med ts={} til Slack med resultat={}", response.getTs(), result);
-
+			var response = slackClient.chatPostMessage(jobbFeiletMelding(melding));
+			if (response.isOk()) {
+				log.info("Sendte melding med ts={} til Slack med resultat=OK", response.getTs());
+			} else {
+				throw new SlackServiceException("Sending til slack feilet: %s".formatted(response.getError()));
+			}
 		}
 	}
 

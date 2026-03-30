@@ -2,17 +2,15 @@ package no.nav.skanmotreferansenr.slack;
 
 import com.slack.api.methods.SlackApiException;
 import no.nav.skanmotreferansenr.config.props.SlackProperties;
+import no.nav.skanmotreferansenr.exceptions.technical.SlackServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.time.Clock;
-import java.time.Instant;
 import java.util.List;
 
-import static no.nav.skanmotreferansenr.CoreConfig.NORGE_ZONE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -119,9 +117,9 @@ class ExceptionMessageBatchingServiceTest {
 	void meldingerLeggesTilbakeIKoenVedFeil() throws SlackApiException, IOException {
 		service.saveMeldingForBatchedSend("Feil som skal overleve");
 
-		doThrow(new IOException("Slack nede")).when(slackService).sendMelding(anyList());
+		doThrow(new SlackServiceException("Slack sending feilet")).when(slackService).sendMelding(anyList());
 
-		assertThatThrownBy(() -> service.sendMeldinger()).isInstanceOf(IOException.class);
+		assertThatThrownBy(() -> service.sendMeldinger()).isInstanceOf(SlackServiceException.class);
 
 		// Meldingene skal ha blitt lagt tilbake — neste sending skal inkludere dem
 		Mockito.reset(slackService);
