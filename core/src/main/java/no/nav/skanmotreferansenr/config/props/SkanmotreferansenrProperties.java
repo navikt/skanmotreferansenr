@@ -1,7 +1,7 @@
 package no.nav.skanmotreferansenr.config.props;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.ToString;
@@ -16,14 +16,17 @@ import java.time.Duration;
 @ConfigurationProperties("skanmotreferansenr")
 public class SkanmotreferansenrProperties {
 
-	@NotEmpty
+	@NotBlank
 	private String endpointuri;
 
-	@NotEmpty
+	@NotBlank
 	private String endpointconfig;
 
 	@NotNull
 	private Duration completiontimeout;
+
+	@NotBlank
+	String slackVarselCron;
 
 	@Valid
 	private final Endpoints endpoints = new Endpoints();
@@ -53,13 +56,13 @@ public class SkanmotreferansenrProperties {
 
 	@Data
 	public static class Referansenr {
-		@NotEmpty
+		@NotBlank
 		private String schedule;
 	}
 
 	@Data
 	public static class Avstem {
-		@NotEmpty
+		@NotBlank
 		private String schedule;
 
 		private boolean startup;
@@ -69,34 +72,34 @@ public class SkanmotreferansenrProperties {
 	@Data
 	public static class FilomraadeProperties {
 
-		@NotEmpty
+		@NotBlank
 		private String inngaaendemappe;
 
-		@NotEmpty
+		@NotBlank
 		private String feilmappe;
 
-		@NotEmpty
+		@NotBlank
 		private String avstemmappe;
 	}
 
 	@Data
 	public static class SftpProperties {
 
-		@NotNull
+		@NotBlank
 		private String host;
 
-		@NotEmpty
+		@NotBlank
 		@Exists
 		private String privateKey;
 
-		@NotEmpty
+		@NotBlank
 		@Exists
 		private String hostKey;
 
-		@NotNull
+		@NotBlank
 		private String username;
 
-		@NotNull
+		@NotBlank
 		private String port;
 	}
 
@@ -105,18 +108,18 @@ public class SkanmotreferansenrProperties {
 		/**
 		 * Url til tjeneste som har azure autorisasjon
 		 */
-		@NotEmpty
+		@NotBlank
 		private String url;
 		/**
 		 * Scope til azure client credential flow
 		 */
-		@NotEmpty
+		@NotBlank
 		private String scope;
 	}
 
 	@Data
 	public static class JiraConfigProperties {
-		@NotEmpty
+		@NotBlank
 		private String url;
 	}
 
@@ -125,14 +128,14 @@ public class SkanmotreferansenrProperties {
 		/**
 		 * passphrase for PGP-tjeneste
 		 */
-		@NotEmpty
+		@NotBlank
 		@ToString.Exclude
 		private String passphrase;
 
 		/**
 		 * privateKey for PGP-tjeneste
 		 */
-		@NotEmpty
+		@NotBlank
 		@Exists
 		private String privateKey;
 	}

@@ -1,10 +1,12 @@
 package no.nav.skanmotreferansenr.referansenr.pgpDecrypt;
 
 import no.nav.skanmotreferansenr.referansenr.itest.AbstractItest;
+import no.nav.skanmotreferansenr.slack.ExceptionMessageBatchingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import wiremock.org.apache.commons.io.FileUtils;
 import wiremock.org.apache.commons.io.FilenameUtils;
 
@@ -12,6 +14,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,12 +26,15 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
+import static java.time.Duration.ofDays;
+import static java.time.Duration.ofHours;
 import static java.time.Duration.ofSeconds;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 
@@ -36,6 +43,8 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 
 	@Autowired
 	private Path sshdPath;
+	@Autowired
+	private ExceptionMessageBatchingService exceptionMessageBatchingService;
 
 	@BeforeEach
 	void beforeEach() {
@@ -75,11 +84,11 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 				verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
 				verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
 				verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG)));
+				exceptionMessageBatchingService.sendMeldinger();
 
 				verify(exactly(1), postRequestedFor(urlPathEqualTo(SLACK_POST_MESSAGE_PATH))
-						.withRequestBody(containing("no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException")));
-				verify(exactly(2), postRequestedFor(urlPathEqualTo(SLACK_POST_MESSAGE_PATH))
-						.withRequestBody(containing("no.nav.skanmotreferansenr.exceptions.functional.ForsendelseNotCompleteException")));
+						.withRequestBody(containing("no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException%3A%201")
+							.and(containing("no.nav.skanmotreferansenr.exceptions.functional.ForsendelseNotCompleteException%3A%202"))));
 			} catch (NoSuchFileException e) {
 				fail();
 			}
@@ -106,6 +115,7 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 
 		await().atMost(15, SECONDS).untilAsserted(() -> {
 			assertTrue(Files.exists(sshdPath.resolve(FEILMAPPE).resolve(filSomIkkeKanDekrypteres)));
+			exceptionMessageBatchingService.sendMeldinger();
 			verify(exactly(1), postRequestedFor(urlPathEqualTo(SLACK_POST_MESSAGE_PATH))
 					.withRequestBody(containing("org.bouncycastle.openpgp.PGPException")));
 		});
