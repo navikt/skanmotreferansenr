@@ -26,8 +26,6 @@ import static org.mockito.Mockito.when;
 
 class ExceptionMessageBatchingServiceTest {
 
-	private static final Clock FIXED_CLOCK = Clock.fixed(Instant.parse("2026-01-15T10:00:00Z"), NORGE_ZONE);
-
 	private SlackProperties slackProperties;
 	private SlackService slackService;
 	private ExceptionMessageBatchingService service;
@@ -39,7 +37,7 @@ class ExceptionMessageBatchingServiceTest {
 
 		when(slackProperties.alertsEnabled()).thenReturn(true);
 
-		service = new ExceptionMessageBatchingService(slackProperties, slackService, FIXED_CLOCK);
+		service = new ExceptionMessageBatchingService(slackProperties, slackService);
 	}
 
 	@Test

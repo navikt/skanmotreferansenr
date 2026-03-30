@@ -10,29 +10,22 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.Clock;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Map;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 @Slf4j
 @Service
 public class ExceptionMessageBatchingService {
-	public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
 	private final SlackProperties slackProperties;
-	private final Clock clock;
-	private final Queue<String> feilmeldingerIkkePostet = new ConcurrentLinkedQueue<>();
+	private final ConcurrentSkipListMap<String,Integer> feilmeldingerIkkePostet = new ConcurrentSkipListMap<>();
 	private final SlackService slackService;
 
 	ExceptionMessageBatchingService(SlackProperties slackProperties,
-				 SlackService slackService,
-				 Clock clock) {
+				 SlackService slackService) {
 		this.slackProperties = slackProperties;
-		this.clock = clock;
 		this.slackService = slackService;
 	}
 
@@ -55,33 +48,36 @@ public class ExceptionMessageBatchingService {
 	}
 
 	private void sendMeldingInternal() throws SlackApiException, IOException {
-		if (feilmeldingerIkkePostet.isEmpty()) {
+		var feilmeldinger = getSavedFeilmeldinger();
+		if (feilmeldinger.isEmpty()) {
 			return;
 		}
-		var melding = getSavedFeilmeldinger();
 		try {
 			if (slackProperties.alertsEnabled()) {
-				slackService.sendMelding(melding);
-				log.info("Sender melding til Slack med melding={}", melding);
+				slackService.sendMelding(feilmeldinger.stream()
+					.map(entry -> "%s: %d ganger".formatted(entry.getKey(), entry.getValue()))
+					.toList());
+				log.info("Sender melding til Slack med melding={}", feilmeldinger);
 			} else {
-				log.info("Varsling til Slack er deaktivert. Sender ikke melding={}", melding);
+				log.info("Varsling til Slack er deaktivert. Sender ikke melding={}", feilmeldinger);
 			}
 		} catch (SlackApiException | IOException | RuntimeException e) {
 			// Legg meldingene tilbake i køen slik at de kan sendes ved neste forsøk
-			feilmeldingerIkkePostet.addAll(melding);
+			feilmeldinger.forEach(entry ->
+				feilmeldingerIkkePostet.merge(entry.getKey(), entry.getValue(), Integer::sum));
 			throw e;
 		}
 	}
 
-	public void saveMeldingForBatchedSend(String feilmelding) {
-		feilmeldingerIkkePostet.add("_%s_: %s".formatted(DATE_TIME_FORMATTER.format(ZonedDateTime.now(clock)), feilmelding));
+	public synchronized void saveMeldingForBatchedSend(String feilmelding) {
+		feilmeldingerIkkePostet.merge(feilmelding, 1, Integer::sum);
 	}
 
-	private List<String> getSavedFeilmeldinger() {
-		var meldinger = new ArrayList<String>();
-		String melding;
-		while ((melding = feilmeldingerIkkePostet.poll()) != null) {
-			meldinger.add(melding);
+	private List<Map.Entry<String,Integer>> getSavedFeilmeldinger() {
+		var meldinger = new ArrayList<Map.Entry<String,Integer>>();
+		Map.Entry<String,Integer> entry;
+		while ((entry = feilmeldingerIkkePostet.pollFirstEntry()) != null) {
+			meldinger.add(entry);
 		}
 		return meldinger;
 	}

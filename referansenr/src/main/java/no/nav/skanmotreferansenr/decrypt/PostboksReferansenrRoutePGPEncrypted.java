@@ -73,7 +73,7 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}-teknisk.zip"))
 				.to(PGP_AVVIK)
 				.log(ERROR, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".")
-				.setBody(simple("Innlesing av fil feilet teknisk med exception=${exception.getClass().getName()}."))
+				.setBody(simple("Innlesing av fil feilet teknisk med exception=${exception.getClass().getName()}"))
 				.to(SEND_SLACKMELDING_RUTE);
 
 		// Får ikke dekryptert .zip.pgp - mest sannsynlig mismatch mellom private key og public key
@@ -88,7 +88,7 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 				.log(ERROR, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".")
 				.end()
 				.process(new MdcRemoverProcessor())
-				.setBody(simple("Innlesing av fil feilet dekryptering med exception=${exception.getClass().getName()}."))
+				.setBody(simple("Innlesing av fil feilet dekryptering med exception=${exception.getClass().getName()}"))
 				.to(SEND_SLACKMELDING_RUTE);
 
 		// Kjente funksjonelle feil
@@ -100,7 +100,7 @@ public class PostboksReferansenrRoutePGPEncrypted extends RouteBuilder {
 				.setHeader(FILE_NAME, simple("${exchangeProperty." + PROPERTY_FORSENDELSE_BATCHNAVN + "}/${exchangeProperty." + PROPERTY_FORSENDELSE_FILEBASENAME + "}.zip"))
 				.to(PGP_AVVIK)
 				.log(WARN, log, "Skanmotreferansenr skrev feiletzip=${header." + FILE_NAME_PRODUCED + "} til feilmappe. " + KEY_LOGGING_INFO + ".")
-				.setBody(simple("Innlesing av fil feilet funksjonelt med exception=${exception.getClass().getName()}."))
+				.setBody(simple("Innlesing av fil feilet funksjonelt med exception=${exception.getClass().getName()}"))
 				.to(SEND_SLACKMELDING_RUTE);
 
 		from(SEND_SLACKMELDING_RUTE)

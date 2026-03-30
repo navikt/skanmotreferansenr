@@ -87,8 +87,8 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 				exceptionMessageBatchingService.sendMeldinger();
 
 				verify(exactly(1), postRequestedFor(urlPathEqualTo(SLACK_POST_MESSAGE_PATH))
-						.withRequestBody(containing("no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException")
-							.and(containing("no.nav.skanmotreferansenr.exceptions.functional.ForsendelseNotCompleteException"))));
+						.withRequestBody(containing("no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException%3A%201")
+							.and(containing("no.nav.skanmotreferansenr.exceptions.functional.ForsendelseNotCompleteException%3A%202"))));
 			} catch (NoSuchFileException e) {
 				fail();
 			}
