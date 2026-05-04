@@ -73,6 +73,10 @@ public class ExceptionMessageBatchingService {
 		feilmeldingerIkkePostet.merge(feilmelding, 1, Integer::sum);
 	}
 
+	public int getPendingErrorCount() {
+		return feilmeldingerIkkePostet.values().stream().mapToInt(Integer::intValue).sum();
+	}
+
 	private List<Map.Entry<String,Integer>> getSavedFeilmeldinger() {
 		var meldinger = new ArrayList<Map.Entry<String,Integer>>();
 		Map.Entry<String,Integer> entry;

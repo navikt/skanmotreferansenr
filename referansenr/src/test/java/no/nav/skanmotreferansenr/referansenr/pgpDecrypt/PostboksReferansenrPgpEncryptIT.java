@@ -63,7 +63,7 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 	}
 
 	@Test
-	public void shouldBehandlePgpEncryptedZip() throws IOException {
+	public void shouldBehandlePgpEncryptedZip() throws Exception {
 		// 09.06.2020_R123456780_1_4000.zip
 		// OK   - 09.06.2020_R123456780_0001x
 		// OK   - 09.06.2020_R123456780_0002x (mangler førstesidemetadata, Oppretter journalpost med tema UKJ)
@@ -74,6 +74,8 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 		final String ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION = "09.06.2020_R123456780_1_4000";
 		copyFileFromClasspathToInngaaende(ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION + ".zip.pgp");
 
+		// Vent til alle filer er i feilmappe og alle feilmeldinger er batched.
+		// sendMeldinger() tømmer køen destruktivt, så den må ikke kalles før alle 3 feil er registrert.
 		await().atMost(ofSeconds(15)).untilAsserted(() -> {
 			try {
 				assertThat(Files.list(sshdPath.resolve(FEILMAPPE)
@@ -84,15 +86,17 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 				verify(exactly(1), getRequestedFor(urlMatching(URL_FOERSTESIDEGENERATOR_NOT_FOUND)));
 				verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_JOURNALPOST_GEN)));
 				verify(exactly(2), postRequestedFor(urlMatching(URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG)));
-				exceptionMessageBatchingService.sendMeldinger();
-
-				verify(exactly(1), postRequestedFor(urlPathEqualTo(SLACK_POST_MESSAGE_PATH))
-						.withRequestBody(containing("no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException%3A%201")
-							.and(containing("no.nav.skanmotreferansenr.exceptions.functional.ForsendelseNotCompleteException%3A%202"))));
+				assertThat(exceptionMessageBatchingService.getPendingErrorCount()).isEqualTo(3);
 			} catch (NoSuchFileException e) {
 				fail();
 			}
 		});
+
+		exceptionMessageBatchingService.sendMeldinger();
+
+		verify(exactly(1), postRequestedFor(urlPathEqualTo(SLACK_POST_MESSAGE_PATH))
+				.withRequestBody(containing("no.nav.skanmotreferansenr.exceptions.functional.InvalidMetadataException%3A%201")
+					.and(containing("no.nav.skanmotreferansenr.exceptions.functional.ForsendelseNotCompleteException%3A%202"))));
 
 		final List<String> feilmappeContents = Files.list(sshdPath.resolve(FEILMAPPE).resolve(ENCRYPTED_ZIP_FILE_NAME_NO_EXTENSION))
 				.map(p -> FilenameUtils.getName(p.toAbsolutePath().toString()))
@@ -104,7 +108,7 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 	}
 
 	@Test
-	public void shouldFailWhenPrivateKeyDoesNotMatchPublicKey() throws IOException {
+	public void shouldFailWhenPrivateKeyDoesNotMatchPublicKey() throws Exception {
 		// 09.06.2020_R123456783_3_4000.zip.pgp er kryptert med publicKeyElGamal (i stedet for publicKeyRSA)
 		// Korresponderende RSA-private key vil da feile i forsøket på dekryptering
 
@@ -115,10 +119,13 @@ public class PostboksReferansenrPgpEncryptIT extends AbstractItest {
 
 		await().atMost(15, SECONDS).untilAsserted(() -> {
 			assertTrue(Files.exists(sshdPath.resolve(FEILMAPPE).resolve(filSomIkkeKanDekrypteres)));
-			exceptionMessageBatchingService.sendMeldinger();
-			verify(exactly(1), postRequestedFor(urlPathEqualTo(SLACK_POST_MESSAGE_PATH))
-					.withRequestBody(containing("org.bouncycastle.openpgp.PGPException")));
+			assertThat(exceptionMessageBatchingService.getPendingErrorCount()).isEqualTo(1);
 		});
+
+		exceptionMessageBatchingService.sendMeldinger();
+
+		verify(exactly(1), postRequestedFor(urlPathEqualTo(SLACK_POST_MESSAGE_PATH))
+				.withRequestBody(containing("org.bouncycastle.openpgp.PGPException")));
 	}
 
 	private void preparePath(Path path) throws IOException {
