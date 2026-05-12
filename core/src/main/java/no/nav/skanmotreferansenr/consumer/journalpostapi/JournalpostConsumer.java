@@ -12,11 +12,9 @@ import no.nav.skanmotreferansenr.exceptions.functional.DuplikatEksternReferanseI
 import no.nav.skanmotreferansenr.exceptions.functional.SkanmotreferansenrFunctionalException;
 import no.nav.skanmotreferansenr.exceptions.technical.SkanmotreferansenrTechnicalException;
 import org.slf4j.MDC;
-import org.springframework.boot.autoconfigure.http.codec.HttpCodecsProperties;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.boot.http.codec.autoconfigure.HttpCodecsProperties;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -44,15 +42,12 @@ public class JournalpostConsumer {
 		this.webClient = webClient.mutate()
 				.defaultHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 				.baseUrl(skanmotreferansenrProperties.getEndpoints().getDokarkiv().getUrl())
-				.exchangeStrategies(ExchangeStrategies.builder()
-						.codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
-								.maxInMemorySize((int) httpCodecsProperties.getMaxInMemorySize().toBytes()))
-						.build())
+				.codecs(clientCodecConfigurer -> clientCodecConfigurer.defaultCodecs()
+						.maxInMemorySize((int) httpCodecsProperties.getMaxInMemorySize().toBytes()))
 				.build();
 	}
 
-	@Retryable(retryFor = SkanmotreferansenrTechnicalException.class,
-			maxAttempts = MAX_RETRIES, backoff = @Backoff(delay = RETRY_DELAY))
+	@Retryable(includes = SkanmotreferansenrTechnicalException.class, maxRetries = MAX_RETRIES, delay = RETRY_DELAY, multiplier = 2)
 	public OpprettJournalpostResponse opprettJournalpost(OpprettJournalpostRequest opprettJournalpostRequest) {
 		return webClient.post()
 				.uri("/journalpost?foersoekFerdigstill=false")
@@ -65,7 +60,7 @@ public class JournalpostConsumer {
 				.block();
 	}
 
-	@Retryable(maxAttempts = MAX_RETRIES, backoff = @Backoff(delay = RETRY_DELAY))
+	@Retryable(maxRetries = MAX_RETRIES, delay = RETRY_DELAY, multiplier = 2)
 	public LeggTilLogiskVedleggResponse leggTilLogiskVedlegg(
 			LeggTilLogiskVedleggRequest request,
 			String dokumentInfoId
@@ -82,7 +77,7 @@ public class JournalpostConsumer {
 				.block();
 	}
 
-	@Retryable(retryFor = SkanmotreferansenrTechnicalException.class, backoff = @Backoff(delay = RETRY_DELAY))
+	@Retryable(includes = SkanmotreferansenrTechnicalException.class, maxRetries = MAX_RETRIES, delay = RETRY_DELAY, multiplier = 2)
 	public FeilendeAvstemmingReferanser avstemReferanser(AvstemmingReferanser avstemmingReferanser) {
 
 		return webClient.post()

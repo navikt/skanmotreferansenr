@@ -8,7 +8,7 @@ import no.nav.skanmotreferansenr.exceptions.functional.HentMetadataFoerstesideTi
 import no.nav.skanmotreferansenr.exceptions.technical.HentMetadataFoerstesideTechnicalException;
 import no.nav.skanmotreferansenr.filters.NavHeadersFilter;
 import org.slf4j.MDC;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -35,7 +35,7 @@ public class FoerstesidegeneratorConsumer {
 				.build();
 	}
 
-	@Retryable(retryFor = HentMetadataFoerstesideTechnicalException.class)
+	@Retryable(includes = HentMetadataFoerstesideTechnicalException.class)
 	public FoerstesideMetadata hentFoersteside(String loepenr) {
 		return webClient.get()
 				.uri(uriBuilder -> uriBuilder

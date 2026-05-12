@@ -1,9 +1,9 @@
 package no.nav.skanmotreferansenr.itest;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.wiremock.spring.ConfigureWireMock;
+import org.wiremock.spring.EnableWireMock;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ActiveProfiles;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -23,7 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 		classes = AvstemTestConfig.class,
 		webEnvironment = RANDOM_PORT
 )
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock(@ConfigureWireMock(name = "wiremock-server"))
 public abstract class AbstractItest {
 
 	public static final String URL_DOKARKIV_AVSTEMREFERANSER = "/rest/journalpostapi/v1/avstemReferanser";

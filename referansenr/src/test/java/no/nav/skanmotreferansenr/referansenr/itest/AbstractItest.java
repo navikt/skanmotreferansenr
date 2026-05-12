@@ -2,9 +2,9 @@ package no.nav.skanmotreferansenr.referansenr.itest;
 
 import com.github.tomakehurst.wiremock.common.Json;
 import lombok.SneakyThrows;
-import org.apache.commons.io.IOUtils;
+import org.wiremock.spring.ConfigureWireMock;
+import org.wiremock.spring.EnableWireMock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -17,7 +17,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 		classes = TestConfig.class,
 		webEnvironment = RANDOM_PORT
 )
-@AutoConfigureWireMock(port = 0)
+@EnableWireMock(@ConfigureWireMock(name = "wiremock-server"))
 @ActiveProfiles("itest")
 public class AbstractItest {
 
@@ -113,6 +113,6 @@ public class AbstractItest {
 	@SneakyThrows
 	private static String classpathToString(String classpathResource) {
 		InputStream inputStream = new ClassPathResource(classpathResource).getInputStream();
-		return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+		return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 	}
 }
