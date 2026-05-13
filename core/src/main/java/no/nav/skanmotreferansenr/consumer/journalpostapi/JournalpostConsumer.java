@@ -20,8 +20,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import static java.lang.String.format;
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CALL_ID;
-import static no.nav.skanmotreferansenr.consumer.RetryConstants.MAX_RETRIES;
-import static no.nav.skanmotreferansenr.consumer.RetryConstants.RETRY_DELAY;
 import static no.nav.skanmotreferansenr.consumer.azure.AzureOAuthEnabledWebClientConfig.CLIENT_REGISTRATION_DOKARKIV;
 import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_CALL_ID;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -47,7 +45,7 @@ public class JournalpostConsumer {
 				.build();
 	}
 
-	@Retryable(includes = SkanmotreferansenrTechnicalException.class, maxRetries = MAX_RETRIES, delay = RETRY_DELAY, multiplier = 2)
+	@Retryable(includes = SkanmotreferansenrTechnicalException.class, multiplier = 2)
 	public OpprettJournalpostResponse opprettJournalpost(OpprettJournalpostRequest opprettJournalpostRequest) {
 		return webClient.post()
 				.uri("/journalpost?foersoekFerdigstill=false")
@@ -60,7 +58,7 @@ public class JournalpostConsumer {
 				.block();
 	}
 
-	@Retryable(maxRetries = MAX_RETRIES, delay = RETRY_DELAY, multiplier = 2)
+	@Retryable(multiplier = 2)
 	public LeggTilLogiskVedleggResponse leggTilLogiskVedlegg(
 			LeggTilLogiskVedleggRequest request,
 			String dokumentInfoId
@@ -77,7 +75,7 @@ public class JournalpostConsumer {
 				.block();
 	}
 
-	@Retryable(includes = SkanmotreferansenrTechnicalException.class, maxRetries = MAX_RETRIES, delay = RETRY_DELAY, multiplier = 2)
+	@Retryable(includes = SkanmotreferansenrTechnicalException.class, multiplier = 2)
 	public FeilendeAvstemmingReferanser avstemReferanser(AvstemmingReferanser avstemmingReferanser) {
 
 		return webClient.post()

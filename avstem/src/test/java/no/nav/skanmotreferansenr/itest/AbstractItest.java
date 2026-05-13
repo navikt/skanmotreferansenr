@@ -23,7 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 		classes = AvstemTestConfig.class,
 		webEnvironment = RANDOM_PORT
 )
-@EnableWireMock(@ConfigureWireMock(name = "wiremock-server"))
+@EnableWireMock
 public abstract class AbstractItest {
 
 	public static final String URL_DOKARKIV_AVSTEMREFERANSER = "/rest/journalpostapi/v1/avstemReferanser";
