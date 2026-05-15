@@ -23,6 +23,10 @@
 			<artifactId>camel-spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-mdc</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.camel.springboot</groupId>
 			<artifactId>camel-ftp-starter</artifactId>
 		</dependency>
@@ -50,8 +54,8 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-contract-wiremock</artifactId>
+			<groupId>org.wiremock.integrations</groupId>
+			<artifactId>wiremock-spring-boot</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

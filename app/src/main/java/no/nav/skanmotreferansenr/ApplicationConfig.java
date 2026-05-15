@@ -6,7 +6,7 @@ import no.nav.skanmotreferansenr.config.props.SlackProperties;
 import no.nav.skanmotreferansenr.consumer.azure.AzureProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.resilience.annotation.EnableResilientMethods;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Configuration
@@ -16,7 +16,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 		JiraAuthProperties.class,
 		AzureProperties.class,
 })
-@EnableRetry
+@EnableResilientMethods
 @EnableScheduling
 public class ApplicationConfig {
 
