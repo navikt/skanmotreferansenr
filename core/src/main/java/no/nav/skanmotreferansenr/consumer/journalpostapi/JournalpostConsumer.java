@@ -64,7 +64,7 @@ public class JournalpostConsumer {
 			String dokumentInfoId
 	) {
 		return webClient.post()
-				.uri(uriBuilder -> uriBuilder.path("/dokumentInfo/{dokumentInfoId}/logiskVedlegg/")
+				.uri(uriBuilder -> uriBuilder.path("/dokumentInfo/{dokumentInfoId}/logiskVedlegg")
 						.build(dokumentInfoId))
 				.header(NAV_CALL_ID, MDC.get(MDC_CALL_ID))
 				.attributes(clientRegistrationId(CLIENT_REGISTRATION_DOKARKIV))
