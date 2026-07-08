@@ -1,9 +1,8 @@
 package no.nav.skanmotreferansenr.itest;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.wiremock.spring.ConfigureWireMock;
-import org.wiremock.spring.EnableWireMock;
 import org.springframework.http.HttpStatus;
+import org.wiremock.spring.EnableWireMock;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -26,7 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @EnableWireMock
 public abstract class AbstractItest {
 
-	public static final String URL_DOKARKIV_AVSTEMREFERANSER = "/rest/journalpostapi/v1/avstemReferanser";
+	public static final String URL_DOKARKIV_AVSTEMREFERANSER = "/rest/internal/avstemReferanser";
 	public static final String JIRA_OPPRETTE_URL = "/rest/api/2/issue";
 	public static final String JIRA_VEDLEGG_URL = "/rest/api/2/issue/MMA-134/attachments";
 	public static final String JIRA_PROJECT_URL = "/rest/api/2/project/MMA";
