@@ -72,6 +72,7 @@ spec:
     - secret: {{ SKANMOTREFERANSE_SECRET }}
     - secret: slack-alerts
     - secret: jira-service-user
+    - configmap: skanmotreferansenr
   observability:
     logging:
       destinations:
