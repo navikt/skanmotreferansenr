@@ -1,6 +1,5 @@
 package no.nav.skanmotreferansenr.mapper;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.consumer.foersteside.data.Avsender;
 import no.nav.skanmotreferansenr.consumer.foersteside.data.FoerstesideMetadata;
 import no.nav.skanmotreferansenr.consumer.journalpostapi.data.AvsenderMottaker;
@@ -16,12 +15,10 @@ import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 
 import java.util.Date;
 import java.util.List;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.StringUtils.isNumeric;
 
-@Slf4j
 public class OpprettJournalpostRequestMapper {
 	private static final String REFERANSENR = "referansenr";
 	private static final String ENDORSERNR = "endorsernr";
@@ -29,9 +26,6 @@ public class OpprettJournalpostRequestMapper {
 	private static final String STREKKODEPOSTBOKS = "strekkodePostboks";
 	private static final String ANTALL_SIDER = "antallSider";
 
-	// foerstesidegenerator domenet
-	private static final String FOERSTESIDE_BRUKERTYPE_PERSON = "PERSON";
-	private static final String FOERSTESIDE_BRUKERTYPE_ORGANISASJON = "ORGANISASJON";
 
 	// joark domenet
 	private static final String JOURNALPOSTTYPE = "INNGAAENDE";
@@ -43,18 +37,14 @@ public class OpprettJournalpostRequestMapper {
 	private static final String VARIANTFORMAT_XML = "SKANNING_META";
 	private static final String DOKUMENTKATEGORI_IS = "IS";
 	private static final String TEMA_UKJENT = "UKJ";
-	static final String BRUKER_IDTYPE_PERSON = "FNR";
-	static final String BRUKER_IDTYPE_ORGANISASJON = "ORGNR";
 	static final String AVSENDER_IDTYPE_PERSON = "FNR";
 	static final String AVSENDER_IDTYPE_ORGANISASJON = "ORGNR";
 
 	static final String DOUBLE_ZERO_PADDING = "00";
-	private static final Pattern BRUKER_ID_PERSON_REGEX = Pattern.compile("[0-9]{11}");
-	private static final Pattern BRUKER_ID_ORGANISASJON_REGEX = Pattern.compile("[0-9]{9}");
 	private static final int FOLKEREGISTER_IDENT_LENGTH = 11;
 	private static final int NORSK_ORGANISASJONSNUMMER_LENGTH = 9;
 
-	public OpprettJournalpostRequest mapMetadataToOpprettJournalpostRequest(Skanningmetadata skanningmetadata, FoerstesideMetadata foerstesideMetadata, Filepair filepair) {
+	public static OpprettJournalpostRequest mapMetadataToOpprettJournalpostRequest(Skanningmetadata skanningmetadata, FoerstesideMetadata foerstesideMetadata, Filepair filepair, Bruker bruker) {
 		Journalpost journalpost = skanningmetadata.getJournalpost();
 		SkanningInfo skanningInfo = skanningmetadata.getSkanningInfo();
 
@@ -67,7 +57,6 @@ public class OpprettJournalpostRequestMapper {
 		Date datoMottatt = skanningmetadata.getJournalpost().getDatoMottatt();
 
 		AvsenderMottaker avsenderMottaker = extractAvsenderMottaker(foerstesideMetadata);
-		Bruker bruker = extractBruker(foerstesideMetadata);
 
 		List<Tilleggsopplysning> tilleggsopplysninger = Stream.of(
 						new Tilleggsopplysning(REFERANSENR, journalpost.getReferansenummer()),
@@ -117,14 +106,14 @@ public class OpprettJournalpostRequestMapper {
 				.build();
 	}
 
-	private String extractTema(FoerstesideMetadata foerstesideMetadata) {
+	private static String extractTema(FoerstesideMetadata foerstesideMetadata) {
 		if (foerstesideMetadata.getTema() == null) {
 			return TEMA_UKJENT;
 		}
 		return foerstesideMetadata.getTema();
 	}
 
-	private AvsenderMottaker extractAvsenderMottaker(FoerstesideMetadata foerstesideMetadata) {
+	private static AvsenderMottaker extractAvsenderMottaker(FoerstesideMetadata foerstesideMetadata) {
 		Avsender avsender = foerstesideMetadata.getAvsender();
 		if (avsender == null) {
 			return null;
@@ -166,39 +155,8 @@ public class OpprettJournalpostRequestMapper {
 		return avsenderId.startsWith(DOUBLE_ZERO_PADDING);
 	}
 
-	private Bruker extractBruker(FoerstesideMetadata foerstesideMetadata) {
-		if (foerstesideMetadata.getBruker() == null || !isValidBruker(foerstesideMetadata)) {
-			return null;
-		}
-		String id = foerstesideMetadata.getBruker().getBrukerId();
-		String idType = foerstesideMetadata.getBruker().getBrukerType();
-		if (FOERSTESIDE_BRUKERTYPE_PERSON.equals(idType)) {
-			idType = BRUKER_IDTYPE_PERSON;
-		} else if (FOERSTESIDE_BRUKERTYPE_ORGANISASJON.equals(idType)) {
-			idType = BRUKER_IDTYPE_ORGANISASJON;
-		}
-		return new Bruker(id, idType);
-	}
 
-	private boolean isValidBruker(FoerstesideMetadata metadata) {
-		no.nav.skanmotreferansenr.consumer.foersteside.data.Bruker bruker = metadata.getBruker();
-		if (FOERSTESIDE_BRUKERTYPE_PERSON.equals(bruker.getBrukerType())) {
-			if (BRUKER_ID_PERSON_REGEX.matcher(bruker.getBrukerId()).matches()) {
-				return true;
-			}
-			log.warn("Brukerid av type {} var ugyldig, setter bruker til null", FOERSTESIDE_BRUKERTYPE_PERSON);
-		} else if (FOERSTESIDE_BRUKERTYPE_ORGANISASJON.equals(bruker.getBrukerType())) {
-			if (BRUKER_ID_ORGANISASJON_REGEX.matcher(bruker.getBrukerId()).matches()) {
-				return true;
-			}
-			log.warn("Brukerid av type {} var ugyldig, setter bruker til null", FOERSTESIDE_BRUKERTYPE_ORGANISASJON);
-		} else {
-			log.warn("Brukertype {} er ikke er en av følgende gyldige verdier: [{}, {}]. Setter bruker til null", bruker.getBrukerType(), FOERSTESIDE_BRUKERTYPE_PERSON, FOERSTESIDE_BRUKERTYPE_ORGANISASJON);
-		}
-		return false;
-	}
-
-	private boolean notNullOrEmpty(String string) {
+	private static boolean notNullOrEmpty(String string) {
 		return string != null && !string.isBlank();
 	}
 

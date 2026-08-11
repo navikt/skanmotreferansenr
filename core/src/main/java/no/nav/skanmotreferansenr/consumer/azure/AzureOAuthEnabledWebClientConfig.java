@@ -29,6 +29,7 @@ public class AzureOAuthEnabledWebClientConfig {
 
 	public static final String CLIENT_REGISTRATION_DOKARKIV = "azure-dokarkiv";
 	public static final String CLIENT_REGISTRATION_FOERSTESIDEGENERATOR = "azure-foerstesidegenerator";
+	public static final String CLIENT_REGISTRATION_PDL = "azure-pdl";
 
 	@Bean
 	WebClient webClient(ReactiveOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager) {
@@ -89,6 +90,14 @@ public class AzureOAuthEnabledWebClientConfig {
 						.clientAuthenticationMethod(CLIENT_SECRET_BASIC)
 						.authorizationGrantType(CLIENT_CREDENTIALS)
 						.scope(skanmotreferansenrProperties.getEndpoints().getFoerstesidegenerator().getScope())
+						.build(),
+				ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_PDL)
+						.tokenUri(azureProperties.openidConfigTokenEndpoint())
+						.clientId(azureProperties.appClientId())
+						.clientSecret(azureProperties.appClientSecret())
+						.clientAuthenticationMethod(CLIENT_SECRET_BASIC)
+						.authorizationGrantType(CLIENT_CREDENTIALS)
+						.scope(skanmotreferansenrProperties.getEndpoints().getPdl().getScope())
 						.build(),
 				ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_DOKARKIV)
 						.tokenUri(azureProperties.openidConfigTokenEndpoint())

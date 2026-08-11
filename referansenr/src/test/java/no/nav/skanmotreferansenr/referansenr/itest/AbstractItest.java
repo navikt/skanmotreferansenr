@@ -38,6 +38,7 @@ public class AbstractItest {
 	public static final String URL_DOKARKIV_DOKUMENTINFO_LOGISKVEDLEGG = "/rest/journalpostapi/v1/dokumentInfo/[0-9]+/logiskVedlegg";
 	public static final String SLACK_POST_MESSAGE_PATH = "/slack/api/chat.postMessage";
 	private static final String SLACK_AUTH_PATH = "/slack/api/auth.test";
+	private static final String URL_PDL_GRAPHQL = "/pdlgraphql";
 
 	final String LOGISK_VEDLEGG_ID = "885522";
 	final String LOEPENR_OK = "1111111111111";
@@ -88,6 +89,12 @@ public class AbstractItest {
 		stubFor(post(urlPathEqualTo(SLACK_POST_MESSAGE_PATH))
 				.willReturn(aResponse()
 						.withBodyFile("slack/message_response.json")
+						.withStatus(OK.value())));
+
+		stubFor(post(urlPathEqualTo(URL_PDL_GRAPHQL))
+				.willReturn(aResponse()
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("pdl/identer_response.json")
 						.withStatus(OK.value())));
 	}
 

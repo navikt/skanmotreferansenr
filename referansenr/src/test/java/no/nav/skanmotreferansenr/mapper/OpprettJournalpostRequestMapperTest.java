@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static no.nav.skanmotreferansenr.mapper.OpprettJournalpostRequestMapper.AVSENDER_IDTYPE_ORGANISASJON;
 import static no.nav.skanmotreferansenr.mapper.OpprettJournalpostRequestMapper.AVSENDER_IDTYPE_PERSON;
-import static no.nav.skanmotreferansenr.mapper.OpprettJournalpostRequestMapper.BRUKER_IDTYPE_PERSON;
+import static no.nav.skanmotreferansenr.mapper.BrukerMapper.BRUKER_IDTYPE_PERSON;
 import static no.nav.skanmotreferansenr.mapper.OpprettJournalpostRequestMapper.DOUBLE_ZERO_PADDING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public class OpprettJournalpostRequestMapperTest {
 
-	private final OpprettJournalpostRequestMapper opprettJournalpostRequestMapper = new OpprettJournalpostRequestMapper();
 
 	private final String MOTTAKSKANAL = "SKAN_IM";
 	private final String BATCHNAVN = "navnPaaBatch.zip";
@@ -63,10 +62,11 @@ public class OpprettJournalpostRequestMapperTest {
 	@Test
 	public void shouldExtractOpprettJournalpostRequestFromSkanningmetadata() {
 
-		OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
+		OpprettJournalpostRequest opprettJournalpostRequest = OpprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
 				generateSkanningMetadata(),
 				generateFoerstesideMetadata(),
-				generateFilepair()
+				generateFilepair(),
+				new no.nav.skanmotreferansenr.consumer.journalpostapi.data.Bruker(BRUKER_ID, BRUKER_IDTYPE_PERSON)
 		);
 
 		assertEquals(JOURNALPOSTTYPE_INNGAAENDE, opprettJournalpostRequest.getJournalpostType());
@@ -131,10 +131,11 @@ public class OpprettJournalpostRequestMapperTest {
 
 	@Test
 	public void shouldExtractEvenWhenNoFoerstesideMetadata() {
-		OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
+		OpprettJournalpostRequest opprettJournalpostRequest = OpprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
 				generateSkanningMetadata(),
 				new FoerstesideMetadata(),
-				generateFilepair()
+				generateFilepair(),
+				null
 		);
 
 		assertEquals(JOURNALPOSTTYPE_INNGAAENDE, opprettJournalpostRequest.getJournalpostType());
@@ -211,10 +212,11 @@ public class OpprettJournalpostRequestMapperTest {
 						.strekkodePostboks(STREKKODE_POSTBOKS)
 						.build())
 				.build();
-		OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
+		OpprettJournalpostRequest opprettJournalpostRequest = OpprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
 				skanningmetadataNoEndorsernrOrFysiskPostboks,
 				generateFoerstesideMetadata(),
-				generateFilepair()
+				generateFilepair(),
+				null
 		);
 
 		assertEquals(2, opprettJournalpostRequest.getTilleggsopplysninger().size());
@@ -227,14 +229,15 @@ public class OpprettJournalpostRequestMapperTest {
 	@ParameterizedTest
 	@ValueSource(strings = {AVSENDER_ID_ORGANISASJON, DOUBLE_ZERO_PADDING + AVSENDER_ID_ORGANISASJON})
 	void shouldMapAvsenderMottakerIdTypeOrgnr(String orgnr) {
-		OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
+		OpprettJournalpostRequest opprettJournalpostRequest = OpprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
 				generateSkanningMetadata(),
 				baseFoerstesideMetadataBuilder()
 						.avsender(Avsender.builder()
 								.avsenderId(orgnr)
 								.avsenderNavn(AVSENDER_NAVN_ORGANISASJON).build())
 						.build(),
-				generateFilepair()
+				generateFilepair(),
+				null
 		);
 
 		AvsenderMottaker avsenderMottaker = opprettJournalpostRequest.getAvsenderMottaker();
@@ -246,14 +249,15 @@ public class OpprettJournalpostRequestMapperTest {
 	@ParameterizedTest
 	@ValueSource(strings = {"00abcdefghj", "01234567890a"})
 	void shouldMapAvsenderMottakerIdTypeNullWhenAvsenderIdNotNumeric(String avsenderId) {
-		OpprettJournalpostRequest opprettJournalpostRequest = opprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
+		OpprettJournalpostRequest opprettJournalpostRequest = OpprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
 				generateSkanningMetadata(),
 				baseFoerstesideMetadataBuilder()
 						.avsender(Avsender.builder()
 								.avsenderId(avsenderId)
 								.avsenderNavn("Noe annet").build())
 						.build(),
-				generateFilepair()
+				generateFilepair(),
+				null
 		);
 
 		AvsenderMottaker avsenderMottaker = opprettJournalpostRequest.getAvsenderMottaker();

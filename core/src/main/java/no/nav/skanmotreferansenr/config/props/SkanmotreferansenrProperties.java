@@ -52,6 +52,8 @@ public class SkanmotreferansenrProperties {
 		@NotNull
 		private AzureEndpoint dokarkiv;
 
+		@NotNull
+		private AzureEndpoint pdl;
 	}
 
 	@Data
