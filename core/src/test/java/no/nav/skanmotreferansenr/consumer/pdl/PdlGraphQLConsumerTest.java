@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -93,7 +94,8 @@ class PdlGraphQLConsumerTest {
 		PdlGraphQLConsumer consumer = consumerSimulatingPdlReturning(HttpStatus.FORBIDDEN, "");
 
 		assertThatThrownBy(() -> consumer.identFinnesIPdl(FOEDSELSNUMMER))
-				.isInstanceOf(PdlTechnicalException.class);
+				.isInstanceOf(PdlTechnicalException.class)
+				.hasCauseInstanceOf(WebClientResponseException.class);
 	}
 
 	@Test
@@ -101,7 +103,8 @@ class PdlGraphQLConsumerTest {
 		PdlGraphQLConsumer consumer = consumerSimulatingPdlReturning(HttpStatus.INTERNAL_SERVER_ERROR, "");
 
 		assertThatThrownBy(() -> consumer.identFinnesIPdl(FOEDSELSNUMMER))
-				.isInstanceOf(PdlTechnicalException.class);
+				.isInstanceOf(PdlTechnicalException.class)
+				.hasCauseInstanceOf(WebClientResponseException.class);
 	}
 
 	private PdlGraphQLConsumer consumerSimulatingPdlReturning(HttpStatus status, String body) {
