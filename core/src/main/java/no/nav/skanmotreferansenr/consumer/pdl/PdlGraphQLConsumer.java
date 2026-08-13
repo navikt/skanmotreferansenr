@@ -16,8 +16,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CALL_ID;
 import static no.nav.skanmotreferansenr.consumer.azure.AzureOAuthEnabledWebClientConfig.CLIENT_REGISTRATION_PDL;
+import static no.nav.skanmotreferansenr.mdc.MDCConstants.MDC_CALL_ID;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
 
@@ -25,6 +25,7 @@ import static org.springframework.security.oauth2.client.web.reactive.function.c
 @Component
 public class PdlGraphQLConsumer {
 
+	static final String NAV_CALL_ID_PDL = "Nav-Call-Id";
 	private static final String PDL_ERROR_EXTENSION_CODE_NOT_FOUND = "not_found";
 	private static final String PDL_ERROR_EXTENSION_CODE_UNAUTHORIZED = "unauthorized";
 	private static final String HENT_IDENTER_QUERY = """
@@ -57,7 +58,7 @@ public class PdlGraphQLConsumer {
 	private ClientGraphQlResponse hentIdenter(String foedselsnummer) {
 		try {
 			return graphQlClient.mutate()
-				.header(NAV_CALL_ID, getCallId())
+				.header(NAV_CALL_ID_PDL, getCallId())
 				.build()
 				.document(HENT_IDENTER_QUERY)
 				.variable("ident", foedselsnummer)
@@ -119,7 +120,7 @@ public class PdlGraphQLConsumer {
 	}
 
 	public static String getCallId() {
-		return isBlank(MDC.get(NAV_CALL_ID)) ? UUID.randomUUID().toString() : MDC.get(NAV_CALL_ID);
+		return isBlank(MDC.get(MDC_CALL_ID)) ? UUID.randomUUID().toString() : MDC.get(MDC_CALL_ID);
 	}
 
 	private enum PersonLookupResult {

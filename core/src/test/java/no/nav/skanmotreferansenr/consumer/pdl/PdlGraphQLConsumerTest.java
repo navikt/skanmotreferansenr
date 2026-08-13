@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static no.nav.skanmotreferansenr.consumer.NavHeaders.NAV_CALL_ID;
+import static no.nav.skanmotreferansenr.consumer.pdl.PdlGraphQLConsumer.NAV_CALL_ID_PDL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -41,7 +42,7 @@ class PdlGraphQLConsumerTest {
 		ClientRequest request = capturedRequest.get();
 		assertThat(request.method()).isEqualTo(POST);
 		assertThat(request.url().toString()).isEqualTo(PDL_URL);
-		assertThat(request.headers().getFirst(NAV_CALL_ID)).isNotBlank();
+		assertThat(request.headers().getFirst(NAV_CALL_ID_PDL)).isNotBlank();
 	}
 
 	@Test
