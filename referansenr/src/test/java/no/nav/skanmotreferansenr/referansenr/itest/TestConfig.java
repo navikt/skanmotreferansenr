@@ -1,6 +1,7 @@
 package no.nav.skanmotreferansenr.referansenr.itest;
 
 import com.slack.api.Slack;
+import com.slack.api.SlackConfig;
 import com.slack.api.methods.MethodsClient;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.skanmotreferansenr.CoreConfig;
@@ -15,8 +16,8 @@ import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.common.keyprovider.ClassLoadableResourceKeyPairProvider;
 import org.apache.sshd.scp.server.ScpCommandFactory;
 import org.apache.sshd.server.SshServer;
-import org.apache.sshd.server.auth.UserAuthNoneFactory;
 import org.apache.sshd.server.auth.pubkey.AcceptAllPublickeyAuthenticator;
+import org.apache.sshd.server.auth.pubkey.UserAuthPublicKeyFactory;
 import org.apache.sshd.sftp.server.SftpSubsystemFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -47,7 +48,9 @@ public class TestConfig {
 	@Bean
 	@Primary
 	MethodsClient slackClient(SlackProperties slackProperties) {
-		var slackClient = Slack.getInstance().methods(slackProperties.token());
+		var slackConfig = new SlackConfig();
+		slackConfig.setProxyUrl(null);
+		var slackClient = Slack.getInstance(slackConfig).methods(slackProperties.token());
 		slackClient.setEndpointUrlPrefix(slackUrl);
 		return slackClient;
 	}
@@ -98,7 +101,7 @@ public class TestConfig {
 			sshd.setSubsystemFactories(singletonList(new SftpSubsystemFactory()));
 			// aksepterer alle public keys som presenteres, behøver ikke authorized_keys
 			sshd.setPublickeyAuthenticator(AcceptAllPublickeyAuthenticator.INSTANCE);
-			sshd.setUserAuthFactories(singletonList(new UserAuthNoneFactory()));
+			sshd.setUserAuthFactories(singletonList(new UserAuthPublicKeyFactory()));
 			sshd.setFileSystemFactory(new VirtualFileSystemFactory(sshdPath));
 			return sshd;
 		}

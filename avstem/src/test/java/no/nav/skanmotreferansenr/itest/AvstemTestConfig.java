@@ -12,8 +12,8 @@ import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
 import org.apache.sshd.common.keyprovider.ClassLoadableResourceKeyPairProvider;
 import org.apache.sshd.scp.server.ScpCommandFactory;
 import org.apache.sshd.server.SshServer;
-import org.apache.sshd.server.auth.UserAuthNoneFactory;
 import org.apache.sshd.server.auth.pubkey.AcceptAllPublickeyAuthenticator;
+import org.apache.sshd.server.auth.pubkey.UserAuthPublicKeyFactory;
 import org.apache.sshd.sftp.server.SftpSubsystemFactory;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -86,7 +86,7 @@ public class AvstemTestConfig {
 			sshd.setSubsystemFactories(singletonList(new SftpSubsystemFactory()));
 			// aksepterer alle public keys som presenteres, behøver ikke authorized_keys
 			sshd.setPublickeyAuthenticator(AcceptAllPublickeyAuthenticator.INSTANCE);
-			sshd.setUserAuthFactories(singletonList(new UserAuthNoneFactory()));
+			sshd.setUserAuthFactories(singletonList(new UserAuthPublicKeyFactory()));
 			sshd.setFileSystemFactory(new VirtualFileSystemFactory(sshdPath));
 			return sshd;
 		}
