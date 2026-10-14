@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,5 +44,21 @@ public class FoerstesideIT extends AbstractItest {
 	@Test
 	void shouldGetEmptyOptionalIfNotExisting() {
 		assertThat(foerstesidegeneratorService.hentFoersteside("222")).isEmpty();
+	}
+
+	@Test
+	void shouldGetFoerstesideMetadataWithAvsender() {
+		stubFoerstesideMedAvsender("12345678", "HPRNR");
+
+		Optional<FoerstesideMetadata> metadata = foerstesidegeneratorService.hentFoersteside(LOEPENR_OK);
+
+		assertThat(metadata)
+				.get()
+				.extracting(FoerstesideMetadata::getAvsender)
+				.satisfies(avsender -> {
+					assertThat(avsender.getAvsenderId()).isEqualTo("12345678");
+					assertThat(avsender.getAvsenderIdType()).isEqualTo("HPRNR");
+					assertThat(avsender.getAvsenderNavn()).isEqualTo("Avsender Navn");
+				});
 	}
 }

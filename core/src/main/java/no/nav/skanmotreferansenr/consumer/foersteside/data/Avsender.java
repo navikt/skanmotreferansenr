@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class Avsender {
 
     private String avsenderId;
+    private String avsenderIdType;
     private String avsenderNavn;
 }

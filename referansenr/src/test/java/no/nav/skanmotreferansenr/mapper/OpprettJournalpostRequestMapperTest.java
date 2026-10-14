@@ -14,6 +14,7 @@ import no.nav.skanmotreferansenr.domain.SkanningInfo;
 import no.nav.skanmotreferansenr.domain.Skanningmetadata;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Date;
@@ -247,8 +248,35 @@ public class OpprettJournalpostRequestMapperTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"00abcdefghj", "01234567890a"})
-	void shouldMapAvsenderMottakerIdTypeNullWhenAvsenderIdNotNumeric(String avsenderId) {
+	@CsvSource({
+			"12345678, HPRNR, 12345678",
+			"12345678901, FNR, 12345678901",
+			"889640782, ORGNR, 889640782",
+			"00889640782, ORGNR, 889640782",
+			"12345678901, HPRNR, 12345678901"
+	})
+	void shouldMapAvsenderMottakerIdTypeFromExplicitAvsenderIdType(String avsenderId, String avsenderIdType, String expectedId) {
+		OpprettJournalpostRequest request = OpprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
+				generateSkanningMetadata(),
+				baseFoerstesideMetadataBuilder()
+						.avsender(Avsender.builder()
+								.avsenderId(avsenderId)
+								.avsenderIdType(avsenderIdType)
+								.avsenderNavn(AVSENDER_NAVN_PERSON)
+								.build())
+						.build(),
+				generateFilepair(),
+				null
+		);
+
+		assertThat(request.getAvsenderMottaker().getId()).isEqualTo(expectedId);
+		assertThat(request.getAvsenderMottaker().getIdType()).isEqualTo(avsenderIdType);
+		assertThat(request.getAvsenderMottaker().getNavn()).isEqualTo(AVSENDER_NAVN_PERSON);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {"00abcdefghj", "01234567890a", "12345678", ""})
+	void shouldMapAvsenderMottakerIdTypeNullWhenAvsenderIdCannotBeInferred(String avsenderId) {
 		OpprettJournalpostRequest opprettJournalpostRequest = OpprettJournalpostRequestMapper.mapMetadataToOpprettJournalpostRequest(
 				generateSkanningMetadata(),
 				baseFoerstesideMetadataBuilder()
