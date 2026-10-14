@@ -120,9 +120,17 @@ public class OpprettJournalpostRequestMapper {
 		}
 		return AvsenderMottaker.builder()
 				.id(mapAvsenderId(avsender.getAvsenderId()))
-				.idType(mapAvsenderMottakerIdType(avsender.getAvsenderId()))
+				.idType(mapAvsenderIdType(avsender))
 				.navn(avsender.getAvsenderNavn())
 				.build();
+	}
+
+	private static String mapAvsenderIdType(Avsender avsender) {
+		if (avsender.getAvsenderIdType() != null) {
+			return avsender.getAvsenderIdType();
+		}
+
+		return mapAvsenderMottakerIdType(avsender.getAvsenderId());
 	}
 
 	private static String mapAvsenderId(String avsenderId) {

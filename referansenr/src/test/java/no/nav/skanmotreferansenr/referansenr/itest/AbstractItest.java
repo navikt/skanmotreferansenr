@@ -1,5 +1,6 @@
 package no.nav.skanmotreferansenr.referansenr.itest;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.tomakehurst.wiremock.common.Json;
 import lombok.SneakyThrows;
 import org.wiremock.spring.ConfigureWireMock;
@@ -96,6 +97,25 @@ public class AbstractItest {
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("pdl/identer_response.json")
 						.withStatus(OK.value())));
+	}
+
+	public void stubFoerstesideMedAvsender(String avsenderId, String avsenderIdType) {
+		ObjectNode response = Json.read(classpathToString("__files/foersteside/foersteside_HAPPY.json"), ObjectNode.class);
+		ObjectNode avsender = response.putObject("avsender");
+		avsender.put("avsenderId", avsenderId);
+		avsender.put("avsenderNavn", "Avsender Navn");
+
+		if (avsenderIdType != null) {
+			avsender.put("avsenderIdType", avsenderIdType);
+		}
+
+		stubFor(get(urlMatching(URL_FOERSTESIDEGENERATOR_OK_1))
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withHeader("Connection", "close")
+						.withJsonBody(response))
+		);
 	}
 
 	public void stubOpprettJournalpostResponseConflictWithValidResponse() {
