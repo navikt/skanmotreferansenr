@@ -1,19 +1,13 @@
 [
   {
-    "self": "https://jira-q1.adeo.no/rest/api/2/attachment/130332",
+    "self": "https://jira-q1.adeo.no/rest/api/3/attachment/130332",
     "id": "130332",
     "filename": "dokdistavstemming-986104543378584628.csv",
     "author": {
-      "self": "https://jira-q1.adeo.no/rest/api/2/user?username=srvjiradokdistavstemming",
-      "name": "srvjiradokdistavstemming",
-      "key": "srvjiradokdistavstemming",
+      "self": "https://jira-q1.adeo.no/rest/api/3/user?username=srvjiradokdistavstemming",
+      "name": "jiradokdistavstemming",
+      "key": "jiradokdistavstemming",
       "emailAddress": "noreply@nav.no",
-      "avatarUrls": {
-        "48x48": "https://jira-q1.adeo.no/secure/useravatar?avatarId=10212",
-        "24x24": "https://jira-q1.adeo.no/secure/useravatar?size=small&avatarId=10212",
-        "16x16": "https://jira-q1.adeo.no/secure/useravatar?size=xsmall&avatarId=10212",
-        "32x32": "https://jira-q1.adeo.no/secure/useravatar?size=medium&avatarId=10212"
-      },
       "displayName": "srvjiradokdistavstemming",
       "active": true,
       "timeZone": "Atlantic/Jan_Mayen"

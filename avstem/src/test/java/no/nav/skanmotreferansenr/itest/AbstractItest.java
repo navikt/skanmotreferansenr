@@ -26,9 +26,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public abstract class AbstractItest {
 
 	public static final String URL_DOKARKIV_AVSTEMREFERANSER = "/rest/internal/avstemReferanser";
-	public static final String JIRA_OPPRETTE_URL = "/rest/api/2/issue";
-	public static final String JIRA_VEDLEGG_URL = "/rest/api/2/issue/MMA-134/attachments";
-	public static final String JIRA_PROJECT_URL = "/rest/api/2/project/MMA";
+	public static final String JIRA_OPPRETTE_URL = "/rest/api/3/issue";
+	public static final String JIRA_VEDLEGG_URL = "/rest/api/3/issue/MMA-134/attachments";
+	public static final String JIRA_PROJECT_URL = "/rest/api/3/project/MMA";
 
 
 	public void setUpStubs() {
