@@ -75,7 +75,7 @@ spec:
   envFrom:
     - secret: {{ SKANMOTREFERANSE_SECRET }}
     - secret: slack-alerts
-    - secret: jira-service-user
+    - secret: jira-cloud
     - configmap: skanmotreferansenr
   observability:
     logging:

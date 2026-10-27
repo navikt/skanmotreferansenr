@@ -6,7 +6,7 @@
   "SKANMOTREFERANSENR_ENDPOINTS_DOKARKIV_SCOPE": "api://dev-fss.teamdokumenthandtering.dokarkiv/.default",
   "SKANMOTREFERANSENR_ENDPOINTS_PDL_URL": "http://pdl-api.pdl.svc.nais.local/graphql",
   "SKANMOTREFERANSENR_ENDPOINTS_PDL_SCOPE": "api://dev-fss.pdl.pdl-api/.default",
-  "SKANMOTREFERANSENR_JIRA_URL": "https://jira-q1.adeo.no",
+  "SKANMOTREFERANSENR_JIRA_URL": "https://api.atlassian.com/ex/jira/e083e647-072b-4276-9112-8c18871dbafd",
   "SKANMOTREFERANSENR_SLACK_VARSEL_CRON": "0 0 * * * *",
   "INGRESSES": [
     "https://skanmotreferansenr.intern.dev.nav.no"
